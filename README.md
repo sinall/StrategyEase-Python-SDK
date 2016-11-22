@@ -3,4 +3,5 @@
 
 ## 聚宽集成
 * 将 shipane_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane_sdk.py。
-* 在聚宽策略里使用 shipane_sdk.Client，可参考 tests/test_client.py。
+* 将 shipane_sdk/joinquant_executor.py 中的 class JoinQuantExecutor（不包含 import）追加到 shpane_sdk.py 中。
+* 用法请参考 examples/simply_joinquant_strategy.py。
