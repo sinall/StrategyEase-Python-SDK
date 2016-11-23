@@ -3,6 +3,9 @@
 from .client import Client
 
 
+#
+# 聚宽整合请从这里开始拷贝
+#
 class JoinQuantExecutor(object):
     def __init__(self, **kwargs):
         self._client = Client(**kwargs)
