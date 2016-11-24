@@ -28,3 +28,6 @@ def handle_data(context, data):
         log.info('ShiPanE response:\nstatus_code: %d\ntext: %s', response.status_code, response.text)
     else:
         log.error('ShiPanE did not response')
+
+    # 撤单
+    g.executor.cancel(order)
