@@ -2,6 +2,7 @@
 
 import collections
 import inspect
+import logging
 import unittest
 
 import shipane_sdk
@@ -9,6 +10,8 @@ import shipane_sdk
 
 class JoinQuantExecutorTest(unittest.TestCase):
     def setUp(self):
+        logging.basicConfig()
+
         self.Order = collections.namedtuple('Order', ['is_buy', 'security', 'price', 'amount'])
         self.executor = shipane_sdk.JoinQuantExecutor(host='192.168.1.102')
 

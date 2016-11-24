@@ -20,14 +20,8 @@ def process_initialize(context):
 def handle_data(context, data):
     # 保存 order 对象
     current_order = order('000001.XSHE', 100)
-    log.info('JointQuant executed:\n%s', str(current_order))
-
     # 实盘易依据聚宽的 order 对象下单
-    response = g.__executor.execute(current_order)
-    if response is not None:
-        log.info('ShiPanE response:\nstatus_code: %d\ntext: %s', response.status_code, response.text)
-    else:
-        log.error('ShiPanE did not response')
+    g.__executor.execute(current_order)
 
     current_order = order(g.security, -100)
     g.__executor.execute(current_order)

@@ -16,7 +16,7 @@
 
 #### 步骤
 * 将 shipane_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane_sdk.py。
-* 将 shipane_sdk/joinquant_executor.py 中的 class JoinQuantExecutor 定义追加到 shpane_sdk.py 中。
+* 将 shipane_sdk/joinquant_executor.py 追加到 shpane_sdk.py 中。
 * 用法请参考 examples/simply_joinquant_strategy.py。
 
 ### 二. 抓取方式

@@ -1,15 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from .client import Client
+try:
+    from .client import Client
+except:
+    pass
+
+try:
+    from kuanke.user_space_api import *
+except:
+    pass
 
 
-#
-# 聚宽整合请从这里开始拷贝
-#
 class JoinQuantExecutor(object):
     def __init__(self, **kwargs):
+        if 'log' in globals():
+            self._log = log
+        else:
+            import logging
+            self._log = logging.getLogger()
         self._client = Client(**kwargs)
-        self.order_id_map = dict()
+        self._order_id_map = dict()
 
     @property
     def client(self):
@@ -21,6 +31,7 @@ class JoinQuantExecutor(object):
 
     def execute(self, order):
         if order is None:
+            self._log.info('[实盘易] 委托为空，忽略下单请求')
             return
 
         try:
@@ -29,25 +40,31 @@ class JoinQuantExecutor(object):
             else:
                 response = self._client.sell(order.security, order.price, order.amount)
 
+            if response is not None:
+                self._log.info('[实盘易] 响应如下：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
+            else:
+                self._log.error('[实盘易] 未响应')
+
             if response is None:
                 return None
 
             if response.status_code == 200:
-                self.order_id_map[order.order_id] = response.json()['id'];
+                self._order_id_map[order.order_id] = response.json()['id'];
 
             return response
-        except:
-            pass
+        except Exception, e:
+            self._log.error("[实盘易] 下单异常：" + str(e))
 
     def cancel(self, order):
         if order is None:
+            self._log.info('[实盘易] 委托为空，忽略撤单请求')
             return
 
         try:
             order_id = order if isinstance(order, int) else order.order_id
-            if order_id in self.order_id_map:
-                return self._client.cancel(self.order_id_map[order_id])
+            if order_id in self._order_id_map:
+                return self._client.cancel(self._order_id_map[order_id])
             else:
-                pass
-        except:
-            pass
+                self._log.warn('[实盘易] 未找到对应的委托编号')
+        except Exception, e:
+            self._log.error("[实盘易] 撤单异常：" + str(e))
