@@ -76,7 +76,7 @@ class Client(object):
         return self.__execute('SELL', symbol, price, amount)
 
     def cancel(self, order_id):
-        return requests.delete(self.__create_order_url(order_id=order_id), timeout=self._timeout)
+        return requests.delete(self.__create_order_url(order_id), timeout=self._timeout)
 
     def cancel_all(self):
         return requests.delete(self.__create_order_url(), timeout=self._timeout)
@@ -89,16 +89,19 @@ class Client(object):
                              json={'orderType': order_type, 'symbol': symbol, 'price': price, 'amount': amount},
                              timeout=self._timeout)
 
-    def __create_order_url(self, **params):
-        return self.__create_url('orders', **params)
+    def __create_order_url(self, order_id=None, **params):
+        return self.__create_url('orders', order_id, **params)
 
-    def __create_url(self, resource, **params):
+    def __create_url(self, resource, resource_id=None, **params):
         client_param = self.__create_client_param()
         all_params = copy.deepcopy(params)
         all_params.update(client=client_param, key=self._key)
-        return '{base_url}/{resource}?{query_str}'.format(base_url=self.__create_base_url(),
-                                                          resource=resource,
-                                                          query_str=urllib.urlencode(all_params))
+        if resource_id is None:
+            path = '/{}'.format(resource)
+        else:
+            path = '/{}/{}'.format(resource, resource_id)
+
+        return '{}{}?{}'.format(self.__create_base_url(), path, urllib.urlencode(all_params))
 
     def __create_base_url(self):
         return 'http://' + self._host + ':' + str(self._port)

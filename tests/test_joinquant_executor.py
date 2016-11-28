@@ -17,7 +17,7 @@ class JoinQuantExecutorTest(unittest.TestCase):
 
     def test_buy_stock(self):
         mock_order = self.Order
-        mock_order.is_buy = False
+        mock_order.is_buy = True
         mock_order.order_id = 1
         mock_order.security = '000001.XSHE'
         mock_order.price = 11.11
