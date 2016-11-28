@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from .client import Client
+    from shipane_sdk.client import Client
 except:
     pass
 

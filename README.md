@@ -16,8 +16,18 @@
 
 #### 步骤
 * 将 shipane_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane_sdk.py。
-* 将 shipane_sdk/joinquant_executor.py 追加到 shpane_sdk.py 中。
-* 用法请参考 examples/simply_joinquant_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
+* 将 shipane_sdk/joinquant/executor.py 追加到 shpane_sdk.py 中。
+* 用法请参考 examples/joinquant/simply_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
 
 ### 二. 抓取方式
-开发中
+无需云服务器，采用定时轮询的方式，实时性不如"推送方式"。
+
+#### 先决条件
+* 部署实盘易成功
+* 手动测试通过
+
+#### 步骤
+* git clone 或下载项目到本地。
+* 安装必要的依赖 "pip install requests"。
+* 参考 examples/joinquant/config/config.ini.template 创建 examples/joinquant/config/config.ini，并完善配置。
+* 命令行运行 "python ./examples/joinquant/simple_runner.py"。

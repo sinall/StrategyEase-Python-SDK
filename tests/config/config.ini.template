@@ -1,0 +1,8 @@
+[ShiPanE]
+host=localhost
+port=8888
+
+[JoinQuant]
+username=
+password=
+backtestId=

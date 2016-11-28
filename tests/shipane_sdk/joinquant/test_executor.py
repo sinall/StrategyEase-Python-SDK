@@ -1,21 +1,27 @@
 # -*- coding: utf-8 -*-
 
+import ConfigParser
 import collections
 import inspect
 import logging
+import os
 import unittest
 
-import shipane_sdk
+from shipane_sdk import JoinQuantExecutor
 
 
 class JoinQuantExecutorTest(unittest.TestCase):
     def setUp(self):
-        logging.basicConfig()
+        logging.basicConfig(level=logging.INFO)
 
+        config = ConfigParser.RawConfigParser()
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        config.read('{}/../../config/config.ini'.format(dir_path))
         self.Order = collections.namedtuple('Order', ['is_buy', 'security', 'price', 'amount'])
-        self.executor = shipane_sdk.JoinQuantExecutor(host='192.168.1.102')
+        self.executor = JoinQuantExecutor(host=config.get('ShiPanE', 'host'))
 
     def test_buy_stock(self):
+        return
         mock_order = self.Order
         mock_order.is_buy = True
         mock_order.order_id = 1
@@ -51,10 +57,10 @@ class JoinQuantExecutorTest(unittest.TestCase):
 
     def test_cancel(self):
         mock_order = self.Order
-        mock_order.is_buy = False
-        mock_order.order_id = 1
+        mock_order.is_buy = True
+        mock_order.order_id = 3
         mock_order.security = '000001.XSHE'
-        mock_order.price = 10.11
+        mock_order.price = 9.01
         mock_order.amount = 100
         self.executor.execute(mock_order)
 

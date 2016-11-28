@@ -1,0 +1,51 @@
+{
+  "data": {
+    "transaction": [
+      {
+        "date": "2016-11-22",
+        "time": "09:30",
+        "security": "股票",
+        "stock": "平安银行(000001.XSHE)",
+        "transaction": "买",
+        "type": "市价单",
+        "amount": "<span class='buy'>100股</span>",
+        "price": 9.25,
+        "total": 925,
+        "gains": 0,
+        "commission": 5,
+        "status": "全部成交"
+      },
+      {
+        "date": "2016-11-22",
+        "time": "09:30",
+        "security": "股票",
+        "stock": "平安银行(000001.XSHE)",
+        "transaction": "卖",
+        "type": "市价单",
+        "amount": "<span class='sell'>-100股</span>",
+        "price": 9.23,
+        "total": "(923)",
+        "gains": -0.01,
+        "commission": 5.92,
+        "status": "全部成交"
+      },
+      {
+        "date": "2016-11-22",
+        "time": "09:31",
+        "security": "股票",
+        "stock": "平安银行(000001.XSHE)",
+        "transaction": "买",
+        "type": "市价单",
+        "amount": "<span class='buy'>100股</span>",
+        "price": 9.25,
+        "total": 925,
+        "gains": 0,
+        "commission": 5,
+        "status": "全部成交"
+      }
+    ]
+  },
+  "status": "0",
+  "code": "00000",
+  "msg": ""
+}

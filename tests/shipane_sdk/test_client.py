@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
 
+import ConfigParser
 import inspect
+import os
 import unittest
 
-import shipane_sdk
+from shipane_sdk import Client
 
 
 class ClientTest(unittest.TestCase):
     def setUp(self):
-        self.client = shipane_sdk.Client(host='192.168.1.102')
+        config = ConfigParser.RawConfigParser()
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        config.read('{}/../config/config.ini'.format(dir_path))
+        self.client = Client(host=config.get('ShiPanE', 'host'))
 
     def test_get_account(self):
         response = self.client.get_account()

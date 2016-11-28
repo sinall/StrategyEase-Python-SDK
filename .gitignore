@@ -89,3 +89,6 @@ ENV/
 .ropeproject
 
 .idea/
+examples/joinquant/config/config.ini
+tests/config/config.ini
+

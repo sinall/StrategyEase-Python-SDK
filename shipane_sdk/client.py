@@ -75,6 +75,9 @@ class Client(object):
     def sell(self, symbol, price, amount):
         return self.__execute('SELL', symbol, price, amount)
 
+    def execute(self, order_type, symbol, price, amount):
+        return self.__execute(order_type, symbol, price, amount)
+
     def cancel(self, order_id):
         return requests.delete(self.__create_order_url(order_id), timeout=self._timeout)
 
