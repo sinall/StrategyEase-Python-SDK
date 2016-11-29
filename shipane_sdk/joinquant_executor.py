@@ -41,9 +41,9 @@ class JoinQuantExecutor(object):
                 response = self._client.sell(order.security, order.price, order.amount)
 
             if response is not None:
-                self._log.info('[实盘易] 响应如下：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
+                self._log.info(u'[实盘易] 回复如下：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
             else:
-                self._log.error('[实盘易] 未响应')
+                self._log.error('[实盘易] 未回复')
 
             if response is None:
                 return None

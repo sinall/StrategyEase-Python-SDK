@@ -10,14 +10,14 @@
 适用于云服务器环境，例如阿里云；特点是稳定、高效，集成简单。
 
 #### 先决条件
-* 已经成功部署实盘易
-* 测试通过
+* 部署实盘易成功
+* 手动测试通过
 * 聚宽（公网）可访问实盘易
 
 #### 步骤
 * 将 shipane_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane_sdk.py。
 * 将 shipane_sdk/joinquant_executor.py 追加到 shpane_sdk.py 中。
-* 用法请参考 examples/simply_joinquant_strategy.py。
+* 用法请参考 examples/simply_joinquant_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
 
 ### 二. 抓取方式
 开发中
