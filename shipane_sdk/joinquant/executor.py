@@ -52,7 +52,7 @@ class JoinQuantExecutor(object):
                 self._order_id_map[order.order_id] = response.json()['id'];
 
             return response
-        except Exception, e:
+        except Exception as e:
             self._log.error("[实盘易] 下单异常：" + str(e))
 
     def cancel(self, order):
@@ -66,5 +66,5 @@ class JoinQuantExecutor(object):
                 return self._client.cancel(self._order_id_map[order_id])
             else:
                 self._log.warn('[实盘易] 未找到对应的委托编号')
-        except Exception, e:
+        except Exception as e:
             self._log.error("[实盘易] 撤单异常：" + str(e))

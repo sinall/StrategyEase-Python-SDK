@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import copy
-import urllib
 
 import requests
+from six.moves.urllib.parse import urlencode
 
 
 class Client(object):
@@ -104,7 +104,7 @@ class Client(object):
         else:
             path = '/{}/{}'.format(resource, resource_id)
 
-        return '{}{}?{}'.format(self.__create_base_url(), path, urllib.urlencode(all_params))
+        return '{}{}?{}'.format(self.__create_base_url(), path, urlencode(all_params))
 
     def __create_base_url(self):
         return 'http://' + self._host + ':' + str(self._port)

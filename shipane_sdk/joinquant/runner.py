@@ -51,7 +51,7 @@ class JoinQuantRunner(object):
                         self._log.info(u'实盘易回复：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
                     else:
                         self._log.error('实盘易未回复')
-            except Exception, e:
+            except Exception as e:
                 self._log.error("跟单异常：" + str(e))
 
             self._log.info("********** 结束跟单 **********\n")

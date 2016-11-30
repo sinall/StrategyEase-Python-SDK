@@ -1,8 +1,15 @@
 # -*- coding: utf-8 -*-
 
-import ConfigParser
 import logging
 import os
+
+import six
+from six.moves import configparser
+
+if six.PY2:
+    ConfigParser = configparser.RawConfigParser
+else:
+    ConfigParser = configparser.ConfigParser
 
 from shipane_sdk import Client
 from shipane_sdk.joinquant.client import JoinQuantClient
@@ -13,7 +20,7 @@ if __name__ == "__main__":
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
 
-    config = ConfigParser.RawConfigParser()
+    config = ConfigParser()
     config.read('{}/config/config.ini'.format(dir_path))
 
     shipane_client = Client(host=config.get('ShiPanE', 'host'),

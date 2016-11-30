@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
 
-import ConfigParser
 import inspect
 import os
 import unittest
+
+import six
+from six.moves import configparser
+
+if six.PY2:
+    ConfigParser = configparser.RawConfigParser
+else:
+    ConfigParser = configparser.ConfigParser
 
 from shipane_sdk import Client
 
 
 class ClientTest(unittest.TestCase):
     def setUp(self):
-        config = ConfigParser.RawConfigParser()
+        config = ConfigParser()
         dir_path = os.path.dirname(os.path.realpath(__file__))
         config.read('{}/../config/config.ini'.format(dir_path))
         self.client = Client(host=config.get('ShiPanE', 'host'))
