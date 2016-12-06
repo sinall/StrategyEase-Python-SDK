@@ -16,6 +16,7 @@ class JoinQuantRunner(object):
         self._start_datatime = datetime.now()
         self._processed_transactions = []
         self._interval = kwargs.pop('interval', 10)
+        self._idle_interval = kwargs.pop('idle_interval', 60)
 
     def run(self):
         while (True):
@@ -24,7 +25,7 @@ class JoinQuantRunner(object):
                 if self._processed_transactions:
                     del self._processed_transactions[:]
 
-                time.sleep(self._interval)
+                time.sleep(self._idle_interval)
                 continue
 
             self._log.info("********** 开始跟单 **********")
@@ -32,7 +33,7 @@ class JoinQuantRunner(object):
             try:
                 transaction_detail = self._jq_client.query()
                 raw_transactions = transaction_detail['data']['transaction']
-                self._log.info("抓取到 {} 条委托".format(len(raw_transactions)))
+                self._log.info("获取到 {} 条委托".format(len(raw_transactions)))
 
                 transactions = []
                 for raw_transaction in raw_transactions:
@@ -52,7 +53,7 @@ class JoinQuantRunner(object):
                     else:
                         self._log.error('实盘易未回复')
             except Exception as e:
-                self._log.error("跟单异常：" + str(e))
+                self._log.exception("跟单异常")
 
             self._log.info("********** 结束跟单 **********\n")
             time.sleep(self._interval)

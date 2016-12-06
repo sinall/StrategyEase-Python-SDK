@@ -6,4 +6,6 @@ key=
 [JoinQuant]
 username=
 password=
-backtestId=
+backtest_id=
+interval=10
+idle_interval=60

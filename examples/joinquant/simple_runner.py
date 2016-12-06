@@ -28,8 +28,10 @@ if __name__ == "__main__":
                             key=config.get('ShiPanE', 'key'))
     jq_client = JoinQuantClient(username=config.get('JoinQuant', 'username'),
                                 password=config.get('JoinQuant', 'password'),
-                                backtest_id=config.get('JoinQuant', 'backtestId'))
+                                backtest_id=config.get('JoinQuant', 'backtest_id'))
     jq_client.login()
-    runner = JoinQuantRunner(shipane_client, jq_client, interval=15)
+    runner = JoinQuantRunner(shipane_client, jq_client,
+                             interval=config.getint('JoinQuant', 'interval'),
+                             idle_interval=config.getint('JoinQuant', 'idle_interval'))
 
     runner.run()

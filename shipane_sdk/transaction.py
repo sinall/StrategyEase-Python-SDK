@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class Transaction(object):
     def __init__(self, **kwargs):
         self._completed_at = kwargs.get('completed_at')
@@ -22,7 +23,7 @@ class Transaction(object):
         return True
 
     def get_cn_type(self):
-        return '买入' if type == 'BUY' else '卖出'
+        return u'买入' if self.type == 'BUY' else u'卖出'
 
     @property
     def completed_at(self):
