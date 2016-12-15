@@ -29,7 +29,7 @@ ShiPanE-Python-SDK
 -  将 shipane\_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为
    shipane\_sdk.py。
 -  将 shipane\_sdk/joinquant/executor.py 追加到 shpane\_sdk.py 中。
--  用法请参考 examples/joinquant/simply\_strategy.py (注意将其中的
+-  用法请参考 examples/joinquant/simple\_strategy.py (注意将其中的
    xxx.xxx.xxx.xxx 替换为实际 IP)。
 
 二. 抓取方式
