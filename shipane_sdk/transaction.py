@@ -4,7 +4,7 @@
 class Transaction(object):
     def __init__(self, **kwargs):
         self._completed_at = kwargs.get('completed_at')
-        self._type = kwargs.get('type')
+        self._action = kwargs.get('action')
         self._symbol = kwargs.get('symbol')
         self._price = kwargs.get('price')
         self._amount = kwargs.get('amount')
@@ -12,7 +12,7 @@ class Transaction(object):
     def __eq__(self, other):
         if self.completed_at != other.completed_at:
             return False
-        if self.type != other.type:
+        if self.action != other.action:
             return False
         if self.symbol != other.symbol:
             return False
@@ -22,8 +22,8 @@ class Transaction(object):
             return False
         return True
 
-    def get_cn_type(self):
-        return u'买入' if self.type == 'BUY' else u'卖出'
+    def get_cn_action(self):
+        return u'买入' if self.action == 'BUY' else u'卖出'
 
     @property
     def completed_at(self):
@@ -34,12 +34,12 @@ class Transaction(object):
         self._completed_at = value
 
     @property
-    def type(self):
-        return self._type
+    def action(self):
+        return self._action
 
-    @type.setter
-    def type(self, value):
-        self._type = value
+    @action.setter
+    def action(self, value):
+        self._action = value
 
     @property
     def symbol(self):

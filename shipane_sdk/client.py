@@ -75,8 +75,8 @@ class Client(object):
     def sell(self, symbol, price, amount):
         return self.__execute('SELL', symbol, price, amount)
 
-    def execute(self, order_type, symbol, price, amount):
-        return self.__execute(order_type, symbol, price, amount)
+    def execute(self, action, symbol, price, amount):
+        return self.__execute(action, symbol, price, amount)
 
     def cancel(self, order_id):
         return requests.delete(self.__create_order_url(order_id), timeout=self._timeout)
@@ -87,9 +87,9 @@ class Client(object):
     def query(self, navigation):
         return requests.get(self.__create_url('', navigation=navigation), timeout=self._timeout)
 
-    def __execute(self, order_type, symbol, price, amount):
+    def __execute(self, action, symbol, price, amount):
         return requests.post(self.__create_order_url(),
-                             json={'orderType': order_type, 'symbol': symbol, 'price': price, 'amount': amount},
+                             json={'action': action, 'symbol': symbol, 'type': 'LIMIT', 'price': price, 'amount': amount},
                              timeout=self._timeout)
 
     def __create_order_url(self, order_id=None, **params):
