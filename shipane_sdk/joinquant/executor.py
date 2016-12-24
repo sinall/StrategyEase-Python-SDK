@@ -19,6 +19,7 @@ class JoinQuantExecutor(object):
             import logging
             self._log = logging.getLogger()
         self._client = Client(**kwargs)
+        self._client_param = kwargs.get('client')
         self._order_id_map = dict()
 
     @property
@@ -35,10 +36,12 @@ class JoinQuantExecutor(object):
             return
 
         try:
-            if order.is_buy:
-                response = self._client.buy(order.security, order.price, order.amount)
-            else:
-                response = self._client.sell(order.security, order.price, order.amount)
+            action = 'BUY' if order.is_buy else 'SELL'
+            response = self._client.execute(self._client_param,
+                                            action=action,
+                                            symbol=order.security,
+                                            price=order.price,
+                                            amount=order.amount)
 
             if response is not None:
                 self._log.info(u'[实盘易] 回复如下：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
@@ -63,7 +66,7 @@ class JoinQuantExecutor(object):
         try:
             order_id = order if isinstance(order, int) else order.order_id
             if order_id in self._order_id_map:
-                return self._client.cancel(self._order_id_map[order_id])
+                return self._client.cancel(self._client_param, self._order_id_map[order_id])
             else:
                 self._log.warn('[实盘易] 未找到对应的委托编号')
         except Exception as e:

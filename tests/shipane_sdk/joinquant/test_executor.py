@@ -38,9 +38,9 @@ class JoinQuantExecutorTest(unittest.TestCase):
         response = self.executor.execute(mock_order)
         print(inspect.stack()[0][3] + ' - ' + response.text)
         json = response.json();
-        if (response.status_code == 200):
+        if response.status_code == 200:
             self.assertTrue(json['id'])
-        elif (response.status_code == 400):
+        elif response.status_code == 400:
             self.assertTrue(json['message'])
         else:
             self.fail()
@@ -55,9 +55,9 @@ class JoinQuantExecutorTest(unittest.TestCase):
         response = self.executor.execute(mock_order)
         print(inspect.stack()[0][3] + ' - ' + response.text)
         json = response.json();
-        if (response.status_code == 200):
+        if response.status_code == 200:
             self.assertTrue(json['id'])
-        elif (response.status_code == 400):
+        elif response.status_code == 400:
             self.assertTrue(json['message'])
         else:
             self.fail()
@@ -73,5 +73,5 @@ class JoinQuantExecutorTest(unittest.TestCase):
 
         response = self.executor.cancel(mock_order)
         print(inspect.stack()[0][3] + ' - ' + response.text)
-        if (response.status_code != 200):
+        if response.status_code != 200:
             self.fail()

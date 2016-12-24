@@ -11,8 +11,6 @@ class Client(object):
         self._host = kwargs.pop('host', 'localhost')
         self._port = kwargs.pop('port', 8888)
         self._key = kwargs.pop('key', '')
-        self._title = kwargs.pop('title', 'monijiaoyi')
-        self._account = kwargs.pop('account', '')
         self._timeout = kwargs.pop('timeout', (5.0, 10.0))
 
     @property
@@ -40,22 +38,6 @@ class Client(object):
         self._key = value
 
     @property
-    def title(self):
-        return self._title
-
-    @host.setter
-    def title(self, value):
-        self._title = value
-
-    @property
-    def account(self):
-        return self._account
-
-    @host.setter
-    def account(self, value):
-        self._account = value
-
-    @property
     def timeout(self):
         return self._timeout
 
@@ -63,42 +45,47 @@ class Client(object):
     def timeout(self, value):
         self._timeout = value
 
-    def get_account(self):
-        return requests.get(self.__create_url('accounts'), timeout=self._timeout)
+    def get_account(self, client=None):
+        return requests.get(self.__create_url(client, 'accounts'), timeout=self._timeout)
 
-    def get_positions(self):
-        return requests.get(self.__create_url('positions'), timeout=self._timeout)
+    def get_positions(self, client=None):
+        return requests.get(self.__create_url(client, 'positions'), timeout=self._timeout)
 
-    def buy(self, symbol, price, amount):
-        return self.__execute('BUY', symbol, price, amount)
+    def buy(self, client=None, **kwargs):
+        kwargs['action'] = 'BUY'
+        return self.__execute(client, **kwargs)
 
-    def sell(self, symbol, price, amount):
-        return self.__execute('SELL', symbol, price, amount)
+    def sell(self, client=None, **kwargs):
+        kwargs['action'] = 'SELL'
+        return self.__execute(client, **kwargs)
 
-    def execute(self, action, symbol, price, amount):
-        return self.__execute(action, symbol, price, amount)
+    def execute(self, client=None, **kwargs):
+        return self.__execute(client, **kwargs)
 
-    def cancel(self, order_id):
-        return requests.delete(self.__create_order_url(order_id), timeout=self._timeout)
+    def cancel(self, client, order_id):
+        return requests.delete(self.__create_order_url(client, order_id), timeout=self._timeout)
 
-    def cancel_all(self):
-        return requests.delete(self.__create_order_url(), timeout=self._timeout)
+    def cancel_all(self, client=None):
+        return requests.delete(self.__create_order_url(client), timeout=self._timeout)
 
-    def query(self, navigation):
-        return requests.get(self.__create_url('', navigation=navigation), timeout=self._timeout)
+    def query(self, client, navigation):
+        return requests.get(self.__create_url(client, '', navigation=navigation), timeout=self._timeout)
 
-    def __execute(self, action, symbol, price, amount):
-        return requests.post(self.__create_order_url(),
-                             json={'action': action, 'symbol': symbol, 'type': 'LIMIT', 'price': price, 'amount': amount},
+    def __execute(self, client=None, **kwargs):
+        if not kwargs.get('type'):
+            kwargs['type'] = 'LIMIT'
+        return requests.post(self.__create_order_url(client),
+                             json=kwargs,
                              timeout=self._timeout)
 
-    def __create_order_url(self, order_id=None, **params):
-        return self.__create_url('orders', order_id, **params)
+    def __create_order_url(self, client=None, order_id=None, **params):
+        return self.__create_url(client, 'orders', order_id, **params)
 
-    def __create_url(self, resource, resource_id=None, **params):
-        client_param = self.__create_client_param()
+    def __create_url(self, client, resource, resource_id=None, **params):
         all_params = copy.deepcopy(params)
-        all_params.update(client=client_param, key=self._key)
+        if client is not None:
+            all_params.update(client=client)
+        all_params.update(key=self._key)
         if resource_id is None:
             path = '/{}'.format(resource)
         else:
@@ -108,13 +95,3 @@ class Client(object):
 
     def __create_base_url(self):
         return 'http://' + self._host + ':' + str(self._port)
-
-    def __create_client_param(self):
-        client_param = ''
-        if self._title:
-            client_param += 'title:' + self._title
-        if self._account:
-            if client_param:
-                client_param += ','
-            client_param += 'account:' + self._account
-        return client_param

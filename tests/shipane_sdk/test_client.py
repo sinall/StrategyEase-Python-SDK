@@ -33,23 +33,23 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_buy_stock(self):
-        response = self.client.buy('000001', 8.11, 100)
+        response = self.client.buy(symbol='000001', price=8.11, amount=100)
         print(inspect.stack()[0][3] + ' - ' + response.text)
         json = response.json();
-        if (response.status_code == 200):
+        if response.status_code == 200:
             self.assertTrue(json['id'])
-        elif (response.status_code == 400):
+        elif response.status_code == 400:
             self.assertTrue(json['message'])
         else:
             self.fail()
 
     def test_sell_stock(self):
-        response = self.client.sell('000001', 9.51, 100)
+        response = self.client.sell(symbol='000001', price=9.51, amount=100)
         print(inspect.stack()[0][3] + ' - ' + response.text)
         json = response.json();
-        if (response.status_code == 200):
+        if response.status_code == 200:
             self.assertTrue(json['id'])
-        elif (response.status_code == 400):
+        elif response.status_code == 400:
             self.assertTrue(json['message'])
         else:
             self.fail()
@@ -60,6 +60,6 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_query(self):
-        response = self.client.query(navigation='查询>资金股份')
+        response = self.client.query(None, '查询>资金股份')
         print(inspect.stack()[0][3] + ' - ' + response.text)
         self.assertEqual(response.status_code, 200)

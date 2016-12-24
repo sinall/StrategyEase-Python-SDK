@@ -12,7 +12,7 @@ def initialize(context):
 
 def process_initialize(context):
     # 创建 JoinQuantExecutor 对象
-    # 可选参数包括：host, port, title, account 等
+    # 可选参数包括：host, port, client 等
     # 请见下面的 IP 替换为实际 IP
     g.__executor = shipane_sdk.JoinQuantExecutor(host='xxx.xxx.xxx.xxx')
 

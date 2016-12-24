@@ -47,7 +47,12 @@ class JoinQuantRunner(object):
                 for tx in transactions:
                     self._processed_transactions.append(tx)
                     self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_type(), tx.amount, tx.symbol))
-                    response = self._shipane_client.execute(tx.type, tx.symbol, tx.price, tx.amount)
+                    response = self._shipane_client.execute(None,
+                                                            action=tx.type,
+                                                            symbol=tx.symbol,
+                                                            type='LIMIT',
+                                                            price=tx.price,
+                                                            amount=tx.amount)
                     if response is not None:
                         self._log.info(u'实盘易回复：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
                     else:

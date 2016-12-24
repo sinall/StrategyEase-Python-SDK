@@ -26,4 +26,4 @@ class JoinQuantClientTest(unittest.TestCase):
     def test_query(self):
         self._jqClient.login()
         transaction_detail = self._jqClient.query()
-        self.assertTrue(transaction_detail.has_key('data'))
+        self.assertTrue('data' in transaction_detail)
