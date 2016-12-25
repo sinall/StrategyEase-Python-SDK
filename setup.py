@@ -3,6 +3,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
+import os.path
 
 here = path.abspath(path.dirname(__file__))
 
@@ -44,7 +45,7 @@ setup(
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
-    install_requires=['requests', 'six'],
+    install_requires=['requests', 'six', 'apscheduler', 'lxml', 'cssselect', 'bs4', 'html5lib', 'pandas'],
 
     extras_require={
         'dev': [],
@@ -54,7 +55,9 @@ setup(
     package_data={
     },
 
-    data_files=[],
+    data_files=[(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config'), ['config/scheduler-example.ini'])],
+
+    scripts=['scripts/shipane-scheduler.py'],
 
     entry_points={
         'console_scripts': [

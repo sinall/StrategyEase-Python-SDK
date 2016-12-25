@@ -8,6 +8,28 @@ ShiPanE-Python-SDK
 | 详情见：http://www.iguuu.com/e
 | 交流QQ群：11527956 |实盘易-股票自动交易|
 
+自动新股申购
+--------
+
+一. Windows
+~~~~~~~~~~~~
+
+- 安装 Python 3.5（建议安装 Anaconda3）
+- cmd 中运行：pip install shipane_sdk
+- cmd 中运行：explorer %UserProfile%\.shipane_sdk
+- 进入 config 目录；将 scheduler-example.ini 拷贝为 scheduler.ini；并修改内容（建议使用Notepad++）
+- 找到 python 安装目录，例如：C:\Users\[用户名]\Anaconda3
+- cmd 下执行（具体路径自行修改）：python "C:\Users\[用户名]\Anaconda3\Scripts\shipane-scheduler.py"
+
+二. Mac/Linux
+~~~~~~~~~~~~
+
+- 安装 Python 3.5
+- terminal 中运行：pip install shipane_sdk
+- terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-example.ini ~/.shipane_sdk/config/scheduler.ini
+- 修改 ~/.shipane_sdk/config/scheduler.ini
+- terminal 中运行：shipane-scheduler.py
+
 聚宽集成
 --------
 
