@@ -9,7 +9,7 @@ ShiPanE-Python-SDK
 | 交流QQ群：11527956 |实盘易-股票自动交易|
 
 自动新股申购
---------
+------------
 
 一. Windows
 ~~~~~~~~~~~~
@@ -22,7 +22,7 @@ ShiPanE-Python-SDK
 - cmd 下执行（具体路径自行修改）：python "C:\Users\[用户名]\Anaconda3\Scripts\shipane-scheduler.py"
 
 二. Mac/Linux
-~~~~~~~~~~~~
+~~~~~~~~~~~~~
 
 - 安装 Python 3.5
 - terminal 中运行：pip install shipane_sdk
@@ -73,6 +73,15 @@ ShiPanE-Python-SDK
 -  参考 examples/joinquant/config/config.ini.template 创建
    examples/joinquant/config/config.ini，并完善配置。
 -  命令行运行 "python ./examples/joinquant/simple\_runner.py"。
+
+其他语言 SDK
+------------
+
+C# SDK
+~~~~~~
+
+| 由网友 @YBO（QQ：259219140）开发。
+| 见 `ShiPanETradingSDK <http://git.oschina.net/ybo1990/ShiPanETradingSDK>`_
 
 .. |实盘易-股票自动交易| image:: http://pub.idqqimg.com/wpa/images/group.png
    :target: http://shang.qq.com/wpa/qunwpa?idkey=1ce867356702f5f7c56d07d5c694e37a3b9a523efce199bb0f6ff30410c6185d%22
