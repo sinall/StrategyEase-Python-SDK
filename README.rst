@@ -15,7 +15,7 @@ ShiPanE-Python-SDK
 ~~~~~~~~~~~~
 
 - 安装 Python 3.5（建议安装 Anaconda3）
-- cmd 中运行：pip install shipane_sdk
+- cmd 中运行：pip install --no-binary shipane_sdk shipane_sdk
 - cmd 中运行：explorer %UserProfile%\\.shipane_sdk
 - 进入 config 目录；将 scheduler-example.ini 拷贝为 scheduler.ini；并修改内容（建议使用Notepad++）
 - 找到 python 安装目录，例如：C:\\Program Files\\Anaconda3
@@ -25,7 +25,7 @@ ShiPanE-Python-SDK
 ~~~~~~~~~~~~~
 
 - 安装 Python 3.5
-- terminal 中运行：pip install shipane_sdk
+- terminal 中运行：pip install --no-binary shipane_sdk shipane_sdk
 - terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-example.ini ~/.shipane_sdk/config/scheduler.ini
 - 修改 ~/.shipane_sdk/config/scheduler.ini
 - terminal 中运行：shipane-scheduler.py

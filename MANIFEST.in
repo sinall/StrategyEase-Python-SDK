@@ -1,1 +1,5 @@
+# Include the license file
 include LICENSE.txt
+
+# Include the config files
+recursive-include config *
