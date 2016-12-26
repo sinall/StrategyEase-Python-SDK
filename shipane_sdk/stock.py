@@ -15,8 +15,8 @@ class StockUtils(object):
         table.remove(table.cssselect('thead')[0])
         table_html = lxml.html.etree.tostring(table).decode('utf-8')
         df = pd.read_html(table_html, skiprows=[0, 1])[0]
-        df = df.drop([df.columns[idx] for idx in [1, 12, 13, 14]], axis=1)
-        df.columns = ['code', 'name', 'ipo_date', 'issue_date', 'amount', 'markets', 'price', 'pe', 'limit', 'funds',
-                      'ballot']
-        df['code'] = df['code'].astype(str)
+        df = df.select(lambda x: x in [0, 1, 2, 3, 7], axis=1)
+        df.columns = ['code', 'xcode', 'name', 'ipo_date', 'price']
+        df['code'] = df['code'].map(lambda x: str(x).zfill(6))
+        df['xcode'] = df['xcode'].map(lambda x: str(x).zfill(6))
         return df

@@ -24,7 +24,7 @@ class NewStockPurchaseJob(object):
             for index, row in df.iterrows():
                 try:
                     order = {
-                        'symbol': row['code'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
+                        'symbol': row['xcode'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
                     }
                     self._log.info(u'下单：%s', json.dumps(order))
                     response = self._client.buy(client, **order)
