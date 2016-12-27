@@ -8,11 +8,24 @@ ShiPanE-Python-SDK
 | 详情见：http://www.iguuu.com/e
 | 交流QQ群：11527956 |实盘易-股票自动交易|
 
-自动新股申购
-------------
+功能介绍
+--------
 
-一. Windows
-~~~~~~~~~~~~
+- 简单的实盘易 HTTP API 封装，见 shipane_sdk/client.py
+- 多账号自动新股申购（自动打新）
+- 聚宽集成
+
+定时任务调度
+--------------
+
+- 多账号自动新股申购（自动打新）
+- 聚宽跟单（抓取方式）
+
+安装
+~~~~
+
+Windows
+^^^^^^^
 
 - 安装 Python 3.5（建议安装 Anaconda3）
 - cmd 中运行：pip install --no-binary shipane_sdk shipane_sdk
@@ -21,14 +34,24 @@ ShiPanE-Python-SDK
 - 找到 python 安装目录，例如：C:\\Program Files\\Anaconda3
 - cmd 下执行（具体路径自行修改）：python "C:\\Program Files\\Anaconda3\\Scripts\\shipane-scheduler.py"
 
-二. Mac/Linux
-~~~~~~~~~~~~~
+Mac/Linux
+^^^^^^^^^
 
 - 安装 Python 3.5
 - terminal 中运行：pip install --no-binary shipane_sdk shipane_sdk
 - terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-example.ini ~/.shipane_sdk/config/scheduler.ini
 - 修改 ~/.shipane_sdk/config/scheduler.ini
 - terminal 中运行：shipane-scheduler.py
+
+升级
+~~~~~
+
+pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
+
+配置
+~~~~~
+
+定时任务默认禁用；如需启动，请设置 enabled=true
 
 聚宽集成
 --------
@@ -48,11 +71,9 @@ ShiPanE-Python-SDK
 步骤
 ^^^^
 
--  将 shipane\_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为
-   shipane\_sdk.py。
+-  将 shipane\_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane\_sdk.py。
 -  将 shipane\_sdk/joinquant/executor.py 追加到 shpane\_sdk.py 中。
--  用法请参考 examples/joinquant/simple\_strategy.py (注意将其中的
-   xxx.xxx.xxx.xxx 替换为实际 IP)。
+-  用法请参考 examples/joinquant/simple\_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
 
 二. 抓取方式
 ~~~~~~~~~~~~
@@ -68,11 +89,7 @@ ShiPanE-Python-SDK
 步骤
 ^^^^
 
--  git clone 或下载项目到本地。
--  安装必要的依赖 "pip install requests"。
--  参考 examples/joinquant/config/config.ini.template 创建
-   examples/joinquant/config/config.ini，并完善配置。
--  命令行运行 "python ./examples/joinquant/simple\_runner.py"。
+见 `定时任务调度 <#定时任务调度>`__
 
 其他语言 SDK
 ------------

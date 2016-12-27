@@ -32,7 +32,7 @@ class JoinQuantClient(object):
             'ajax': 1
         })
         self._session.headers.update({
-            'cookie': response.headers['set-Cookie']
+            'cookie': response.headers['Set-Cookie']
         })
 
     def query(self):
