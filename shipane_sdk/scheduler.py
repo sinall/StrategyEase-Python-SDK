@@ -13,6 +13,7 @@ from shipane_sdk import Client
 from shipane_sdk.ap import APCronParser
 from shipane_sdk.jobs.joinquant_following import JoinQuantFollowingJob
 from shipane_sdk.jobs.new_stock_purchase import NewStockPurchaseJob
+from shipane_sdk.jobs.ricequant_following import RiceQuantFollowingJob
 
 if six.PY2:
     ConfigParser = configparser.RawConfigParser
@@ -36,6 +37,7 @@ class Scheduler(object):
 
         self._new_stock_purchase_job = NewStockPurchaseJob(self._config, self._client)
         self._joinquant_following_job = JoinQuantFollowingJob(self._config, self._client)
+        self._ricequant_following_job = RiceQuantFollowingJob(self._config, self._client)
 
     def start(self):
         scheduler = BackgroundScheduler()
@@ -51,6 +53,12 @@ class Scheduler(object):
                               APCronParser.parse(self._config.get('JoinQuant', 'schedule')))
         else:
             self._log.warning('JoinQuant following job is not enabled')
+
+        if self._config.getboolean('RiceQuant', 'enabled'):
+            scheduler.add_job(self._ricequant_following_job,
+                              APCronParser.parse(self._config.get('RiceQuant', 'schedule')))
+        else:
+            self._log.warning('RiceQuant following job is not enabled')
 
         scheduler.start()
         print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))

@@ -1,0 +1,7 @@
+{"code": 200, "resp": {"name": "SVM大法好",
+          "trades": [{"order_book_id": "600216.XSHG",
+                      "price": 12.77,
+                      "quantity": -100.0,
+                      "time": "2016-12-23 09:32:00",
+                      "trade_id": "2",
+                      "transaction_cost": 6.28}]}}
