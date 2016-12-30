@@ -11,9 +11,10 @@ from six.moves import configparser
 
 from shipane_sdk import Client
 from shipane_sdk.ap import APCronParser
-from shipane_sdk.jobs.joinquant_following import JoinQuantFollowingJob
 from shipane_sdk.jobs.new_stock_purchase import NewStockPurchaseJob
-from shipane_sdk.jobs.ricequant_following import RiceQuantFollowingJob
+from shipane_sdk.jobs.online_quant_following import OnlineQuantFollowingJob
+from shipane_sdk.joinquant.client import JoinQuantClient
+from shipane_sdk.ricequant.client import RiceQuantClient
 
 if six.PY2:
     ConfigParser = configparser.RawConfigParser
@@ -34,10 +35,16 @@ class Scheduler(object):
         self._client = Client(host=self._config.get('ShiPanE', 'host'),
                               port=self._config.get('ShiPanE', 'port'),
                               key=self._config.get('ShiPanE', 'key'))
+        self._jq_client = JoinQuantClient(username=self._config.get('JoinQuant', 'username'),
+                                          password=self._config.get('JoinQuant', 'password'),
+                                          backtest_id=self._config.get('JoinQuant', 'backtest_id'))
+        self._rq_client = RiceQuantClient(username=self._config.get('RiceQuant', 'username'),
+                                          password=self._config.get('RiceQuant', 'password'),
+                                          run_id=self._config.get('RiceQuant', 'run_id'))
 
         self._new_stock_purchase_job = NewStockPurchaseJob(self._config, self._client)
-        self._joinquant_following_job = JoinQuantFollowingJob(self._config, self._client)
-        self._ricequant_following_job = RiceQuantFollowingJob(self._config, self._client)
+        self._jq_following_job = OnlineQuantFollowingJob(self._client, self._jq_client, 'JoinQuantFollowingJob')
+        self._rq_following_job = OnlineQuantFollowingJob(self._client, self._rq_client, 'RiceQuantFollowingJob')
 
     def start(self):
         scheduler = BackgroundScheduler()
@@ -49,14 +56,16 @@ class Scheduler(object):
             self._log.warning('New stock purchase job is not enabled')
 
         if self._config.getboolean('JoinQuant', 'enabled'):
-            scheduler.add_job(self._joinquant_following_job,
-                              APCronParser.parse(self._config.get('JoinQuant', 'schedule')))
+            scheduler.add_job(self._jq_following_job,
+                              APCronParser.parse(self._config.get('JoinQuant', 'schedule')),
+                              None, None, None, self._jq_following_job.name)
         else:
             self._log.warning('JoinQuant following job is not enabled')
 
         if self._config.getboolean('RiceQuant', 'enabled'):
-            scheduler.add_job(self._ricequant_following_job,
-                              APCronParser.parse(self._config.get('RiceQuant', 'schedule')))
+            scheduler.add_job(self._rq_following_job,
+                              APCronParser.parse(self._config.get('RiceQuant', 'schedule')),
+                              None, None, None, self._rq_following_job.name)
         else:
             self._log.warning('RiceQuant following job is not enabled')
 

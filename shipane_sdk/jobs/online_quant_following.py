@@ -3,20 +3,15 @@
 import logging
 from datetime import datetime
 
-from shipane_sdk.joinquant.client import JoinQuantClient
-from shipane_sdk.joinquant.transaction import JoinQuantTransaction
 from shipane_sdk.market_utils import MarketUtils
 
 
-class JoinQuantFollowingJob(object):
-    def __init__(self, config, client):
+class OnlineQuantFollowingJob(object):
+    def __init__(self, shipane_client, quant_client, name=None):
         self._log = logging.getLogger()
-        self._config = config
-        self._shipane_client = client
-        self._jq_client = JoinQuantClient(username=self._config.get('JoinQuant', 'username'),
-                                          password=self._config.get('JoinQuant', 'password'),
-                                          backtest_id=self._config.get('JoinQuant', 'backtest_id'))
-        self._jq_client.login()
+        self._shipane_client = shipane_client
+        self._quant_client = quant_client
+        self._name = name
         self._start_datatime = datetime.now()
         self._processed_transactions = []
 
@@ -27,19 +22,21 @@ class JoinQuantFollowingJob(object):
                 del self._processed_transactions[:]
             return
 
+        if not self._quant_client.is_login():
+            self._log.info("登录 {}".format(self._quant_client.name))
+            self._quant_client.login()
+
         self._log.info("********** 开始跟单 **********")
         try:
-            transaction_detail = self._jq_client.query()
-            raw_transactions = transaction_detail['data']['transaction']
-            self._log.info("获取到 {} 条委托".format(len(raw_transactions)))
+            all_transactions = self._quant_client.query()
+            self._log.info("获取到 {} 条委托".format(len(all_transactions)))
 
             transactions = []
-            for raw_transaction in raw_transactions:
-                transaction = JoinQuantTransaction(raw_transaction).normalize()
+            for transaction in all_transactions:
                 if self._is_expired(transaction):
                     continue
-
                 transactions.append(transaction)
+            
             self._log.info("获取到 {} 条有效委托".format(len(transactions)))
 
             for tx in transactions:
@@ -58,6 +55,10 @@ class JoinQuantFollowingJob(object):
         except Exception as e:
             self._log.exception("跟单异常")
         self._log.info("********** 结束跟单 **********\n")
+
+    @property
+    def name(self):
+        return self._name
 
     def _is_expired(self, transaction):
         if transaction.completed_at < self._start_datatime:

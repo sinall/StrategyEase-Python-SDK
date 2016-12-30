@@ -4,11 +4,16 @@ from datetime import datetime
 
 import requests
 
+from shipane_sdk.base_quant_client import BaseQuantClient
+from shipane_sdk.joinquant.transaction import JoinQuantTransaction
 
-class JoinQuantClient(object):
+
+class JoinQuantClient(BaseQuantClient):
     BASE_URL = 'https://www.joinquant.com'
 
     def __init__(self, **kwargs):
+        super(JoinQuantClient, self).__init__('JoinQuant')
+
         self._session = requests.Session()
         self._username = kwargs.pop('username')
         self._password = kwargs.pop('password')
@@ -35,6 +40,8 @@ class JoinQuantClient(object):
             'cookie': response.headers['Set-Cookie']
         })
 
+        super(JoinQuantClient, self).login()
+
     def query(self):
         today_str = datetime.today().strftime('%Y-%m-%d')
         response = self._session.get('{}/algorithm/live/transactionDetail'.format(self.BASE_URL), params={
@@ -42,4 +49,11 @@ class JoinQuantClient(object):
             'data': today_str,
             'ajax': 1
         })
-        return response.json()
+        transaction_detail = response.json()
+        raw_transactions = transaction_detail['data']['transaction']
+        transactions = []
+        for raw_transaction in raw_transactions:
+            transaction = JoinQuantTransaction(raw_transaction).normalize()
+            transactions.append(transaction)
+
+        return transactions

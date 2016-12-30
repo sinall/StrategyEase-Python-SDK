@@ -19,11 +19,11 @@ class JoinQuantClientTest(unittest.TestCase):
         config = ConfigParser()
         dir_path = os.path.dirname(os.path.realpath(__file__))
         config.read('{}/../../config/config.ini'.format(dir_path))
-        self._jqClient = JoinQuantClient(username=config.get('JoinQuant', 'username'),
-                                         password=config.get('JoinQuant', 'password'),
-                                         backtest_id=config.get('JoinQuant', 'backtestId'))
+        self._jq_client = JoinQuantClient(username=config.get('JoinQuant', 'username'),
+                                          password=config.get('JoinQuant', 'password'),
+                                          backtest_id=config.get('JoinQuant', 'backtestId'))
 
     def test_query(self):
-        self._jqClient.login()
-        transaction_detail = self._jqClient.query()
-        self.assertTrue('data' in transaction_detail)
+        self._jq_client.login()
+        transactions = self._jq_client.query()
+        self.assertTrue(isinstance(transactions, list))
