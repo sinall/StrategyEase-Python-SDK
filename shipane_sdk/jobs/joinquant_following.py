@@ -12,7 +12,7 @@ class JoinQuantFollowingJob(object):
     def __init__(self, config, client):
         self._log = logging.getLogger()
         self._config = config
-        self._client = client
+        self._shipane_client = client
         self._jq_client = JoinQuantClient(username=self._config.get('JoinQuant', 'username'),
                                           password=self._config.get('JoinQuant', 'password'),
                                           backtest_id=self._config.get('JoinQuant', 'backtest_id'))
@@ -44,9 +44,9 @@ class JoinQuantFollowingJob(object):
 
             for tx in transactions:
                 self._processed_transactions.append(tx)
-                self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_type(), tx.amount, tx.symbol))
+                self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_action(), tx.amount, tx.symbol))
                 response = self._shipane_client.execute(None,
-                                                        action=tx.type,
+                                                        action=tx.action,
                                                         symbol=tx.symbol,
                                                         type='LIMIT',
                                                         price=tx.price,

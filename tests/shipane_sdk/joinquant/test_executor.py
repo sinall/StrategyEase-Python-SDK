@@ -28,7 +28,6 @@ class JoinQuantExecutorTest(unittest.TestCase):
         self.executor = JoinQuantExecutor(host=config.get('ShiPanE', 'host'))
 
     def test_buy_stock(self):
-        return
         mock_order = self.Order
         mock_order.is_buy = True
         mock_order.order_id = 1
