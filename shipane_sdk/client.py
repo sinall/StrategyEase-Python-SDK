@@ -2,6 +2,7 @@
 
 import copy
 
+import pandas as pd
 import requests
 from requests import Request
 from six.moves.urllib.parse import urlencode
@@ -50,12 +51,15 @@ class Client(object):
     def get_account(self, client=None):
         request = Request('GET', self.__create_url(client, 'accounts'))
         response = self.__send_request(request)
-        return response
+        return response.json()
 
     def get_positions(self, client=None):
         request = Request('GET', self.__create_url(client, 'positions'))
         response = self.__send_request(request)
-        return response
+        json = response.json()
+        sub_accounts = pd.DataFrame(json['subAccounts']).T
+        positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
+        return {'sub_accounts': sub_accounts, 'positions': positions}
 
     def buy(self, client=None, **kwargs):
         kwargs['action'] = 'BUY'
@@ -70,25 +74,25 @@ class Client(object):
 
     def cancel(self, client, order_id):
         request = Request('DELETE', self.__create_order_url(client, order_id))
-        response = self.__send_request(request)
-        return response
+        self.__send_request(request)
 
     def cancel_all(self, client=None):
         request = Request('DELETE', self.__create_order_url(client))
-        response = self.__send_request(request)
-        return response
+        self.__send_request(request)
 
     def query(self, client, navigation):
         request = Request('GET', self.__create_url(client, '', navigation=navigation))
         response = self.__send_request(request)
-        return response
+        json = response.json()
+        df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
+        return df
 
     def __execute(self, client=None, **kwargs):
         if not kwargs.get('type'):
             kwargs['type'] = 'LIMIT'
         request = Request('POST', self.__create_order_url(client), json=kwargs)
         response = self.__send_request(request)
-        return response
+        return response.json()
 
     def __create_order_url(self, client=None, order_id=None, **params):
         return self.__create_url(client, 'orders', order_id, **params)

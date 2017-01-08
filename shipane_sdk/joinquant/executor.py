@@ -37,13 +37,13 @@ class JoinQuantExecutor(object):
 
         try:
             action = 'BUY' if order.is_buy else 'SELL'
-            response = self._client.execute(self._client_param,
-                                            action=action,
-                                            symbol=order.security,
-                                            price=order.price,
-                                            amount=order.amount)
-            self._order_id_map[order.order_id] = response.json()['id']
-            return response
+            actual_order = self._client.execute(self._client_param,
+                                                action=action,
+                                                symbol=order.security,
+                                                price=order.price,
+                                                amount=order.amount)
+            self._order_id_map[order.order_id] = actual_order['id']
+            return actual_order
         except Exception as e:
             self._log.error("[实盘易] 下单异常：" + str(e))
 
