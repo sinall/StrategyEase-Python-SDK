@@ -30,7 +30,7 @@ class Scheduler(object):
         config_path = os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config', 'scheduler.ini')
         self._log.info('Config path: %s', config_path)
         self._config = ConfigParser()
-        self._config.readfp(codecs.open(config_path, "r", "utf8"))
+        self._config.readfp(codecs.open(config_path, "r", "utf_8_sig"))
 
         self._client = Client(host=self._config.get('ShiPanE', 'host'),
                               port=self._config.get('ShiPanE', 'port'),
