@@ -5,6 +5,7 @@ import os
 import unittest
 
 import six
+from requests import HTTPError
 from six.moves import configparser
 
 if six.PY2:
@@ -32,24 +33,22 @@ class ClientTest(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_buy_stock(self):
-        response = self.client.buy(symbol='000001', price=8.11, amount=100)
-        json = response.json();
-        if response.status_code == 200:
-            self.assertTrue(json['id'])
-        elif response.status_code == 400:
-            self.assertTrue(json['message'])
-        else:
-            self.fail()
+        try:
+            response = self.client.buy(symbol='000001', price=8.11, amount=100)
+            json = response.json()
+            self.assertIsNotNone(json['id'])
+        except HTTPError as e:
+            json = e.response.json()
+            self.assertIsNotNone(json['message'])
 
     def test_sell_stock(self):
-        response = self.client.sell(symbol='000001', price=9.51, amount=100)
-        json = response.json();
-        if response.status_code == 200:
-            self.assertTrue(json['id'])
-        elif response.status_code == 400:
-            self.assertTrue(json['message'])
-        else:
-            self.fail()
+        try:
+            response = self.client.sell(symbol='000001', price=9.51, amount=100)
+            json = response.json()
+            self.assertIsNotNone(json['id'])
+        except HTTPError as e:
+            json = e.response.json()
+            self.assertIsNotNone(json['message'])
 
     def test_cancel_all(self):
         response = self.client.cancel_all()

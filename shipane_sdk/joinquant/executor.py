@@ -42,13 +42,7 @@ class JoinQuantExecutor(object):
                                             symbol=order.security,
                                             price=order.price,
                                             amount=order.amount)
-
-            if response is None:
-                return None
-
-            if response.status_code == 200:
-                self._order_id_map[order.order_id] = response.json()['id'];
-
+            self._order_id_map[order.order_id] = response.json()['id']
             return response
         except Exception as e:
             self._log.error("[实盘易] 下单异常：" + str(e))

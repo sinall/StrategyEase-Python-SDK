@@ -114,6 +114,7 @@ class Client(object):
         with requests.sessions.Session() as session:
             response = session.send(prepared_request, timeout=self._timeout)
         self.__log_response(response)
+        response.raise_for_status()
         return response
 
     def __log_request(self, request):

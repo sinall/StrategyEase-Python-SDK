@@ -3,6 +3,8 @@
 import logging
 from datetime import datetime
 
+from requests import HTTPError
+
 from shipane_sdk.market_utils import MarketUtils
 
 
@@ -40,14 +42,17 @@ class OnlineQuantFollowingJob(object):
             self._log.info("获取到 {} 条有效委托".format(len(transactions)))
 
             for tx in transactions:
-                self._processed_transactions.append(tx)
-                self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_action(), tx.amount, tx.symbol))
-                self._shipane_client.execute(None,
-                                             action=tx.action,
-                                             symbol=tx.symbol,
-                                             type='LIMIT',
-                                             price=tx.price,
-                                             amount=tx.amount)
+                try:
+                    self._processed_transactions.append(tx)
+                    self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_action(), tx.amount, tx.symbol))
+                    self._shipane_client.execute(None,
+                                                 action=tx.action,
+                                                 symbol=tx.symbol,
+                                                 type='LIMIT',
+                                                 price=tx.price,
+                                                 amount=tx.amount)
+                except HTTPError as e:
+                    self._log.exception("下单异常")
         except Exception as e:
             self._log.exception("跟单异常")
         self._log.info("********** 结束跟单 **********\n")
