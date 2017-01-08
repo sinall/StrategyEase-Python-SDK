@@ -18,7 +18,7 @@ class JoinQuantExecutor(object):
         else:
             import logging
             self._log = logging.getLogger()
-        self._client = Client(**kwargs)
+        self._client = Client(self._log, **kwargs)
         self._client_param = kwargs.get('client')
         self._order_id_map = dict()
 
@@ -43,11 +43,6 @@ class JoinQuantExecutor(object):
                                             price=order.price,
                                             amount=order.amount)
 
-            if response is not None:
-                self._log.info(u'[实盘易] 回复如下：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
-            else:
-                self._log.error('[实盘易] 未回复')
-
             if response is None:
                 return None
 
@@ -68,6 +63,6 @@ class JoinQuantExecutor(object):
             if order_id in self._order_id_map:
                 return self._client.cancel(self._client_param, self._order_id_map[order_id])
             else:
-                self._log.warn('[实盘易] 未找到对应的委托编号')
+                self._log.warning('[实盘易] 未找到对应的委托编号')
         except Exception as e:
             self._log.error("[实盘易] 撤单异常：" + str(e))

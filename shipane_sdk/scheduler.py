@@ -32,7 +32,8 @@ class Scheduler(object):
         self._config = ConfigParser()
         self._config.readfp(codecs.open(config_path, "r", "utf_8_sig"))
 
-        self._client = Client(host=self._config.get('ShiPanE', 'host'),
+        self._client = Client(self._log,
+                              host=self._config.get('ShiPanE', 'host'),
                               port=self._config.get('ShiPanE', 'port'),
                               key=self._config.get('ShiPanE', 'key'))
         self._jq_client = JoinQuantClient(username=self._config.get('JoinQuant', 'username'),

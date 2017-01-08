@@ -36,22 +36,18 @@ class OnlineQuantFollowingJob(object):
                 if self._is_expired(transaction):
                     continue
                 transactions.append(transaction)
-            
+
             self._log.info("获取到 {} 条有效委托".format(len(transactions)))
 
             for tx in transactions:
                 self._processed_transactions.append(tx)
                 self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_action(), tx.amount, tx.symbol))
-                response = self._shipane_client.execute(None,
-                                                        action=tx.action,
-                                                        symbol=tx.symbol,
-                                                        type='LIMIT',
-                                                        price=tx.price,
-                                                        amount=tx.amount)
-                if response is not None:
-                    self._log.info(u'实盘易回复：\nstatus_code: %d\ntext: %s', response.status_code, response.text)
-                else:
-                    self._log.error('实盘易未回复')
+                self._shipane_client.execute(None,
+                                             action=tx.action,
+                                             symbol=tx.symbol,
+                                             type='LIMIT',
+                                             price=tx.price,
+                                             amount=tx.amount)
         except Exception as e:
             self._log.exception("跟单异常")
         self._log.info("********** 结束跟单 **********\n")

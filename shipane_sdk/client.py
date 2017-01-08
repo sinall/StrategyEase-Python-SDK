@@ -3,11 +3,13 @@
 import copy
 
 import requests
+from requests import Request
 from six.moves.urllib.parse import urlencode
 
 
 class Client(object):
-    def __init__(self, **kwargs):
+    def __init__(self, log=None, **kwargs):
+        self._log = log
         self._host = kwargs.pop('host', 'localhost')
         self._port = kwargs.pop('port', 8888)
         self._key = kwargs.pop('key', '')
@@ -46,10 +48,14 @@ class Client(object):
         self._timeout = value
 
     def get_account(self, client=None):
-        return requests.get(self.__create_url(client, 'accounts'), timeout=self._timeout)
+        request = Request('GET', self.__create_url(client, 'accounts'))
+        response = self.__send_request(request)
+        return response
 
     def get_positions(self, client=None):
-        return requests.get(self.__create_url(client, 'positions'), timeout=self._timeout)
+        request = Request('GET', self.__create_url(client, 'positions'))
+        response = self.__send_request(request)
+        return response
 
     def buy(self, client=None, **kwargs):
         kwargs['action'] = 'BUY'
@@ -63,20 +69,26 @@ class Client(object):
         return self.__execute(client, **kwargs)
 
     def cancel(self, client, order_id):
-        return requests.delete(self.__create_order_url(client, order_id), timeout=self._timeout)
+        request = Request('DELETE', self.__create_order_url(client, order_id))
+        response = self.__send_request(request)
+        return response
 
     def cancel_all(self, client=None):
-        return requests.delete(self.__create_order_url(client), timeout=self._timeout)
+        request = Request('DELETE', self.__create_order_url(client))
+        response = self.__send_request(request)
+        return response
 
     def query(self, client, navigation):
-        return requests.get(self.__create_url(client, '', navigation=navigation), timeout=self._timeout)
+        request = Request('GET', self.__create_url(client, '', navigation=navigation))
+        response = self.__send_request(request)
+        return response
 
     def __execute(self, client=None, **kwargs):
         if not kwargs.get('type'):
             kwargs['type'] = 'LIMIT'
-        return requests.post(self.__create_order_url(client),
-                             json=kwargs,
-                             timeout=self._timeout)
+        request = Request('POST', self.__create_order_url(client), json=kwargs)
+        response = self.__send_request(request)
+        return response
 
     def __create_order_url(self, client=None, order_id=None, **params):
         return self.__create_url(client, 'orders', order_id, **params)
@@ -95,3 +107,30 @@ class Client(object):
 
     def __create_base_url(self):
         return 'http://' + self._host + ':' + str(self._port)
+
+    def __send_request(self, request):
+        prepared_request = request.prepare()
+        self.__log_request(request)
+        with requests.sessions.Session() as session:
+            response = session.send(prepared_request, timeout=self._timeout)
+        self.__log_response(response)
+        return response
+
+    def __log_request(self, request):
+        if self._log is None:
+            return
+
+        if request.json is None:
+            self._log.info('Request:\n%s %s', request.method, request.url)
+        else:
+            self._log.info('Request:\n%s %s\n%s', request.method, request.url, request.json)
+
+    def __log_response(self, response):
+        if self._log is None:
+            return
+
+        message = 'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
+        if response.status_code == 200:
+            self._log.info(message)
+        else:
+            self._log.error(message)
