@@ -23,37 +23,60 @@ ShiPanE-Python-SDK
 - 聚宽（JoinQuant）自动跟单（抓取方式）
 - 米筐（RiceQuant）自动跟单（抓取方式）
 
-安装
-~~~~
-
 Windows
-^^^^^^^
+~~~~~~~
 
-- 安装 Python 3.5（建议安装 Anaconda3）
+安装
+^^^^
+
+- 安装 Python 3.5（建议安装 `Anaconda3 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
 - cmd 中运行：pip install --no-binary shipane_sdk shipane_sdk
-- cmd 中运行：explorer %UserProfile%\\.shipane_sdk
-- 进入 config 目录；将 scheduler-example.ini 拷贝为 scheduler.ini；并修改内容（建议使用Notepad++）
+- cmd 中运行：cd %UserProfile%\\.shipane_sdk\\config
+- cmd 中运行：echo No | copy /-Y scheduler-example.ini scheduler.ini
+
+配置
+^^^^
+
+- cmd 中运行：explorer %UserProfile%\\.shipane_sdk\\config
+- 修改 scheduler.ini 中的配置（建议使用Notepad++）
+
+运行
+^^^^
+
 - 找到 python 安装目录，例如：C:\\Program Files\\Anaconda3
 - cmd 下执行（具体路径自行修改）：python "C:\\Program Files\\Anaconda3\\Scripts\\shipane-scheduler.py"
 
+升级
+^^^^
+
+- cmd 中运行：pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
+- 参考 scheduler-example.ini 修改 scheduler.ini
+
 Mac/Linux
-^^^^^^^^^
+~~~~~~~~~
+
+安装
+^^^^
 
 - 安装 Python 3.5
 - terminal 中运行：pip install --no-binary shipane_sdk shipane_sdk
 - terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-example.ini ~/.shipane_sdk/config/scheduler.ini
+
+配置
+^^^^
+
 - 修改 ~/.shipane_sdk/config/scheduler.ini
+
+运行
+^^^^
+
 - terminal 中运行：shipane-scheduler.py
 
 升级
-~~~~~
+~~~~
 
-pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
-
-配置
-~~~~~
-
-定时任务默认禁用；如需启动，请设置 enabled=true
+- terminal 中运行：pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
+- 参考 scheduler-example.ini 修改 scheduler.ini
 
 聚宽（JoinQuant）集成
 ---------------------
@@ -63,7 +86,7 @@ pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
 
 适用于云服务器环境，例如阿里云；特点是稳定、高效，集成简单。
 
-先决条件
+准备工作
 ^^^^^^^^
 
 -  部署实盘易成功。
@@ -74,7 +97,7 @@ pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
 ^^^^
 
 -  将 shipane\_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane\_sdk.py。
--  将 shipane\_sdk/joinquant/executor.py 追加到 shpane\_sdk.py 中。
+-  将 shipane\_sdk/joinquant/executor.py 拷贝粘贴到 shpane\_sdk.py 末尾。
 -  用法请参考 examples/joinquant/simple\_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
 
 二. 抓取方式
@@ -82,7 +105,7 @@ pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
 
 无需云服务器，采用定时轮询的方式，实时性不如"推送方式"。
 
-先决条件
+准备工作
 ^^^^^^^^
 
 -  部署实盘易成功。
@@ -106,7 +129,7 @@ pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
 
 采用定时轮询的方式。
 
-先决条件
+准备工作
 ^^^^^^^^
 
 -  部署实盘易成功。
