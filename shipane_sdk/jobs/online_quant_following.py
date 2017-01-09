@@ -9,10 +9,11 @@ from shipane_sdk.market_utils import MarketUtils
 
 
 class OnlineQuantFollowingJob(object):
-    def __init__(self, shipane_client, quant_client, name=None):
+    def __init__(self, shipane_client, quant_client, client_aliases=None, name=None):
         self._log = logging.getLogger()
         self._shipane_client = shipane_client
         self._quant_client = quant_client
+        self._client_aliases = client_aliases
         self._name = name
         self._start_datatime = datetime.now()
         self._processed_transactions = []
@@ -25,34 +26,36 @@ class OnlineQuantFollowingJob(object):
             return
 
         if not self._quant_client.is_login():
-            self._log.info("登录 {}".format(self._quant_client.name))
+            self._log.info("登录 %s", self._quant_client.name)
             self._quant_client.login()
 
         self._log.info("********** 开始跟单 **********")
         try:
             all_transactions = self._quant_client.query()
-            self._log.info("获取到 {} 条委托".format(len(all_transactions)))
+            self._log.info("获取到 %d 条委托", len(all_transactions))
 
             transactions = []
             for transaction in all_transactions:
                 if self._is_expired(transaction):
                     continue
                 transactions.append(transaction)
+            self._log.info("获取到 %d 条有效委托", len(transactions))
 
-            self._log.info("获取到 {} 条有效委托".format(len(transactions)))
-
-            for tx in transactions:
-                try:
-                    self._processed_transactions.append(tx)
-                    self._log.info("开始以 {}元 {} {}股 {}".format(tx.price, tx.get_cn_action(), tx.amount, tx.symbol))
-                    self._shipane_client.execute(None,
-                                                 action=tx.action,
-                                                 symbol=tx.symbol,
-                                                 type='LIMIT',
-                                                 price=tx.price,
-                                                 amount=tx.amount)
-                except HTTPError as e:
-                    self._log.exception("下单异常")
+            for client_alias in self._client_aliases:
+                client = self._client_aliases[client_alias]
+                for tx in transactions:
+                    try:
+                        self._processed_transactions.append(tx)
+                        self._log.info("开始在[%s(%s)]以 %f元 %s %d股 %s",
+                                       client_alias, client, tx.price, tx.get_cn_action(), tx.amount, tx.symbol)
+                        self._shipane_client.execute(client,
+                                                     action=tx.action,
+                                                     symbol=tx.symbol,
+                                                     type='LIMIT',
+                                                     price=tx.price,
+                                                     amount=tx.amount)
+                    except HTTPError as e:
+                        self._log.exception("下单异常")
         except Exception as e:
             self._log.exception("跟单异常")
         self._log.info("********** 结束跟单 **********\n")

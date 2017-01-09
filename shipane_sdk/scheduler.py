@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import codecs
+import collections
 import logging
 import os
 import os.path
@@ -43,9 +44,11 @@ class Scheduler(object):
                                           password=self._config.get('RiceQuant', 'password'),
                                           run_id=self._config.get('RiceQuant', 'run_id'))
 
-        self._new_stock_purchase_job = NewStockPurchaseJob(self._config, self._client)
-        self._jq_following_job = OnlineQuantFollowingJob(self._client, self._jq_client, 'JoinQuantFollowingJob')
-        self._rq_following_job = OnlineQuantFollowingJob(self._client, self._rq_client, 'RiceQuantFollowingJob')
+        self._new_stock_purchase_job = NewStockPurchaseJob(self._config,
+                                                           self._client,
+                                                           self.__filter_client_aliases('NewStocks'))
+        self._jq_following_job = self.__create_following_job('JoinQuant')
+        self._rq_following_job = self.__create_following_job('RiceQuant')
 
     def start(self):
         scheduler = BackgroundScheduler()
@@ -78,3 +81,13 @@ class Scheduler(object):
                 time.sleep(1)
         except (KeyboardInterrupt, SystemExit):
             scheduler.shutdown()
+
+    def __filter_client_aliases(self, section):
+        all_client_aliases = dict(self._config.items('ClientAliases'))
+        client_aliases = map(str.strip, self._config.get(section, 'clients').split(','))
+        return collections.OrderedDict(
+            (client_alias, all_client_aliases[client_alias]) for client_alias in client_aliases)
+
+    def __create_following_job(self, section):
+        client_aliases = self.__filter_client_aliases(section)
+        return OnlineQuantFollowingJob(self._client, self._jq_client, client_aliases, '{}FollowingJob'.format(section))

@@ -7,19 +7,18 @@ from shipane_sdk.stock import *
 
 
 class NewStockPurchaseJob(object):
-    def __init__(self, config, client):
+    def __init__(self, config, client, client_aliases=None):
         self._log = logging.getLogger()
         self._config = config
         self._client = client
+        self._client_aliases = client_aliases
 
     def __call__(self):
-        all_client_aliases = dict(self._config.items('ClientAliases'))
-        client_aliases = self._config.get('NewStocks', 'clients').split(',')
         today = datetime.strftime(datetime.today(), '%Y-%m-%d')
         df = StockUtils.new_stocks()
         df = df[(df.ipo_date == today)]
-        for client_alias in client_aliases:
-            client = all_client_aliases[client_alias.strip()]
+        for client_alias in self._client_aliases:
+            client = self._client_aliases[client_alias]
             self._log.info(u'客户端[%s(%s)]开始新股申购', client_alias, client)
             for index, row in df.iterrows():
                 try:
