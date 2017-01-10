@@ -26,12 +26,7 @@ class NewStockPurchaseJob(object):
                         'symbol': row['xcode'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
                     }
                     self._log.info(u'下单：%s', json.dumps(order))
-                    response = self._client.buy(client, **order)
-                    if response is not None:
-                        self._log.info(u'[实盘易] 回复如下：\nstatus_code: %d\ntext: %s',
-                                       response.status_code, response.text)
-                    else:
-                        self._log.error('[实盘易] 未回复')
+                    self._client.buy(client, **order)
                 except Exception as e:
                     self._log.exception('账户[%s(%s)]申购新股[%s（%s）]失败', client_alias, client, row['name'], row['code'])
             self._log.info(u'客户端[%s(%s)]结束新股申购', client_alias, client)
