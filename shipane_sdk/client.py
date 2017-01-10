@@ -126,9 +126,9 @@ class Client(object):
             return
 
         if request.json is None:
-            self._log.info('Request:\n%s %s', request.method, request.url)
+            self._log.info('Request:\n{} {}'.format(request.method, request.url))
         else:
-            self._log.info('Request:\n%s %s\n%s', request.method, request.url, request.json)
+            self._log.info('Request:\n{} {}\n{}'.format(request.method, request.url, request.json))
 
     def __log_response(self, response):
         if self._log is None:

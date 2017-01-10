@@ -122,7 +122,21 @@ Mac/Linux
 一. 推送方式
 ~~~~~~~~~~~~
 
-不支持。
+适用于云服务器环境，例如阿里云；特点是稳定、高效，集成简单。
+
+准备工作
+^^^^^^^^
+
+-  部署实盘易成功。
+-  手动测试通过。
+-  米筐（公网）可访问实盘易。
+
+步骤
+^^^^
+
+-  将 shipane\_sdk/client.py 上传米筐“策略研究”根目录，并重命名为 shipane\_sdk.py。
+-  将 shipane\_sdk/ricequant/executor.py 拷贝粘贴到 shpane\_sdk.py 末尾。
+-  用法请参考 examples/ricequant/simple\_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
 
 二. 抓取方式
 ~~~~~~~~~~~~
