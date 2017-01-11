@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import datetime
+
 try:
     from shipane_sdk.client import Client
 except:
@@ -21,6 +23,7 @@ class JoinQuantExecutor(object):
         self._client = Client(self._log, **kwargs)
         self._client_param = kwargs.get('client')
         self._order_id_map = dict()
+        self._started_at = datetime.datetime.now()
 
     @property
     def client(self):
@@ -33,6 +36,10 @@ class JoinQuantExecutor(object):
     def execute(self, order):
         if order is None:
             self._log.info('[实盘易] 委托为空，忽略下单请求')
+            return
+
+        if self.__is_expired(order):
+            self._logger.info('[实盘易] 委托已过期，忽略下单请求')
             return
 
         try:
@@ -55,8 +62,11 @@ class JoinQuantExecutor(object):
         try:
             order_id = order if isinstance(order, int) else order.order_id
             if order_id in self._order_id_map:
-                return self._client.cancel(self._client_param, self._order_id_map[order_id])
+                self._client.cancel(self._client_param, self._order_id_map[order_id])
             else:
                 self._log.warning('[实盘易] 未找到对应的委托编号')
         except Exception as e:
             self._log.error("[实盘易] 撤单异常：" + str(e))
+
+    def __is_expired(self, order):
+        return order.add_time < self._started_at
