@@ -9,8 +9,8 @@ from six.moves.urllib.parse import urlencode
 
 
 class Client(object):
-    def __init__(self, log=None, **kwargs):
-        self._log = log
+    def __init__(self, logger=None, **kwargs):
+        self._logger = logger
         self._host = kwargs.pop('host', 'localhost')
         self._port = kwargs.pop('port', 8888)
         self._key = kwargs.pop('key', '')
@@ -122,20 +122,20 @@ class Client(object):
         return response
 
     def __log_request(self, request):
-        if self._log is None:
+        if self._logger is None:
             return
 
         if request.json is None:
-            self._log.info('Request:\n{} {}'.format(request.method, request.url))
+            self._logger.info('Request:\n{} {}'.format(request.method, request.url))
         else:
-            self._log.info('Request:\n{} {}\n{}'.format(request.method, request.url, request.json))
+            self._logger.info('Request:\n{} {}\n{}'.format(request.method, request.url, request.json))
 
     def __log_response(self, response):
-        if self._log is None:
+        if self._logger is None:
             return
 
         message = 'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
         if response.status_code == 200:
-            self._log.info(message)
+            self._logger.info(message)
         else:
-            self._log.error(message)
+            self._logger.error(message)

@@ -26,14 +26,14 @@ else:
 class Scheduler(object):
     def __init__(self):
         logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(levelname)-6s %(message)s')
-        self._log = logging.getLogger()
+        self._logger = logging.getLogger()
 
         config_path = os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config', 'scheduler.ini')
-        self._log.info('Config path: %s', config_path)
+        self._logger.info('Config path: %s', config_path)
         self._config = ConfigParser()
         self._config.readfp(codecs.open(config_path, "r", "utf_8_sig"))
 
-        self._client = Client(self._log,
+        self._client = Client(self._logger,
                               host=self._config.get('ShiPanE', 'host'),
                               port=self._config.get('ShiPanE', 'port'),
                               key=self._config.get('ShiPanE', 'key'))
@@ -57,21 +57,21 @@ class Scheduler(object):
             scheduler.add_job(self._new_stock_purchase_job,
                               APCronParser.parse(self._config.get('NewStocks', 'schedule')))
         else:
-            self._log.warning('New stock purchase job is not enabled')
+            self._logger.warning('New stock purchase job is not enabled')
 
         if self._config.getboolean('JoinQuant', 'enabled'):
             scheduler.add_job(self._jq_following_job,
                               APCronParser.parse(self._config.get('JoinQuant', 'schedule')),
                               None, None, None, self._jq_following_job.name)
         else:
-            self._log.warning('JoinQuant following job is not enabled')
+            self._logger.warning('JoinQuant following job is not enabled')
 
         if self._config.getboolean('RiceQuant', 'enabled'):
             scheduler.add_job(self._rq_following_job,
                               APCronParser.parse(self._config.get('RiceQuant', 'schedule')),
                               None, None, None, self._rq_following_job.name)
         else:
-            self._log.warning('RiceQuant following job is not enabled')
+            self._logger.warning('RiceQuant following job is not enabled')
 
         scheduler.start()
         print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
