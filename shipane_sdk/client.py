@@ -28,7 +28,7 @@ class Client(object):
     def port(self):
         return self._port
 
-    @host.setter
+    @port.setter
     def port(self, value):
         self._port = value
 
@@ -36,7 +36,7 @@ class Client(object):
     def key(self):
         return self._key
 
-    @host.setter
+    @key.setter
     def key(self, value):
         self._key = value
 
@@ -44,7 +44,7 @@ class Client(object):
     def timeout(self):
         return self._timeout
 
-    @host.setter
+    @timeout.setter
     def timeout(self, value):
         self._timeout = value
 
