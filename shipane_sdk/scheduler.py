@@ -55,21 +55,24 @@ class Scheduler(object):
 
         if self._config.getboolean('NewStocks', 'enabled'):
             scheduler.add_job(self._new_stock_purchase_job,
-                              APCronParser.parse(self._config.get('NewStocks', 'schedule')))
+                              APCronParser.parse(self._config.get('NewStocks', 'schedule')),
+                              misfire_grace_time=None)
         else:
             self._logger.warning('New stock purchase job is not enabled')
 
         if self._config.getboolean('JoinQuant', 'enabled'):
             scheduler.add_job(self._jq_following_job,
                               APCronParser.parse(self._config.get('JoinQuant', 'schedule')),
-                              None, None, None, self._jq_following_job.name)
+                              name=self._jq_following_job.name,
+                              misfire_grace_time=None)
         else:
             self._logger.warning('JoinQuant following job is not enabled')
 
         if self._config.getboolean('RiceQuant', 'enabled'):
             scheduler.add_job(self._rq_following_job,
                               APCronParser.parse(self._config.get('RiceQuant', 'schedule')),
-                              None, None, None, self._rq_following_job.name)
+                              name=self._rq_following_job.name,
+                              misfire_grace_time=None)
         else:
             self._logger.warning('RiceQuant following job is not enabled')
 
