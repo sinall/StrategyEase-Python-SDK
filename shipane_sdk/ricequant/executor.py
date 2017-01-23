@@ -30,15 +30,16 @@ class RiceQuantExecutor(object):
 
     def execute(self, order_id):
         if order_id is None:
-            self._logger.info('[实盘易] 委托为空，忽略下单请求')
+            self._logger.info('[实盘易] 委托编号为空，忽略下单请求')
             return
 
         try:
             order = get_order(order_id)
+            self._logger.info("[实盘易] 跟单：" + str(order))
+
             if order is None:
                 self._logger.info('[实盘易] 委托为空，忽略下单请求')
                 return
-
             if self.__is_expired(order):
                 self._logger.info('[实盘易] 委托已过期，忽略下单请求')
                 return

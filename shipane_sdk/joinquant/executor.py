@@ -13,9 +13,16 @@ except:
     pass
 
 
+def warning(self, msg, *args, **kwargs):
+    self.warn(msg, *args, **kwargs)
+
+
 class JoinQuantExecutor(object):
     def __init__(self, **kwargs):
         if 'log' in globals():
+            import types
+            if not callable(getattr(log, 'warning', None)):
+                log.warning = types.MethodType(warning, log)
             self._logger = log
         else:
             import logging
@@ -34,10 +41,11 @@ class JoinQuantExecutor(object):
         return self._client
 
     def execute(self, order):
+        self._logger.info("[实盘易] 跟单：" + str(order))
+
         if order is None:
             self._logger.info('[实盘易] 委托为空，忽略下单请求')
             return
-
         if self.__is_expired(order):
             self._logger.info('[实盘易] 委托已过期，忽略下单请求')
             return
