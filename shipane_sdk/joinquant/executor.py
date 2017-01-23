@@ -36,10 +36,6 @@ class JoinQuantExecutor(object):
     def client(self):
         return self._client
 
-    @property
-    def client(self):
-        return self._client
-
     def execute(self, order):
         self._logger.info("[实盘易] 跟单：" + str(order))
 

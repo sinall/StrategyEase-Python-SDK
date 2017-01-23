@@ -24,10 +24,6 @@ class RiceQuantExecutor(object):
     def client(self):
         return self._client
 
-    @property
-    def client(self):
-        return self._client
-
     def execute(self, order_id):
         if order_id is None:
             self._logger.info('[实盘易] 委托编号为空，忽略下单请求')
