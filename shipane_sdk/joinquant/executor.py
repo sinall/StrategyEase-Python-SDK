@@ -44,10 +44,14 @@ class JoinQuantExecutor(object):
 
         try:
             action = 'BUY' if order.is_buy else 'SELL'
+            order_type = 'LIMIT' if order.limit > 0 else 'MARKET'
+            price_type = 0 if order_type == 'LIMIT' else 4
             actual_order = self._client.execute(self._client_param,
                                                 action=action,
                                                 symbol=order.security,
-                                                price=order.price,
+                                                type=order_type,
+                                                priceType=price_type,
+                                                price=order.limit,
                                                 amount=order.amount)
             self._order_id_map[order.order_id] = actual_order['id']
             return actual_order
