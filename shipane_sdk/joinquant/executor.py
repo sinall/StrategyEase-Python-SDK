@@ -30,7 +30,7 @@ class JoinQuantExecutor(object):
         self._client = Client(self._logger, **kwargs)
         self._client_param = kwargs.get('client')
         self._order_id_map = dict()
-        self._started_at = datetime.datetime.now()
+        self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
 
     @property
     def client(self):
@@ -77,4 +77,4 @@ class JoinQuantExecutor(object):
             self._logger.error("[实盘易] 撤单异常：" + str(e))
 
     def __is_expired(self, order):
-        return order.add_time < self._started_at
+        return order.add_time < self._expire_before
