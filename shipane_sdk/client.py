@@ -51,54 +51,54 @@ class Client(object):
     def timeout(self, value):
         self._timeout = value
 
-    def get_account(self, client=None):
+    def get_account(self, client=None, timeout=None):
         request = Request('GET', self.__create_url(client, 'accounts'))
-        response = self.__send_request(request)
+        response = self.__send_request(request, timeout)
         return response.json()
 
-    def get_positions(self, client=None):
+    def get_positions(self, client=None, timeout=None):
         request = Request('GET', self.__create_url(client, 'positions'))
-        response = self.__send_request(request)
+        response = self.__send_request(request, timeout)
         json = response.json()
         sub_accounts = pd.DataFrame(json['subAccounts']).T
         positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
         return {'sub_accounts': sub_accounts, 'positions': positions}
 
-    def buy(self, client=None, **kwargs):
+    def buy(self, client=None, timeout=None, **kwargs):
         kwargs['action'] = 'BUY'
-        return self.__execute(client, **kwargs)
+        return self.__execute(client, timeout, **kwargs)
 
-    def sell(self, client=None, **kwargs):
+    def sell(self, client=None, timeout=None, **kwargs):
         kwargs['action'] = 'SELL'
-        return self.__execute(client, **kwargs)
+        return self.__execute(client, timeout, **kwargs)
 
-    def execute(self, client=None, **kwargs):
-        return self.__execute(client, **kwargs)
+    def execute(self, client=None, timeout=None, **kwargs):
+        return self.__execute(client, timeout, **kwargs)
 
-    def cancel(self, client, order_id):
+    def cancel(self, client=None, order_id=None, timeout=None):
         request = Request('DELETE', self.__create_order_url(client, order_id))
-        self.__send_request(request)
+        self.__send_request(request, timeout)
 
-    def cancel_all(self, client=None):
+    def cancel_all(self, client=None, timeout=None):
         request = Request('DELETE', self.__create_order_url(client))
-        self.__send_request(request)
+        self.__send_request(request, timeout)
 
-    def query(self, client, navigation):
+    def query(self, client=None, navigation=None, timeout=None):
         request = Request('GET', self.__create_url(client, '', navigation=navigation))
-        response = self.__send_request(request)
+        response = self.__send_request(request, timeout)
         json = response.json()
         df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
         return df
 
-    def start_clients(self):
+    def start_clients(self, timeout=None):
         request = Request('PUT', self.__create_url(None, 'clients'))
-        self.__send_request(request)
+        self.__send_request(request, timeout)
 
-    def shutdown_clients(self):
+    def shutdown_clients(self, timeout=None):
         request = Request('DELETE', self.__create_url(None, 'clients'))
-        self.__send_request(request)
+        self.__send_request(request, timeout)
 
-    def __execute(self, client=None, **kwargs):
+    def __execute(self, client=None, timeout=None, **kwargs):
         if not kwargs.get('type'):
             kwargs['type'] = 'LIMIT'
         request = Request('POST', self.__create_order_url(client), json=kwargs)
@@ -123,11 +123,12 @@ class Client(object):
     def __create_base_url(self):
         return 'http://' + self._host + ':' + str(self._port)
 
-    def __send_request(self, request):
+    def __send_request(self, request, timeout=None):
         prepared_request = request.prepare()
+        timeout = timeout if timeout is not None else self._timeout
         self.__log_request(prepared_request)
         with requests.sessions.Session() as session:
-            response = session.send(prepared_request, timeout=self._timeout)
+            response = session.send(prepared_request, timeout=timeout)
         self.__log_response(response)
         response.raise_for_status()
         return response
