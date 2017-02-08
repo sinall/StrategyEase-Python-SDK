@@ -23,6 +23,7 @@ class ClientTest(unittest.TestCase):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         config.read('{}/../config/config.ini'.format(dir_path))
         self.client = Client(logging.getLogger(), host=config.get('ShiPanE', 'host'))
+        self.client.start_clients()
 
     def test_get_account(self):
         try:

@@ -90,6 +90,14 @@ class Client(object):
         df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
         return df
 
+    def start_clients(self):
+        request = Request('PUT', self.__create_url(None, 'clients'))
+        self.__send_request(request)
+
+    def shutdown_clients(self):
+        request = Request('DELETE', self.__create_url(None, 'clients'))
+        self.__send_request(request)
+
     def __execute(self, client=None, **kwargs):
         if not kwargs.get('type'):
             kwargs['type'] = 'LIMIT'
