@@ -10,9 +10,14 @@ def init(context):
 
 def before_trading(context):
     # 创建 RiceQuantExecutor 对象
-    # 可选参数包括：host, port, client 等
+    # 可选参数包括：host, port, key, client, timeout 等
     # 请将下面的 IP 替换为实际 IP
-    context.__executor = shipane_sdk.RiceQuantExecutor(host='xxx.xxx.xxx.xxx')
+    context.__executor = shipane_sdk.RiceQuantExecutor(
+        host='xxx.xxx.xxx.xxx',
+        port=8888,
+        key='',
+        client=''
+    )
 
 # 你选择的证券的数据更新将会触发此段逻辑，例如日或分钟历史数据切片或者是实时数据切片更新
 def handle_bar(context, bar_dict):

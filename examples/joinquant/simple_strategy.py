@@ -12,9 +12,14 @@ def initialize(context):
 
 def process_initialize(context):
     # 创建 JoinQuantExecutor 对象
-    # 可选参数包括：host, port, client 等
+    # 可选参数包括：host, port, key, client, timeout 等
     # 请将下面的 IP 替换为实际 IP
-    g.__executor = shipane_sdk.JoinQuantExecutor(host='xxx.xxx.xxx.xxx')
+    g.__executor = shipane_sdk.JoinQuantExecutor(
+        host='xxx.xxx.xxx.xxx',
+        port=8888,
+        key='',
+        client=''
+    )
 
 
 # 每个单位时间(如果按天回测,则每天调用一次,如果按分钟,则每分钟调用一次)调用一次
