@@ -101,7 +101,7 @@ Mac/Linux
 ^^^^^^^^
 
 -  本地部署实盘易成功
--  本地测试通过（比如浏览器访问http://localhost:8888/accounts返回账户信息）
+-  本地测试通过（比如浏览器访问 http://localhost:8888/accounts 返回账户信息）
 
 步骤
 ^^^^
@@ -133,7 +133,7 @@ Mac/Linux
 ^^^^^^^^
 
 -  本地部署实盘易成功
--  本地测试通过（比如浏览器访问http://localhost:8888/accounts返回账户信息）
+-  本地测试通过（比如浏览器访问 http://localhost:8888/accounts 返回账户信息）
 
 步骤
 ^^^^
