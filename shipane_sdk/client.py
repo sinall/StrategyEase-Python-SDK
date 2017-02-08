@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import re
 
 import pandas as pd
 import requests
@@ -9,6 +10,8 @@ from six.moves.urllib.parse import urlencode
 
 
 class Client(object):
+    KEY_REGEX = r'key=([^&]*)'
+
     def __init__(self, logger=None, **kwargs):
         self._logger = logger
         self._host = kwargs.pop('host', 'localhost')
@@ -114,21 +117,22 @@ class Client(object):
 
     def __send_request(self, request):
         prepared_request = request.prepare()
-        self.__log_request(request)
+        self.__log_request(prepared_request)
         with requests.sessions.Session() as session:
             response = session.send(prepared_request, timeout=self._timeout)
         self.__log_response(response)
         response.raise_for_status()
         return response
 
-    def __log_request(self, request):
+    def __log_request(self, prepared_request):
         if self._logger is None:
             return
 
-        if request.json is None:
-            self._logger.info('Request:\n{} {}'.format(request.method, request.url))
+        url = self.__eliminate_privacy(prepared_request.path_url)
+        if prepared_request.body is None:
+            self._logger.info('Request:\n{} {}'.format(prepared_request.method, url))
         else:
-            self._logger.info('Request:\n{} {}\n{}'.format(request.method, request.url, request.json))
+            self._logger.info('Request:\n{} {}\n{}'.format(prepared_request.method, url, prepared_request.body))
 
     def __log_response(self, response):
         if self._logger is None:
@@ -139,3 +143,11 @@ class Client(object):
             self._logger.info(message)
         else:
             self._logger.error(message)
+
+    @classmethod
+    def __eliminate_privacy(cls, url):
+        match = re.search(cls.KEY_REGEX, url)
+        key = match.group(1)
+        masked_key = '*' * len(key)
+        url = re.sub(cls.KEY_REGEX, "key={}".format(masked_key), url)
+        return url
