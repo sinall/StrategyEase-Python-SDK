@@ -13,7 +13,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 setup(
     name='shipane_sdk',
 
-    version='1.0.0.a15',
+    version='1.0.0.b1',
 
     description=u'实盘易（ShiPanE）Python SDK，通达信自动化交易 API。',
     long_description=long_description,
