@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import codecs
 import collections
+import distutils.util
 import logging
 import os
 import os.path
@@ -33,64 +34,61 @@ class Scheduler(object):
         self._config = ConfigParser()
         self._config.readfp(codecs.open(config_path, "r", "utf_8_sig"))
 
-        self._client = Client(self._logger,
-                              host=self._config.get('ShiPanE', 'host'),
-                              port=self._config.get('ShiPanE', 'port'),
-                              key=self._config.get('ShiPanE', 'key'))
-        self._jq_client = JoinQuantClient(username=self._config.get('JoinQuant', 'username'),
-                                          password=self._config.get('JoinQuant', 'password'),
-                                          backtest_id=self._config.get('JoinQuant', 'backtest_id'))
-        self._rq_client = RiceQuantClient(username=self._config.get('RiceQuant', 'username'),
-                                          password=self._config.get('RiceQuant', 'password'),
-                                          run_id=self._config.get('RiceQuant', 'run_id'))
-
-        self._new_stock_purchase_job = NewStockPurchaseJob(self._config,
-                                                           self._client,
-                                                           self.__filter_client_aliases('NewStocks'))
-        self._jq_following_job = self.__create_following_job('JoinQuant')
-        self._rq_following_job = self.__create_following_job('RiceQuant')
+        self._scheduler = BackgroundScheduler()
+        self._client = Client(self._logger, **dict(self._config.items('ShiPanE')))
 
     def start(self):
-        scheduler = BackgroundScheduler()
+        self.__add_job(self.__create_new_stock_purchase_job())
+        self.__add_job(self.__create_join_quant_following_job())
+        self.__add_job(self.__create_rice_quant_following_job())
 
-        if self._config.getboolean('NewStocks', 'enabled'):
-            scheduler.add_job(self._new_stock_purchase_job,
-                              APCronParser.parse(self._config.get('NewStocks', 'schedule')),
-                              misfire_grace_time=None)
-        else:
-            self._logger.warning('New stock purchase job is not enabled')
-
-        if self._config.getboolean('JoinQuant', 'enabled'):
-            scheduler.add_job(self._jq_following_job,
-                              APCronParser.parse(self._config.get('JoinQuant', 'schedule')),
-                              name=self._jq_following_job.name,
-                              misfire_grace_time=None)
-        else:
-            self._logger.warning('JoinQuant following job is not enabled')
-
-        if self._config.getboolean('RiceQuant', 'enabled'):
-            scheduler.add_job(self._rq_following_job,
-                              APCronParser.parse(self._config.get('RiceQuant', 'schedule')),
-                              name=self._rq_following_job.name,
-                              misfire_grace_time=None)
-        else:
-            self._logger.warning('RiceQuant following job is not enabled')
-
-        scheduler.start()
+        self._scheduler.start()
         print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
         try:
             while True:
                 time.sleep(1)
         except (KeyboardInterrupt, SystemExit):
-            scheduler.shutdown()
+            self._scheduler.shutdown()
+
+    def __add_job(self, job):
+        if job.is_enabled:
+            self._scheduler.add_job(job, APCronParser.parse(job.schedule), name=job.name, misfire_grace_time=None)
+        else:
+            self._logger.warning('{} is not enabled'.format(job.name))
+
+    def __create_new_stock_purchase_job(self):
+        section = 'NewStocks'
+        options = self.__build_options(section)
+        client_aliases = self.__filter_client_aliases(section)
+        return NewStockPurchaseJob(self._client, client_aliases, '{}FollowingJob'.format(section), **options)
+
+    def __create_join_quant_following_job(self):
+        section = 'JoinQuant'
+        options = self.__build_options(section)
+        client_aliases = self.__filter_client_aliases(section)
+        quant_client = JoinQuantClient(**options)
+        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}FollowingJob'.format(section),
+                                       **options)
+
+    def __create_rice_quant_following_job(self):
+        section = 'RiceQuant'
+        options = self.__build_options(section)
+        client_aliases = self.__filter_client_aliases(section)
+        quant_client = RiceQuantClient(**options)
+        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}FollowingJob'.format(section),
+                                       **options)
+
+    def __build_options(self, section):
+        if not self._config.has_section(section):
+            return dict()
+
+        options = dict(self._config.items(section))
+        options['enabled'] = bool(distutils.util.strtobool(options['enabled']))
+        return options
 
     def __filter_client_aliases(self, section):
         all_client_aliases = dict(self._config.items('ClientAliases'))
-        client_aliases = map(str.strip, self._config.get(section, 'clients').split(','))
+        client_aliases = map(str.strip, filter(None, self._config.get(section, 'clients', fallback='').split(',')))
         return collections.OrderedDict(
             (client_alias, all_client_aliases[client_alias]) for client_alias in client_aliases)
-
-    def __create_following_job(self, section):
-        client_aliases = self.__filter_client_aliases(section)
-        return OnlineQuantFollowingJob(self._client, self._jq_client, client_aliases, '{}FollowingJob'.format(section))

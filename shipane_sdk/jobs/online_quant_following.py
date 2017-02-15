@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import logging
 from datetime import datetime
 
 from requests import HTTPError
 
+from shipane_sdk.jobs.basic_job import BasicJob
 from shipane_sdk.market_utils import MarketUtils
 
 
-class OnlineQuantFollowingJob(object):
-    def __init__(self, shipane_client, quant_client, client_aliases=None, name=None):
-        self._logger = logging.getLogger()
+class OnlineQuantFollowingJob(BasicJob):
+    def __init__(self, shipane_client, quant_client, client_aliases=None, name=None, **kwargs):
+        super(OnlineQuantFollowingJob, self).__init__(name, kwargs.get('schedule', None), kwargs.get('enabled', False))
+
         self._shipane_client = shipane_client
         self._quant_client = quant_client
         self._client_aliases = client_aliases
@@ -47,7 +48,7 @@ class OnlineQuantFollowingJob(object):
                     try:
                         self._processed_transactions.append(tx)
                         self._logger.info("开始在[%s(%s)]以 %f元 %s %d股 %s",
-                                       client_alias, client, tx.price, tx.get_cn_action(), tx.amount, tx.symbol)
+                                          client_alias, client, tx.price, tx.get_cn_action(), tx.amount, tx.symbol)
                         self._shipane_client.execute(client,
                                                      action=tx.action,
                                                      symbol=tx.symbol,

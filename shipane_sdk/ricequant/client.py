@@ -10,8 +10,8 @@ class RiceQuantClient(BaseQuantClient):
     def __init__(self, **kwargs):
         super(RiceQuantClient, self).__init__('RiceQuant')
 
-        self._run_id = kwargs.pop('run_id')
-        self._rq_client = RQOpenClient(kwargs.pop('username'), kwargs.pop('password'))
+        self._rq_client = RQOpenClient(kwargs.get('username', None), kwargs.get('password', None))
+        self._run_id = kwargs.get('run_id', None)
 
     def login(self):
         self._rq_client.login()

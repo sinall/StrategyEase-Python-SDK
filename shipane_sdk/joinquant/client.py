@@ -15,9 +15,9 @@ class JoinQuantClient(BaseQuantClient):
         super(JoinQuantClient, self).__init__('JoinQuant')
 
         self._session = requests.Session()
-        self._username = kwargs.pop('username')
-        self._password = kwargs.pop('password')
-        self._backtest_id = kwargs.pop('backtest_id')
+        self._username = kwargs.get('username', None)
+        self._password = kwargs.get('password', None)
+        self._backtest_id = kwargs.get('backtest_id', None)
 
     def login(self):
         self._session.headers = {

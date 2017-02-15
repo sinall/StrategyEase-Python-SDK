@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import json
-import logging
 from datetime import datetime
 
+from shipane_sdk.jobs.basic_job import BasicJob
 from shipane_sdk.stock import *
 
 
-class NewStockPurchaseJob(object):
-    def __init__(self, config, client, client_aliases=None):
-        self._logger = logging.getLogger()
-        self._config = config
+class NewStockPurchaseJob(BasicJob):
+    def __init__(self, client, client_aliases=None, name=None, **kwargs):
+        super(NewStockPurchaseJob, self).__init__(name, kwargs.get('schedule', None), kwargs.get('enabled', False))
+
         self._client = client
         self._client_aliases = client_aliases
 
