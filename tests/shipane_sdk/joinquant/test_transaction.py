@@ -10,7 +10,7 @@ from shipane_sdk.joinquant.transaction import JoinQuantTransaction
 class TransactionTest(unittest.TestCase):
     def setUp(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open('{}/../../sample_data/transactionDetail.json'.format(dir_path)) as data_file:
+        with open('{}/../../sample_data/transactionDetail.json'.format(dir_path), encoding='utf_8_sig') as data_file:
             self._transaction_detail = json.loads(data_file.read())
 
     def test_from_raw(self):
