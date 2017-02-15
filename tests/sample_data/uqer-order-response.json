@@ -1,0 +1,28 @@
+[
+  {
+    "amount": 100,
+    "execution_avg_price": 9.42,
+    "execution_time": "09:30:07",
+    "filled_amount": 100.0,
+    "id": 10955228,
+    "mark": "[J149I]:\u8be5\u8ba2\u5355\u5df2\u5168\u90e8\u6210\u4ea4!",
+    "name": "\u5e73\u5b89\u94f6\u884c",
+    "place_time": 1487035806610,
+    "side": "BUY",
+    "status": "\u5168\u90e8\u6210\u4ea4",
+    "ticker": "000001"
+  },
+  {
+    "amount": 100,
+    "execution_avg_price": 9.41,
+    "execution_time": "09:30:07",
+    "filled_amount": 100.0,
+    "id": 10955229,
+    "mark": "[J149I]:\u8be5\u8ba2\u5355\u5df2\u5168\u90e8\u6210\u4ea4!",
+    "name": "\u5e73\u5b89\u94f6\u884c",
+    "place_time": 1487035806652,
+    "side": "SELL",
+    "status": "\u5168\u90e8\u6210\u4ea4",
+    "ticker": "000001"
+  }
+]

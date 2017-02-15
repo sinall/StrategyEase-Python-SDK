@@ -12,7 +12,7 @@ ShiPanE-Python-SDK
 - 实盘易通过调用 WINDOWS API 对通达信进行操作。
 - 实盘易提供基于 HTTP 协议的 RESTFul Service/API。
 - SDK 对 API 进行了封装（由 shipane_sdk/client.py 中的 Client 类实现）。
-- 本地策略或量化交易平台（目前支持聚宽、米筐）的模拟交易通过调用 SDK 实现自动下单。
+- 本地策略或量化交易平台（目前支持聚宽、米筐、优矿）的模拟交易通过调用 SDK 实现自动下单。
 
 功能介绍
 --------
@@ -21,6 +21,7 @@ ShiPanE-Python-SDK
 - 多账号自动新股申购（自动打新）
 - 聚宽（JoinQuant）集成
 - 米筐（RiceQuant）集成
+- 优矿（Uqer）集成
 
 定时任务调度
 --------------
@@ -28,6 +29,7 @@ ShiPanE-Python-SDK
 - 多账号自动新股申购（自动打新）
 - 聚宽（JoinQuant）自动跟单（抓取方式）
 - 米筐（RiceQuant）自动跟单（抓取方式）
+- 优矿（Uqer）自动跟单（抓取方式）
 
 Windows
 ~~~~~~~
@@ -143,6 +145,31 @@ Mac/Linux
 - 将 shipane\_sdk/client.py 上传米筐“策略研究”根目录，并重命名为 shipane\_sdk.py。
 - 将 shipane\_sdk/ricequant/executor.py 拷贝粘贴到 shipane\_sdk.py 末尾。
 - 用法请参考 examples/ricequant/simple\_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
+
+二. 抓取方式
+~~~~~~~~~~~~
+
+采用定时轮询的方式。
+
+准备工作
+^^^^^^^^
+
+- 部署实盘易。
+- 测试通过。
+
+步骤
+^^^^
+
+见 `定时任务调度 <#定时任务调度>`__
+
+优矿（Uqer）集成
+---------------------
+
+一. 推送方式
+~~~~~~~~~~~~
+
+| 适用于云服务器环境，例如阿里云；特点是稳定、高效，集成简单。
+| 开发中，暂不支持。
 
 二. 抓取方式
 ~~~~~~~~~~~~
