@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import codecs
 import os
 import unittest
 
@@ -18,10 +18,8 @@ class RiceQuantClientTest(unittest.TestCase):
     def setUp(self):
         config = ConfigParser()
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        config.read('{}/../../config/config.ini'.format(dir_path))
-        self._rq_client = RiceQuantClient(username=config.get('RiceQuant', 'username'),
-                                          password=config.get('RiceQuant', 'password'),
-                                          run_id=config.get('RiceQuant', 'run_id'))
+        config.readfp(codecs.open('{}/../../config/config.ini'.format(dir_path), encoding="utf_8_sig"))
+        self._rq_client = RiceQuantClient(**dict(config.items('RiceQuant')))
 
     def test_query(self):
         self._rq_client.login()

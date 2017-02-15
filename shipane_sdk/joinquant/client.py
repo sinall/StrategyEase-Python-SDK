@@ -46,7 +46,7 @@ class JoinQuantClient(BaseQuantClient):
         today_str = datetime.today().strftime('%Y-%m-%d')
         response = self._session.get('{}/algorithm/live/transactionDetail'.format(self.BASE_URL), params={
             'backtestId': self._backtest_id,
-            'data': today_str,
+            'date': today_str,
             'ajax': 1
         })
         transaction_detail = response.json()

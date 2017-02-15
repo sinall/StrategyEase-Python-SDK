@@ -5,4 +5,14 @@ port=8888
 [JoinQuant]
 username=
 password=
+backtest_id=
+
+[RiceQuant]
+username=
+password=
 backtestId=
+
+[Uqer]
+username=
+password=
+strategy=
