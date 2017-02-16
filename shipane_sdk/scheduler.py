@@ -98,7 +98,11 @@ class Scheduler(object):
         return options
 
     def __filter_client_aliases(self, section):
+        if not self._config.has_section(section):
+            return dict()
+
         all_client_aliases = dict(self._config.items('ClientAliases'))
-        client_aliases = map(str.strip, filter(None, self._config.get(section, 'clients', fallback='').split(',')))
+        client_aliases = [client_alias.strip() for client_alias in
+                          filter(None, self._config.get(section, 'clients').split(','))]
         return collections.OrderedDict(
             (client_alias, all_client_aliases[client_alias]) for client_alias in client_aliases)
