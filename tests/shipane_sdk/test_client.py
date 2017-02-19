@@ -22,7 +22,7 @@ class ClientTest(unittest.TestCase):
         config = ConfigParser()
         dir_path = os.path.dirname(os.path.realpath(__file__))
         config.read('{}/../config/config.ini'.format(dir_path))
-        self.client = Client(logging.getLogger(), host=config.get('ShiPanE', 'host'))
+        self.client = Client(logging.getLogger(), host=config.get('ShiPanE', 'host'), key=config.get('ShiPanE', 'key'))
         self.client.start_clients()
 
     def test_get_account(self):
@@ -69,3 +69,6 @@ class ClientTest(unittest.TestCase):
             self.assertIsNotNone(df['证券代码'][0])
         except HTTPError as e:
             self.fail()
+
+    def test_purchase_new_stocks(self):
+        pass
