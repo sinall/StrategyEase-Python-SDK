@@ -28,5 +28,5 @@ class NewStockPurchaseJob(BasicJob):
                     self._logger.info(u'下单：%s', json.dumps(order))
                     self._client.buy(client, **order)
                 except Exception as e:
-                    self._logger.exception('账户[%s(%s)]申购新股[%s（%s）]失败', client_alias, client, row['name'], row['code'])
+                    self._logger.exception('客户端[%s(%s)]申购新股[%s（%s）]失败', client_alias, client, row['name'], row['code'])
             self._logger.info(u'客户端[%s(%s)]结束新股申购', client_alias, client)

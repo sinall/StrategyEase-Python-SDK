@@ -24,6 +24,9 @@ class RiceQuantExecutor(object):
     def client(self):
         return self._client
 
+    def purchase_new_stocks(self):
+        self.client.purchase_new_stocks(self._client_param)
+
     def execute(self, order_id):
         if order_id is None:
             self._logger.info('[实盘易] 委托编号为空，忽略下单请求')
