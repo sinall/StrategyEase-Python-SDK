@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import copy
+import datetime
 import re
-from datetime import datetime
 
 import lxml.html
 import pandas as pd
@@ -104,7 +104,7 @@ class Client(object):
         self.__send_request(request, timeout)
 
     def purchase_new_stocks(self, client=None):
-        today = datetime.strftime(datetime.today(), '%Y-%m-%d')
+        today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
         df = self.__get_new_stocks()
         df = df[(df.ipo_date == today)]
         self._logger.info(u'今日可申购新股有%s只' % len(df))
