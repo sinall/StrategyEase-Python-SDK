@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import collections
+import datetime
 import inspect
 import logging
 import os
@@ -34,6 +35,8 @@ class JoinQuantExecutorTest(unittest.TestCase):
         mock_order.security = '000001.XSHE'
         mock_order.price = 11.11
         mock_order.amount = 100
+        mock_order.limit = 11.11
+        mock_order.add_time = datetime.datetime.now()
         response = self.executor.execute(mock_order)
         print(inspect.stack()[0][3] + ' - ' + response.text)
         json = response.json();
@@ -51,6 +54,8 @@ class JoinQuantExecutorTest(unittest.TestCase):
         mock_order.security = '000001.XSHE'
         mock_order.price = 11.11
         mock_order.amount = 100
+        mock_order.limit = 11.11
+        mock_order.add_time = datetime.datetime.now()
         response = self.executor.execute(mock_order)
         print(inspect.stack()[0][3] + ' - ' + response.text)
         json = response.json();
@@ -68,6 +73,8 @@ class JoinQuantExecutorTest(unittest.TestCase):
         mock_order.security = '000001.XSHE'
         mock_order.price = 9.01
         mock_order.amount = 100
+        mock_order.limit = 9.01
+        mock_order.add_time = datetime.datetime.now()
         self.executor.execute(mock_order)
 
         response = self.executor.cancel(mock_order)

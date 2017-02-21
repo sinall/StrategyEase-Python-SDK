@@ -2,10 +2,7 @@
 
 import datetime
 
-try:
-    from shipane_sdk.client import Client
-except:
-    pass
+import shipane_sdk
 
 try:
     from kuanke.user_space_api import *
@@ -13,21 +10,15 @@ except:
     pass
 
 
-def warning(self, msg, *args, **kwargs):
-    self.warn(msg, *args, **kwargs)
-
-
 class JoinQuantExecutor(object):
     def __init__(self, **kwargs):
-        if 'log' in globals():
-            import types
-            if not callable(getattr(log, 'warning', None)):
-                log.warning = types.MethodType(warning, log)
-            self._logger = log
-        else:
+        try:
+            log
+            self._logger = _Logger()
+        except NameError:
             import logging
             self._logger = logging.getLogger()
-        self._client = Client(self._logger, **kwargs)
+        self._client = shipane_sdk.Client(self._logger, **kwargs)
         self._client_param = kwargs.get('client')
         self._order_id_map = dict()
         self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
@@ -81,3 +72,17 @@ class JoinQuantExecutor(object):
 
     def __is_expired(self, order):
         return order.add_time < self._expire_before
+
+
+class _Logger(object):
+    def debug(self, msg, *args, **kwargs):
+        log.debug(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        log.info(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        log.warn(msg, *args, **kwargs)
+
+    def error(self, msg, *args, **kwargs):
+        log.error(msg, *args, **kwargs)
