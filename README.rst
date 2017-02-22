@@ -106,7 +106,10 @@ Mac/Linux
 
 - 将 shipane\_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane\_sdk.py。
 - 将 shipane\_sdk/joinquant/executor.py 拷贝粘贴到 shipane\_sdk.py 末尾。
-- 用法请参考 examples/joinquant/simple\_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
+- 修改策略代码，可参考如下示例：
+
+  - examples/joinquant/simple\_strategy.py - 基本用法
+  - examples/joinquant/new\_stocks\_purchase.py - 新股申购
 
 二. 抓取方式
 ~~~~~~~~~~~~
@@ -144,7 +147,10 @@ Mac/Linux
 
 - 将 shipane\_sdk/client.py 上传米筐“策略研究”根目录，并重命名为 shipane\_sdk.py。
 - 将 shipane\_sdk/ricequant/executor.py 拷贝粘贴到 shipane\_sdk.py 末尾。
-- 用法请参考 examples/ricequant/simple\_strategy.py (注意将其中的 xxx.xxx.xxx.xxx 替换为实际 IP)。
+- 修改策略代码，可参考如下示例：
+
+  - examples/ricequant/simple\_strategy.py - 基本用法
+  - examples/ricequant/new\_stocks\_purchase.py - 新股申购
 
 二. 抓取方式
 ~~~~~~~~~~~~
