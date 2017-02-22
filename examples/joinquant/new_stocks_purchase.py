@@ -1,13 +1,13 @@
 import shipane_sdk
 
 
-# 注意：需将回测调成分钟级别，否则daily_mission不会运行
+# 注意：需将回测调成分钟级别
 # 注意：SDK内部取今日时间来获取新股数据
 # 注意：用于回测没有意义，需挂到“我的交易”
 
 def initialize(context):
-    # 申购新股的时间
-    run_daily(daily_mission, '09:50')
+    # 每天的开市后10分钟进行新股申购，参数设置见：https://www.joinquant.com/api#定时运行
+    run_daily(purchase_new_stocks, '9:40')
 
 
 def process_initialize(context):
@@ -22,5 +22,5 @@ def process_initialize(context):
     )
 
 
-def daily_mission(context):
+def purchase_new_stocks(context):
     g.__executor.purchase_new_stocks()

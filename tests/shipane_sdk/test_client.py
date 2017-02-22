@@ -70,5 +70,6 @@ class ClientTest(unittest.TestCase):
         except HTTPError as e:
             self.fail()
 
-    def test_purchase_new_stocks(self):
-        pass
+    def test_query_new_stocks(self):
+        df = self.client.query_new_stocks()
+        self.assertTrue((df.columns == ['code', 'xcode', 'name', 'ipo_date', 'price']).all())

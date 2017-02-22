@@ -18,7 +18,11 @@ class Client(object):
     KEY_REGEX = r'key=([^&]*)'
 
     def __init__(self, logger=None, **kwargs):
-        self._logger = logger
+        if logger is not None:
+            self._logger = logger
+        else:
+            import logging
+            self._logger = logging.getLogger(__name__)
         self._host = kwargs.pop('host', 'localhost')
         self._port = kwargs.pop('port', 8888)
         self._key = kwargs.pop('key', '')
@@ -95,6 +99,24 @@ class Client(object):
         df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
         return df
 
+    def query_new_stocks(self):
+        return self.__query_new_stocks()
+
+    def purchase_new_stocks(self, client=None, timeout=None):
+        today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
+        df = self.query_new_stocks()
+        df = df[(df.ipo_date == today)]
+        self._logger.info('今日可申购新股有[%d]只', len(df))
+        for index, row in df.iterrows():
+            try:
+                order = {
+                    'symbol': row['xcode'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
+                }
+                self._logger.info('申购新股：%s', str(order))
+                self.buy(client, timeout, **order)
+            except Exception as e:
+                self._logger.error('客户端[%s]申购新股[%s(%s)]失败\n%s', client, row['name'], row['code'], e)
+
     def start_clients(self, timeout=None):
         request = Request('PUT', self.__create_url(None, 'clients'))
         self.__send_request(request, timeout)
@@ -103,22 +125,14 @@ class Client(object):
         request = Request('DELETE', self.__create_url(None, 'clients'))
         self.__send_request(request, timeout)
 
-    def purchase_new_stocks(self, client=None):
-        today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
-        df = self.__get_new_stocks()
-        df = df[(df.ipo_date == today)]
-        self._logger.info(u'今日可申购新股有%s只' % len(df))
-        for index, row in df.iterrows():
-            try:
-                order = {
-                    'symbol': row['xcode'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
-                }
-                self._logger.info(u'申购新股：%s', str(order))
-                self.buy(client, **order)
-            except Exception as e:
-                self._logger.exception('客户端[%s]申购新股[%s（%s）]失败', client, row['name'], row['code'])
+    def __execute(self, client=None, timeout=None, **kwargs):
+        if not kwargs.get('type'):
+            kwargs['type'] = 'LIMIT'
+        request = Request('POST', self.__create_order_url(client), json=kwargs)
+        response = self.__send_request(request)
+        return response.json()
 
-    def __get_new_stocks(self):
+    def __query_new_stocks(self):
         DATA_URL = 'http://vip.stock.finance.sina.com.cn/corp/view/vRPD_NewStockIssue.php?page=1&cngem=0&orderBy=NetDate&orderType=desc'
         html = lxml.html.parse(DATA_URL)
         res = html.xpath('//table[@id=\"NewStockTable\"]/tr')
@@ -135,13 +149,6 @@ class Client(object):
         df['code'] = df['code'].map(lambda x: str(x).zfill(6))
         df['xcode'] = df['xcode'].map(lambda x: str(x).zfill(6))
         return df
-
-    def __execute(self, client=None, timeout=None, **kwargs):
-        if not kwargs.get('type'):
-            kwargs['type'] = 'LIMIT'
-        request = Request('POST', self.__create_order_url(client), json=kwargs)
-        response = self.__send_request(request)
-        return response.json()
 
     def __create_order_url(self, client=None, order_id=None, **params):
         return self.__create_url(client, 'orders', order_id, **params)
@@ -172,19 +179,13 @@ class Client(object):
         return response
 
     def __log_request(self, prepared_request):
-        if self._logger is None:
-            return
-
         url = self.__eliminate_privacy(prepared_request.path_url)
         if prepared_request.body is None:
-            self._logger.info('Request:\n{} {}'.format(prepared_request.method, url))
+            self._logger.info('Request:\n%s %s', prepared_request.method, url)
         else:
-            self._logger.info('Request:\n{} {}\n{}'.format(prepared_request.method, url, prepared_request.body))
+            self._logger.info('Request:\n%s %s\n%s', prepared_request.method, url, prepared_request.body)
 
     def __log_response(self, response):
-        if self._logger is None:
-            return
-
         message = 'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
         if response.status_code == 200:
             self._logger.info(message)
