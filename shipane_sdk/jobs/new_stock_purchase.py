@@ -11,4 +11,6 @@ class NewStockPurchaseJob(BasicJob):
         self._client_aliases = client_aliases
 
     def __call__(self):
-        self._client.purchase_new_stocks()
+        for client_alias in self._client_aliases:
+            client = self._client_aliases[client_alias]
+            self._client.purchase_new_stocks(client)
