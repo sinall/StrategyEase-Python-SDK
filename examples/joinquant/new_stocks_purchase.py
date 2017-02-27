@@ -23,4 +23,7 @@ def process_initialize(context):
 
 
 def purchase_new_stocks(context):
-    g.__executor.purchase_new_stocks()
+    if context.run_params.type == 'sim_trade':
+        g.__executor.purchase_new_stocks()
+    else:
+        log.info('回测中不进行新股申购')
