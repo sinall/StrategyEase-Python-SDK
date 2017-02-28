@@ -2,6 +2,7 @@
 host=localhost
 port=8888
 key=
+client=
 
 [JoinQuant]
 username=
