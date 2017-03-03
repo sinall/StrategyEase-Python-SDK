@@ -20,7 +20,7 @@ ShiPanE-Python-SDK
 - 简单的实盘易 HTTP API 封装，见 shipane_sdk/client.py
 - 多账号自动新股申购（自动打新）
 - 聚宽（JoinQuant）集成
-- 米筐（RiceQuant）集成
+- `米筐（RiceQuant）`_ 集成
 - 优矿（Uqer）集成
 
 定时任务调度
@@ -28,7 +28,7 @@ ShiPanE-Python-SDK
 
 - 多账号自动新股申购（自动打新）
 - 聚宽（JoinQuant）自动跟单（抓取方式）
-- 米筐（RiceQuant）自动跟单（抓取方式）
+- `米筐（RiceQuant）`_ 自动跟单（抓取方式）
 - 优矿（Uqer）自动跟单（抓取方式）
 
 Windows
@@ -204,3 +204,5 @@ C# SDK
 
 .. |实盘易-股票自动交易| image:: http://pub.idqqimg.com/wpa/images/group.png
    :target: http://shang.qq.com/wpa/qunwpa?idkey=1ce867356702f5f7c56d07d5c694e37a3b9a523efce199bb0f6ff30410c6185d%22
+
+.. _米筐（RiceQuant）: http://www.ricequant.com
