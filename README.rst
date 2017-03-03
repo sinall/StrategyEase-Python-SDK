@@ -23,6 +23,23 @@ ShiPanE-Python-SDK
 - `米筐（RiceQuant）`_ 集成
 - 优矿（Uqer）集成
 
+基本用法
+--------------
+
+.. code:: python
+
+  import logging
+
+  import shipane_sdk
+
+  logging.basicConfig(level=logging.DEBUG)
+
+  client = shipane_sdk.Client(host='localhost', port=8888, key='')
+  account_info = client.get_account('title:monijiaoyi')
+  print(account_info)
+
+详见：examples/basic_example.py
+
 定时任务调度
 --------------
 
