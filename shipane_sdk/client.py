@@ -77,6 +77,13 @@ class Client(object):
         positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
         return {'sub_accounts': sub_accounts, 'positions': positions}
 
+    def get_orders(self, client=None, status="", timeout=None):
+        request = Request('GET', self.__create_url(client, 'orders', status=status))
+        response = self.__send_request(request, timeout)
+        json = response.json()
+        df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
+        return df
+
     def buy(self, client=None, timeout=None, **kwargs):
         kwargs['action'] = 'BUY'
         return self.__execute(client, timeout, **kwargs)

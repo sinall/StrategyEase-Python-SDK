@@ -43,6 +43,27 @@ class ClientTest(unittest.TestCase):
         except HTTPError as e:
             self.fail()
 
+    def test_get_orders(self):
+        try:
+            df = self.client.get_orders(self.client_param)
+            self.assertIsNotNone(df['委托编号'][0])
+        except HTTPError as e:
+            self.fail()
+
+    def test_get_open_orders(self):
+        try:
+            df = self.client.get_orders(self.client_param, 'open')
+            self.assertIsNotNone(df['委托编号'][0])
+        except HTTPError as e:
+            self.fail()
+
+    def test_get_filled_orders(self):
+        try:
+            df = self.client.get_orders(self.client_param, 'filled')
+            self.assertIsNotNone(df['委托编号'][0])
+        except HTTPError as e:
+            self.fail()
+
     def test_buy_stock(self):
         try:
             order = self.client.buy(self.client_param, symbol='000001', price=8.11, amount=100)
