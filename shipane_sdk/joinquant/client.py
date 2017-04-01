@@ -18,6 +18,7 @@ class JoinQuantClient(BaseQuantClient):
         self._username = kwargs.get('username', None)
         self._password = kwargs.get('password', None)
         self._backtest_id = kwargs.get('backtest_id', None)
+        self._timeout = kwargs.pop('timeout', (5.0, 10.0))
 
     def login(self):
         self._session.headers = {
@@ -30,12 +31,12 @@ class JoinQuantClient(BaseQuantClient):
             'Origin': self.BASE_URL,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         }
-        self._session.get(self.BASE_URL)
+        self._session.get(self.BASE_URL, timeout=self._timeout)
         response = self._session.post('{}/user/login/doLogin?ajax=1'.format(self.BASE_URL), data={
             'CyLoginForm[username]': self._username,
             'CyLoginForm[pwd]': self._password,
             'ajax': 1
-        })
+        }, timeout=self._timeout)
         self._session.headers.update({
             'cookie': response.headers['Set-Cookie']
         })
@@ -48,7 +49,7 @@ class JoinQuantClient(BaseQuantClient):
             'backtestId': self._backtest_id,
             'date': today_str,
             'ajax': 1
-        })
+        }, timeout=self._timeout)
         transaction_detail = response.json()
         raw_transactions = transaction_detail['data']['transaction']
         transactions = []

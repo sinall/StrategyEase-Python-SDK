@@ -18,6 +18,7 @@ class UqerClient(BaseQuantClient):
         self._username = kwargs.get('username', None)
         self._password = kwargs.get('password', None)
         self._strategy = kwargs.get('strategy', None)
+        self._timeout = kwargs.pop('timeout', (5.0, 10.0))
 
     def login(self):
         self._session.headers = {
@@ -30,12 +31,12 @@ class UqerClient(BaseQuantClient):
             'Origin': self.BASE_URL,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         }
-        self._session.get(self.BASE_URL)
+        self._session.get(self.BASE_URL, timeout=self._timeout)
         response = self._session.post('{}/usermaster/authenticate/v1.json'.format(self.BASE_URL), data={
             'username': self._username,
             'password': self._password,
             'rememberMe': 'false'
-        })
+        }, timeout=self._timeout)
         self._session.headers.update({
             'cookie': response.headers['Set-Cookie']
         })
@@ -44,9 +45,10 @@ class UqerClient(BaseQuantClient):
 
     def query(self):
         today_str = datetime.today().strftime('%Y-%m-%d')
-        response = self._session.get('{}/mercury_trade/strategy/{}/order'.format(self.BASE_URL, self._strategy), params={
-            'date': today_str,
-        })
+        response = self._session.get('{}/mercury_trade/strategy/{}/order'.format(self.BASE_URL, self._strategy),
+                                     params={
+                                         'date': today_str,
+                                     }, timeout=self._timeout)
         raw_transactions = response.json()
         transactions = []
         for raw_transaction in raw_transactions:
