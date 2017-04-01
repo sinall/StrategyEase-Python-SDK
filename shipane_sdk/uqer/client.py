@@ -17,7 +17,7 @@ class UqerClient(BaseQuantClient):
         self._session = requests.Session()
         self._username = kwargs.get('username', None)
         self._password = kwargs.get('password', None)
-        self.strategy = kwargs.get('strategy', None)
+        self._strategy = kwargs.get('strategy', None)
 
     def login(self):
         self._session.headers = {
@@ -44,7 +44,7 @@ class UqerClient(BaseQuantClient):
 
     def query(self):
         today_str = datetime.today().strftime('%Y-%m-%d')
-        response = self._session.get('{}/mercury_trade/strategy/18551/order'.format(self.BASE_URL), params={
+        response = self._session.get('{}/mercury_trade/strategy/{}/order'.format(self.BASE_URL, self._strategy), params={
             'date': today_str,
         })
         raw_transactions = response.json()
