@@ -3,6 +3,7 @@
 import copy
 import datetime
 import re
+from enum import Enum
 
 import lxml.html
 import pandas as pd
@@ -12,6 +13,11 @@ from lxml import etree
 from pandas.compat import StringIO
 from requests import Request
 from six.moves.urllib.parse import urlencode
+
+
+class MediaType(Enum):
+    DEFAULT = 'application/json'
+    JOIN_QUANT = 'application/vnd.joinquant+json'
 
 
 class Client(object):
@@ -69,13 +75,17 @@ class Client(object):
         response = self.__send_request(request, timeout)
         return response.json()
 
-    def get_positions(self, client=None, timeout=None):
+    def get_positions(self, client=None, media_type=MediaType.DEFAULT, timeout=None):
         request = Request('GET', self.__create_url(client, 'positions'))
+        request.headers['Accept'] = media_type.value
         response = self.__send_request(request, timeout)
         json = response.json()
-        sub_accounts = pd.DataFrame(json['subAccounts']).T
-        positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
-        return {'sub_accounts': sub_accounts, 'positions': positions}
+        if media_type == MediaType.DEFAULT:
+            sub_accounts = pd.DataFrame(json['subAccounts']).T
+            positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
+            portfolio = {'sub_accounts': sub_accounts, 'positions': positions}
+            return portfolio
+        return json
 
     def get_orders(self, client=None, status="", timeout=None):
         request = Request('GET', self.__create_url(client, 'orders', status=status))
@@ -128,6 +138,13 @@ class Client(object):
             except Exception as e:
                 self._logger.error('客户端[%s]申购新股[%s(%s)]失败\n%s', client, row['name'], row['code'], e)
 
+    def create_adjustment(self, client=None, request_json=None, timeout=None):
+        request = Request('POST', self.__create_url(client, 'adjustments'), json=request_json)
+        request.headers['Content-Type'] = MediaType.JOIN_QUANT.value
+        response = self.__send_request(request, timeout)
+        json = response.json()
+        return json
+
     def start_clients(self, timeout=None):
         request = Request('PUT', self.__create_url(None, 'clients'))
         self.__send_request(request, timeout)
@@ -173,8 +190,8 @@ class Client(object):
             path = '/{}'.format(resource)
         else:
             path = '/{}/{}'.format(resource, resource_id)
-
-        return '{}{}?{}'.format(self.__create_base_url(), path, urlencode(all_params))
+        url = '{}{}?{}'.format(self.__create_base_url(), path, urlencode(all_params))
+        return url
 
     def __create_base_url(self):
         return 'http://' + self._host + ':' + str(self._port)
@@ -197,7 +214,7 @@ class Client(object):
             self._logger.info('Request:\n%s %s\n%s', prepared_request.method, url, prepared_request.body)
 
     def __log_response(self, response):
-        message = 'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
+        message = u'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
         if response.status_code == 200:
             self._logger.info(message)
         else:

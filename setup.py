@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+import os.path
 from codecs import open
 from os import path
-import os.path
+
+from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
@@ -45,7 +46,8 @@ setup(
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
-    install_requires=['requests', 'six', 'apscheduler', 'lxml', 'cssselect', 'bs4', 'html5lib', 'pandas', 'rqopen-client'],
+    install_requires=['requests', 'six', 'apscheduler', 'lxml', 'cssselect', 'bs4', 'html5lib', 'pandas',
+                      'rqopen-client', 'tushare'],
 
     extras_require={
         'dev': [],

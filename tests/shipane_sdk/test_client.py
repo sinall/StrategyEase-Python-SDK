@@ -9,6 +9,7 @@ from requests import HTTPError
 from six.moves import configparser
 
 from shipane_sdk import Client
+from shipane_sdk.client import MediaType
 
 if six.PY2:
     ConfigParser = configparser.RawConfigParser
@@ -37,30 +38,37 @@ class ClientTest(unittest.TestCase):
         try:
             data = self.client.get_positions(self.client_param)
             sub_accounts = data['sub_accounts']
-            self.assertGreaterEqual(sub_accounts['余额']['人民币'], 0)
+            self.assertGreaterEqual(sub_accounts[u'余额'][u'人民币'], 0)
             positions = data['positions']
-            self.assertIsNotNone(positions['证券代码'][0])
+            self.assertIsNotNone(positions[u'证券代码'][0])
+        except HTTPError as e:
+            self.fail()
+
+    def test_get_positions_in_jq_format(self):
+        try:
+            data = self.client.get_positions(self.client_param, media_type=MediaType.JOIN_QUANT)
+            self.assertIsNotNone(data['availableCash'])
         except HTTPError as e:
             self.fail()
 
     def test_get_orders(self):
         try:
             df = self.client.get_orders(self.client_param)
-            self.assertIsNotNone(df['委托编号'][0])
+            self.assertIsNotNone(df[u'委托编号'][0])
         except HTTPError as e:
             self.fail()
 
     def test_get_open_orders(self):
         try:
             df = self.client.get_orders(self.client_param, 'open')
-            self.assertIsNotNone(df['委托编号'][0])
+            self.assertIsNotNone(df[u'委托编号'][0])
         except HTTPError as e:
             self.fail()
 
     def test_get_filled_orders(self):
         try:
             df = self.client.get_orders(self.client_param, 'filled')
-            self.assertIsNotNone(df['委托编号'][0])
+            self.assertIsNotNone(df[u'委托编号'][0])
         except HTTPError as e:
             self.fail()
 
@@ -89,7 +97,7 @@ class ClientTest(unittest.TestCase):
     def test_query(self):
         try:
             df = self.client.query(self.client_param, '查询>资金股份')
-            self.assertIsNotNone(df['证券代码'][0])
+            self.assertIsNotNone(df[u'证券代码'][0])
         except HTTPError as e:
             self.fail()
 

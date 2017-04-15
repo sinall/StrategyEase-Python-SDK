@@ -18,3 +18,8 @@ backtestId=
 username=
 password=
 strategy=
+
+[Guorn]
+username=
+password=
+sid=
