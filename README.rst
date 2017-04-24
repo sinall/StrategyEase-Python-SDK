@@ -19,6 +19,7 @@ ShiPanE-Python-SDK
 
 - 简单的实盘易 HTTP API 封装，见 shipane_sdk/client.py
 - 多账号自动新股申购（自动打新）
+- 多账号自动逆回购
 - 聚宽（JoinQuant）集成
 - `米筐（RiceQuant）`_ 集成
 - 优矿（Uqer）集成
@@ -128,6 +129,7 @@ Mac/Linux
 
   - examples/joinquant/simple\_strategy.py - 基本用法
   - examples/joinquant/new\_stocks\_purchase.py - 新股申购
+  - examples/joinquant/repo.py - 逆回购
 
 二. 抓取方式
 ~~~~~~~~~~~~
@@ -169,6 +171,7 @@ Mac/Linux
 
   - examples/ricequant/simple\_strategy.py - 基本用法
   - examples/ricequant/new\_stocks\_purchase.py - 新股申购
+  - examples/ricequant/repo.py - 逆回购
 
 二. 抓取方式
 ~~~~~~~~~~~~

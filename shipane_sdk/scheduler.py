@@ -17,6 +17,7 @@ from shipane_sdk.guorn.client import GuornClient
 from shipane_sdk.jobs.new_stock_purchase import NewStockPurchaseJob
 from shipane_sdk.jobs.online_quant_following import OnlineQuantFollowingJob
 from shipane_sdk.jobs.online_quant_sync import OnlineQuantSyncJob
+from shipane_sdk.jobs.repo import RepoJob
 from shipane_sdk.joinquant.client import JoinQuantClient
 from shipane_sdk.ricequant.client import RiceQuantClient
 from shipane_sdk.uqer.client import UqerClient
@@ -39,6 +40,7 @@ class Scheduler(object):
 
     def start(self):
         self.__add_job(self.__create_new_stock_purchase_job())
+        self.__add_job(self.__create_repo_job())
         self.__add_job(self.__create_join_quant_following_job())
         self.__add_job(self.__create_rice_quant_following_job())
         self.__add_job(self.__create_uqer_following_job())
@@ -63,7 +65,13 @@ class Scheduler(object):
         section = 'NewStocks'
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
-        return NewStockPurchaseJob(self._client, client_aliases, '{}FollowingJob'.format(section), **options)
+        return NewStockPurchaseJob(self._client, client_aliases, '{}Job'.format(section), **options)
+
+    def __create_repo_job(self):
+        section = 'Repo'
+        options = self.__build_options(section)
+        client_aliases = self.__filter_client_aliases(section)
+        return RepoJob(self._client, client_aliases, '{}Job'.format(section), **options)
 
     def __create_join_quant_following_job(self):
         section = 'JoinQuant'
