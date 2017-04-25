@@ -76,7 +76,7 @@ Windows
 升级
 ^^^^
 
-- cmd 中运行：pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
+- cmd 中运行：pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk
 - 参考 scheduler-example.ini 修改 scheduler.ini
 
 Mac/Linux
