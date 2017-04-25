@@ -32,6 +32,7 @@ class Client(object):
         self._host = kwargs.pop('host', 'localhost')
         self._port = kwargs.pop('port', 8888)
         self._key = kwargs.pop('key', '')
+        self._client = kwargs.pop('client', '')
         self._timeout = kwargs.pop('timeout', (5.0, 10.0))
 
     @property
@@ -183,6 +184,8 @@ class Client(object):
 
     def __create_url(self, client, resource, resource_id=None, **params):
         all_params = copy.deepcopy(params)
+        if self._client is not None:
+            all_params.update(client=self._client)
         if client is not None:
             all_params.update(client=client)
         all_params.update(key=self._key)
