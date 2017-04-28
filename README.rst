@@ -20,6 +20,7 @@ ShiPanE-Python-SDK
 - 简单的实盘易 HTTP API 封装，见 shipane_sdk/client.py
 - 多账号自动新股申购（自动打新）
 - 多账号自动逆回购
+- 定时批量下单
 - 聚宽（JoinQuant）集成
 - `米筐（RiceQuant）`_ 集成
 - 优矿（Uqer）集成

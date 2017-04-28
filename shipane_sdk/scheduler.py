@@ -14,6 +14,7 @@ from six.moves import configparser
 from shipane_sdk import Client
 from shipane_sdk.ap import APCronParser
 from shipane_sdk.guorn.client import GuornClient
+from shipane_sdk.jobs.batch import BatchJob
 from shipane_sdk.jobs.new_stock_purchase import NewStockPurchaseJob
 from shipane_sdk.jobs.online_quant_following import OnlineQuantFollowingJob
 from shipane_sdk.jobs.online_quant_sync import OnlineQuantSyncJob
@@ -41,6 +42,7 @@ class Scheduler(object):
     def start(self):
         self.__add_job(self.__create_new_stock_purchase_job())
         self.__add_job(self.__create_repo_job())
+        self.__add_job(self.__create_batch_job())
         self.__add_job(self.__create_join_quant_following_job())
         self.__add_job(self.__create_rice_quant_following_job())
         self.__add_job(self.__create_uqer_following_job())
@@ -72,6 +74,12 @@ class Scheduler(object):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         return RepoJob(self._client, client_aliases, '{}Job'.format(section), **options)
+
+    def __create_batch_job(self):
+        section = 'Batch'
+        options = self.__build_options(section)
+        client_aliases = self.__filter_client_aliases(section)
+        return BatchJob(self._client, client_aliases, '{}Job'.format(section), **options)
 
     def __create_join_quant_following_job(self):
         section = 'JoinQuant'
