@@ -7,7 +7,7 @@ import time
 
 from shipane_sdk.jobs.basic_job import BasicJob
 from shipane_sdk.market_utils import MarketUtils
-from shipane_sdk.models import AdjustmentRequest, AdjustmentContext, OrderAction, Adjustment, OrderStyle
+from shipane_sdk.models import *
 
 
 class OnlineQuantSyncJob(BasicJob):
@@ -21,7 +21,7 @@ class OnlineQuantSyncJob(BasicJob):
         self._name = name
 
     def __call__(self):
-        if MarketUtils.is_closed() and not self._config.is_debug():
+        if MarketUtils.is_closed() and not self._config.debug:
             self._logger.warning("********** 休市期间不同步 **********")
             return
 
@@ -31,9 +31,10 @@ class OnlineQuantSyncJob(BasicJob):
 
         self._logger.info("********** 开始同步 **********")
         try:
+            target_portfolio = self._get_target_portfolio()
             for client_alias in self._client_aliases:
                 client = self._client_aliases[client_alias]
-                self._sync(client)
+                self._sync(target_portfolio, client)
         except Exception as e:
             self._logger.exception("同步异常")
         self._logger.info("********** 结束同步 **********\n")
@@ -42,13 +43,21 @@ class OnlineQuantSyncJob(BasicJob):
     def name(self):
         return self._name
 
-    def _sync(self, client):
-        target_portfolio = self._get_target_portfolio()
+    def _sync(self, target_portfolio, client):
         for i in range(0, 2 + self._config.extra_loops):
-            adjustment = self._create_adjustment(target_portfolio, client)
-            self._log_progress(adjustment)
-            self._execute_adjustment(adjustment, client)
+            is_sync = self._sync_once(target_portfolio, client)
+            if is_sync:
+                self._logger.info("已同步")
+                return
             time.sleep(self._config.loop_interval)
+
+    def _sync_once(self, target_portfolio, client):
+        adjustment = self._create_adjustment(target_portfolio, client)
+        self._log_progress(adjustment)
+        is_sync = adjustment.empty()
+        if not is_sync:
+            self._execute_adjustment(adjustment, client)
+        return is_sync
 
     def _get_target_portfolio(self):
         portfolio = self._quant_client.query_portfolio()
@@ -63,16 +72,13 @@ class OnlineQuantSyncJob(BasicJob):
 
     def _execute_order(self, order, client):
         try:
-            if self._config.is_dry_run() or self._config.is_debug():
-                self._logger.info('以 %7.3f元 %s%s %5d股 %s',
-                                  order.price,
-                                  '限价' if order.style == OrderStyle.LIMIT else '市价',
-                                  '买入' if order.action == OrderAction.OPEN else '卖出',
-                                  order.amount, order.security)
+            if self._config.debug:
+                self._logger.info(order)
                 return
-            action = 'BUY' if order.action == OrderAction.OPEN else 'SELL'
-            self._shipane_client.execute(client=client, action=action, symbol=order.security, type='MARKET',
-                                         priceType=4, amount=order.amount)
+            e_order = order.to_e_order()
+            e_order['type'] = 'MARKET'
+            e_order['priceType'] = 4
+            self._shipane_client.execute(client=client, **e_order)
         except Exception as e:
             self._logger.error('客户端[%s]下单失败\n%s', client, e)
 
@@ -91,15 +97,12 @@ class OnlineQuantSyncJob(BasicJob):
         return request
 
     def _log_progress(self, adjustment):
-        self._logger.info("今日进度：[%.0f%%] ==> [%.0f%%]；总进度：[%.0f%%] ==> [%.0f%%]",
-                          adjustment.today_progress.before * 100, adjustment.today_progress.after * 100,
-                          adjustment.overall_progress.before * 100, adjustment.overall_progress.after * 100)
+        self._logger.info(adjustment.progress)
 
 
 class PortfolioSyncConfig(object):
     def __init__(self, **kwargs):
-        self._is_dry_run = distutils.util.strtobool(kwargs.get('dry_run', 'false'))
-        self._is_debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
+        self._debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
         self._reserved_securities = [x.strip() for x in kwargs.get('reserved_securities', '').split(',')]
         self._min_order_value = kwargs.get('min_order_value', '0')
         self._max_order_value = float(kwargs.get('max_order_value', '1000000'))
@@ -108,11 +111,9 @@ class PortfolioSyncConfig(object):
         self._order_interval = int(kwargs.get('order_interval', '1'))
         self._extra_loops = int(kwargs.get('extra_loops', '0'))
 
-    def is_dry_run(self):
-        return self._is_dry_run
-
-    def is_debug(self):
-        return self._is_debug
+    @property
+    def debug(self):
+        return self._debug
 
     @property
     def reserved_securities(self):

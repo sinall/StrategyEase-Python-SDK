@@ -88,10 +88,11 @@ class Adjustment(object):
                 batch.append(Order.from_json(order_json))
             batches.append(batch)
         instance.batches = batches
-        progress_json = json['progress']
-        instance._today_progress = AdjustmentProgress.from_json(progress_json['today'])
-        instance._overall_progress = AdjustmentProgress.from_json(progress_json['overall'])
+        instance._progress = AdjustmentProgressGroup.from_json(json['progress'])
         return instance
+
+    def empty(self):
+        return not self.batches
 
     @property
     def id(self):
@@ -118,20 +119,44 @@ class Adjustment(object):
         self._batches = value
 
     @property
-    def today_progress(self):
-        return self._today_progress
+    def progress(self):
+        return self._progress
 
-    @today_progress.setter
-    def today_progress(self, value):
-        self._today_progress = value
+    @progress.setter
+    def progress(self, value):
+        self._progress = value
+
+
+class AdjustmentProgressGroup(object):
+    @staticmethod
+    def from_json(json):
+        instance = AdjustmentProgressGroup()
+        instance._today = AdjustmentProgress.from_json(json['today'])
+        instance._overall = AdjustmentProgress.from_json(json['overall'])
+        return instance
+
+    def __str__(self):
+        str = "今日进度：[{0:>.0f}%] ==> [{1:>.0f}%]；总进度：[{2:>.0f}%] ==> [{3:>.0f}%]".format(
+            self.today.before * 100, self.today.after * 100,
+            self.overall.before * 100, self.overall.after * 100
+        )
+        return str
 
     @property
-    def overall_progress(self):
-        return self._overall_progress
+    def today(self):
+        return self._today
 
-    @overall_progress.setter
-    def overall_progress(self, value):
-        self._overall_progress = value
+    @today.setter
+    def today(self, value):
+        self._today = value
+
+    @property
+    def overall(self):
+        return self._overall
+
+    @overall.setter
+    def overall(self, value):
+        self._overall = value
 
 
 class AdjustmentProgress(object):
@@ -312,9 +337,23 @@ class Order(object):
         self._style = style
 
     def __str__(self):
-        return '{0} {1:>5} {2:>5} {3} on {4:>7.3f}'.format(self._style.name, self._action.name, self._amount,
-                                                           self._security,
-                                                           self._price)
+        str = "以 {0:>7.3f}元 {1}{2} {3:>5} {4}".format(
+            self.price,
+            '限价' if self.style == OrderStyle.LIMIT else '市价',
+            '买入' if self.action == OrderAction.OPEN else '卖出',
+            self.amount,
+            self.security
+        )
+        return str
+
+    def to_e_order(self):
+        e_order = dict(
+            action='BUY' if self._action == OrderAction.OPEN else 'SELL',
+            symbol=self._security,
+            type=self._style,
+            amount=self._amount
+        )
+        return e_order
 
     @property
     def value(self):
