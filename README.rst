@@ -126,13 +126,9 @@ Mac/Linux
 步骤
 ^^^^
 
-- 将 shipane\_sdk/client.py 上传至聚宽“投资研究”根目录，并重命名为 shipane\_sdk.py。
-- 将 shipane\_sdk/joinquant/executor.py 拷贝粘贴到 shipane\_sdk.py 末尾。
-- 修改策略代码，可参考如下示例：
-
-  - examples/joinquant/simple\_strategy.py - 基本用法
-  - examples/joinquant/new\_stocks\_purchase.py - 新股申购
-  - examples/joinquant/repo.py - 逆回购
+- 将 `scripts/shipane_sdk_installer.ipynb <https://raw.githubusercontent.com/sinall/ShiPanE-Python-SDK/master/scripts/shipane_sdk_installer.ipynb>`_ 上传至聚宽“投资研究”根目录。
+- 打开该文件，查看参数并根据需要进行修改。
+- 运行该文件。
 
 二. 抓取方式
 ~~~~~~~~~~~~

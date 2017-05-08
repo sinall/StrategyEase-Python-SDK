@@ -2,7 +2,7 @@
 
 import datetime
 
-import shipane_sdk
+from shipane_sdk.client import Client
 
 try:
     from kuanke.user_space_api import *
@@ -18,7 +18,7 @@ class JoinQuantExecutor(object):
         except NameError:
             import logging
             self._logger = logging.getLogger()
-        self._client = shipane_sdk.Client(self._logger, **kwargs)
+        self._client = Client(self._logger, **kwargs)
         self._client_param = kwargs.get('client')
         self._order_id_map = dict()
         self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
