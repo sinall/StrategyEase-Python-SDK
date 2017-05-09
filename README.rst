@@ -62,7 +62,7 @@ Windows
 - 安装 Python 3.5（建议安装 `Anaconda3 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
 - cmd 中运行：pip install --no-binary shipane_sdk shipane_sdk
 - cmd 中运行：cd %UserProfile%\\.shipane_sdk\\config
-- cmd 中运行：echo No | copy /-Y scheduler-example.ini scheduler.ini
+- cmd 中运行：echo No | copy /-Y scheduler-template.ini scheduler.ini
 
 配置
 ^^^^
@@ -80,7 +80,7 @@ Windows
 ^^^^
 
 - cmd 中运行：pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk
-- 参考 scheduler-example.ini 修改 scheduler.ini
+- 参考 scheduler-template.ini 修改 scheduler.ini
 
 Mac/Linux
 ~~~~~~~~~
@@ -90,7 +90,7 @@ Mac/Linux
 
 - 安装 Python 3.5
 - terminal 中运行：pip install --no-binary shipane_sdk shipane_sdk
-- terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-example.ini ~/.shipane_sdk/config/scheduler.ini
+- terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-template.ini ~/.shipane_sdk/config/scheduler.ini
 
 配置
 ^^^^
@@ -106,7 +106,7 @@ Mac/Linux
 ~~~~
 
 - terminal 中运行：pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk
-- 参考 scheduler-example.ini 修改 scheduler.ini
+- 参考 scheduler-template.ini 修改 scheduler.ini
 
 聚宽（JoinQuant）集成
 ---------------------

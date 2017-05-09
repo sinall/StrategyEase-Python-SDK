@@ -49,12 +49,12 @@ class OnlineQuantSyncJob(BasicJob):
                 self._shipane_client.cancel_all(client)
             time.sleep(self._config.order_interval)
 
-        for i in range(0, 2 + self._config.extra_loops):
+        for i in range(0, 2 + self._config.extra_rounds):
             is_sync = self._sync_once(target_portfolio, client)
             if is_sync:
                 self._logger.info("已同步")
                 return
-            time.sleep(self._config.loop_interval)
+            time.sleep(self._config.round_interval)
 
     def _sync_once(self, target_portfolio, client):
         adjustment = self._create_adjustment(target_portfolio, client)
@@ -111,13 +111,13 @@ class PortfolioSyncConfig(object):
     def __init__(self, **kwargs):
         self._debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
         self._pre_clear = distutils.util.strtobool(kwargs.get('pre_clear', 'false'))
-        self._reserved_securities = kwargs.get('reserved_securities').split('\n')
+        self._reserved_securities = list(filter(None, kwargs.get('reserved_securities').split('\n')))
         self._min_order_value = kwargs.get('min_order_value', '0')
         self._max_order_value = float(kwargs.get('max_order_value', '1000000'))
-        self._loop_interval = int(kwargs.get('loop_interval', '5'))
+        self._round_interval = int(kwargs.get('round_interval', '5'))
         self._batch_interval = int(kwargs.get('batch_interval', '5'))
         self._order_interval = int(kwargs.get('order_interval', '1'))
-        self._extra_loops = int(kwargs.get('extra_loops', '0'))
+        self._extra_rounds = int(kwargs.get('extra_rounds', '0'))
 
     @property
     def debug(self):
@@ -140,8 +140,8 @@ class PortfolioSyncConfig(object):
         return self._max_order_value
 
     @property
-    def loop_interval(self):
-        return self._loop_interval
+    def round_interval(self):
+        return self._round_interval
 
     @property
     def batch_interval(self):
@@ -152,5 +152,5 @@ class PortfolioSyncConfig(object):
         return self._order_interval
 
     @property
-    def extra_loops(self):
-        return self._extra_loops
+    def extra_rounds(self):
+        return self._extra_rounds

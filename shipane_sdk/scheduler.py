@@ -7,7 +7,6 @@ import logging
 import os
 import os.path
 import time
-from configparser import RawConfigParser
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from six.moves import configparser
@@ -22,10 +21,7 @@ from shipane_sdk.jobs.online_quant_sync import OnlineQuantSyncJob
 from shipane_sdk.jobs.repo import RepoJob
 from shipane_sdk.joinquant.client import JoinQuantClient
 from shipane_sdk.ricequant.client import RiceQuantClient
-from shipane_sdk.support import MultiOrderedDict
 from shipane_sdk.uqer.client import UqerClient
-
-ConfigParser = configparser.RawConfigParser
 
 
 class Scheduler(object):
@@ -35,7 +31,7 @@ class Scheduler(object):
 
         config_path = os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config', 'scheduler.ini')
         self._logger.info('Config path: %s', config_path)
-        self._config = RawConfigParser(dict_type=MultiOrderedDict, strict=False)
+        self._config = configparser.RawConfigParser()
         self._config.readfp(codecs.open(config_path, encoding="utf_8_sig"), )
 
         self._scheduler = BackgroundScheduler()
