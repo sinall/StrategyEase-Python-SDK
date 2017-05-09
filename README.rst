@@ -126,9 +126,15 @@ Mac/Linux
 步骤
 ^^^^
 
-- 将 `scripts/shipane_sdk_installer.ipynb <https://raw.githubusercontent.com/sinall/ShiPanE-Python-SDK/master/scripts/shipane_sdk_installer.ipynb>`_ 上传至聚宽“投资研究”根目录。
-- 打开该文件，查看参数并根据需要进行修改。
+- 下载 `scripts/shipane_sdk_installer.ipynb`_ 并上传至“投资研究”根目录。
+- 打开该文件，设置参数：QUANT_NAME = 'joinquant'
+- 查看其它参数并根据需要进行修改。
 - 运行该文件。
+- 修改策略代码，可参考如下示例：
+
+  - examples/joinquant/simple\_strategy.py - 基本用法
+  - examples/joinquant/new\_stocks\_purchase.py - 新股申购
+  - examples/joinquant/repo.py - 逆回购
 
 二. 抓取方式
 ~~~~~~~~~~~~
@@ -164,8 +170,10 @@ Mac/Linux
 步骤
 ^^^^
 
-- 将 shipane\_sdk/client.py 上传米筐“策略研究”根目录，并重命名为 shipane\_sdk.py。
-- 将 shipane\_sdk/ricequant/executor.py 拷贝粘贴到 shipane\_sdk.py 末尾。
+- 下载 `scripts/shipane_sdk_installer.ipynb`_ 并上传至“策略研究”根目录。
+- 打开该文件，设置参数：QUANT_NAME = 'ricequant'
+- 查看其它参数并根据需要进行修改。
+- 运行该文件。
 - 修改策略代码，可参考如下示例：
 
   - examples/ricequant/simple\_strategy.py - 基本用法
@@ -255,3 +263,5 @@ C# SDK
    :target: http://shang.qq.com/wpa/qunwpa?idkey=1ce867356702f5f7c56d07d5c694e37a3b9a523efce199bb0f6ff30410c6185d%22
 
 .. _米筐（RiceQuant）: http://www.ricequant.com
+
+.. _scripts/shipane_sdk_installer.ipynb: https://raw.githubusercontent.com/sinall/ShiPanE-Python-SDK/master/scripts/shipane_sdk_installer.ipynb
