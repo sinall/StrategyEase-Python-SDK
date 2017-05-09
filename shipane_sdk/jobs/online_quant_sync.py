@@ -103,7 +103,7 @@ class OnlineQuantSyncJob(BasicJob):
 class PortfolioSyncConfig(object):
     def __init__(self, **kwargs):
         self._debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
-        self._reserved_securities = [x.strip() for x in kwargs.get('reserved_securities', '').split(',')]
+        self._reserved_securities = kwargs.get('reserved_securities').split('\n')
         self._min_order_value = kwargs.get('min_order_value', '0')
         self._max_order_value = float(kwargs.get('max_order_value', '1000000'))
         self._loop_interval = int(kwargs.get('loop_interval', '5'))
