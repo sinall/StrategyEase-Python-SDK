@@ -84,7 +84,7 @@ class OnlineQuantSyncJob(BasicJob):
 
     def _create_adjustment(self, target_portfolio, client):
         request = self._create_adjustment_request(target_portfolio)
-        request_json = AdjustmentRequest.to_json(request)
+        request_json = Adjustment.to_json(request)
         response_json = self._shipane_client.create_adjustment(client=client, request_json=request_json)
         adjustment = Adjustment.from_json(response_json)
         return adjustment
@@ -93,7 +93,9 @@ class OnlineQuantSyncJob(BasicJob):
         context = AdjustmentContext(self._config.reserved_securities,
                                     self._config.min_order_value,
                                     self._config.max_order_value)
-        request = AdjustmentRequest(target_portfolio, context)
+        request = Adjustment()
+        request.target_portfolio = target_portfolio
+        request.context = context
         return request
 
     def _log_progress(self, adjustment):

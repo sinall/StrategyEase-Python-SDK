@@ -5,7 +5,7 @@ from __future__ import division
 from enum import Enum
 
 
-class AdjustmentRequest(object):
+class Adjustment(object):
     @staticmethod
     def to_json(instance):
         json = {
@@ -14,9 +14,39 @@ class AdjustmentRequest(object):
         }
         return json
 
-    def __init__(self, target_portfolio, context):
-        self._target_portfolio = target_portfolio
-        self._context = context
+    @classmethod
+    def from_json(cls, json):
+        instance = Adjustment()
+        instance.id = json.get('id', None)
+        instance.status = json.get('status', None)
+        batches = []
+        for batch_json in json['batches']:
+            batch = []
+            for order_json in batch_json:
+                batch.append(Order.from_json(order_json))
+            batches.append(batch)
+        instance.batches = batches
+        instance._progress = AdjustmentProgressGroup.from_json(json['progress'])
+        return instance
+
+    def empty(self):
+        return not self.batches
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
 
     @property
     def target_portfolio(self):
@@ -33,6 +63,22 @@ class AdjustmentRequest(object):
     @context.setter
     def context(self, value):
         self._context = value
+
+    @property
+    def batches(self):
+        return self._batches
+
+    @batches.setter
+    def batches(self, value):
+        self._batches = value
+
+    @property
+    def progress(self):
+        return self._progress
+
+    @progress.setter
+    def progress(self, value):
+        self._progress = value
 
 
 class AdjustmentContext(object):
@@ -73,58 +119,6 @@ class AdjustmentContext(object):
     @max_order_value.setter
     def max_order_value(self, value):
         self._max_order_value = value
-
-
-class Adjustment(object):
-    @classmethod
-    def from_json(cls, json):
-        instance = Adjustment()
-        instance.id = json.get('id', None)
-        instance.status = json.get('status', None)
-        batches = []
-        for batch_json in json['batches']:
-            batch = []
-            for order_json in batch_json:
-                batch.append(Order.from_json(order_json))
-            batches.append(batch)
-        instance.batches = batches
-        instance._progress = AdjustmentProgressGroup.from_json(json['progress'])
-        return instance
-
-    def empty(self):
-        return not self.batches
-
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, value):
-        self._id = value
-
-    @property
-    def status(self):
-        return self._status
-
-    @status.setter
-    def status(self, value):
-        self._status = value
-
-    @property
-    def batches(self):
-        return self._batches
-
-    @batches.setter
-    def batches(self, value):
-        self._batches = value
-
-    @property
-    def progress(self):
-        return self._progress
-
-    @progress.setter
-    def progress(self, value):
-        self._progress = value
 
 
 class AdjustmentProgressGroup(object):
