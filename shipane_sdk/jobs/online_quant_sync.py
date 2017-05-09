@@ -44,6 +44,11 @@ class OnlineQuantSyncJob(BasicJob):
         return self._name
 
     def _sync(self, target_portfolio, client):
+        if self._config.pre_clear:
+            if not self._config.debug:
+                self._shipane_client.cancel_all(client)
+            time.sleep(self._config.order_interval)
+
         for i in range(0, 2 + self._config.extra_loops):
             is_sync = self._sync_once(target_portfolio, client)
             if is_sync:
@@ -105,6 +110,7 @@ class OnlineQuantSyncJob(BasicJob):
 class PortfolioSyncConfig(object):
     def __init__(self, **kwargs):
         self._debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
+        self._pre_clear = distutils.util.strtobool(kwargs.get('pre_clear', 'false'))
         self._reserved_securities = kwargs.get('reserved_securities').split('\n')
         self._min_order_value = kwargs.get('min_order_value', '0')
         self._max_order_value = float(kwargs.get('max_order_value', '1000000'))
@@ -116,6 +122,10 @@ class PortfolioSyncConfig(object):
     @property
     def debug(self):
         return self._debug
+
+    @property
+    def pre_clear(self):
+        return self._pre_clear
 
     @property
     def reserved_securities(self):
