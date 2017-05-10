@@ -130,11 +130,22 @@ Mac/Linux
 - 打开该文件，设置参数：QUANT_NAME = 'joinquant'
 - 查看其它参数并根据需要进行修改。
 - 运行该文件。
+- 修改 shipane_sdk_config.yaml，升级后需参考 shipane_sdk_config_template.yaml。
 - 修改策略代码，可参考如下示例：
 
-  - examples/joinquant/simple\_strategy.py - 基本用法
+  - examples/joinquant/simple\_strategy.py - 基本跟单用法
+  - examples/joinquant/simple\_sync\_strategy.py - 基本同步用法
   - examples/joinquant/new\_stocks\_purchase.py - 新股申购
   - examples/joinquant/repo.py - 逆回购
+
+同步操作注意事项：
+
+- 同步操作根据模拟盘持仓比例对实盘进行调整。
+- 同步操作依赖于“可用”资金。请留意配置文件中“撤销全部订单”相关选项。
+- “新股申购”不影响“可用”资金，并且不可被撤销，因此不影响同步功能。
+- 同步操作依赖于实盘易 API /adjustments；因此也依赖于“查询投资组合”API，使用前请先做好测试及配置。
+- 同步操作使用“市价单”。
+- 如遇到策略报错“ImportError: No module named shipane_sdk”，请稍后重试。
 
 二. 抓取方式
 ~~~~~~~~~~~~

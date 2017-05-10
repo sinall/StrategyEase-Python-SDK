@@ -1,0 +1,124 @@
+# *********************************************************
+# 实盘易 SDK 配置
+# 如无特别说明，配置项修改后，将在策略重启后生效
+# 注意：请勿在策略运行期间修改结构，比如 id 等关键信息
+# *********************************************************
+
+# *********************************************************
+# 实盘易配置
+# *********************************************************
+gateways:
+    # 实盘易-1 配置
+    -   id: gateway-1
+        # IP 地址
+        host: xxx.xxx.xxx.xxx
+        # 端口
+        port: 8888
+        # 密钥
+        key:
+        # 超时
+        timeout:
+            # 连接超时
+            connect: 5.0
+            # 读取超时
+            read: 10.0
+        # 交易客户端
+        clients:
+            # 客户端-1
+            # 注意：id 需全局唯一
+            -   id: client-1
+                # 查询串，对应于 API 的 client 参数
+                query: title:monijiaoyi
+                # 是否默认？
+                # 1 个实盘易只允许设置 1 个交易客户端为默认
+                default: true
+                # 保留名单，每行一个
+                # 股票代码，注意使用 str 标签
+                # 例如：!!str 000001
+                # 注意：该配置在下次 handle_data 调用时生效
+                reserved-securities:
+                    # B股代码
+                    - ^[92]
+                    # 港股代码
+                    - ^[\d]{5}$
+                    # 逆回购代码
+                    - ^(204|131)
+            # 客户端-2
+            -   id: client-2
+                query: title:xxx,account:xxx
+                reserved-securities: []
+    # 实盘易-2 配置
+    -   id: gateway-2
+        host: xxx.xxx.xxx.xxx
+        port: 8888
+        key:
+        timeout:
+            connect: 5.0
+            read: 10.0
+        clients:
+            -   id: client-3
+                query: title:monijiaoyi
+                default: true
+            -   id: client-4
+                query: title:xxx,account:xxx
+
+# *********************************************************
+# 策略配置
+# 实体关系
+#
+# manager 1 ---- N trader 1 ---- 1 交易客户端(client)
+#
+# *********************************************************
+managers:
+    # manager-1 配置
+    -   id: manager-1
+        traders:
+            # trader-1
+            -   id: trader-1
+                client: client-1
+                # 同步选项
+                # 如果该策略无需同步操作，可以省略 sync 配置项
+                # 注意：该配置在下次 handle_data 调用时生效
+                sync:
+                    # 是否开启？
+                    # 正式运行时设置为 true
+                    enabled: true
+                    # 是否调试？调试时不会下单。
+                    # 正式运行时设置为 false
+                    debug: true
+                    # 同步前是否撤销模拟盘未成交订单
+                    # 如果该选项未启用，并且模拟盘有未成交订单，SDK 将不会做同步
+                    pre-clear-for-sim: false
+                    # 同步前是否撤销实盘未成交订单
+                    pre-clear-for-live: false
+                    # 最小订单金额，低于该值的订单将被忽略，以防因为价格波动导致的频繁调仓
+                    # 取值可以为数值，或者百分比
+                    min-order-value: 1%
+                    # 最大订单金额，用于分单
+                    # 取值为数值
+                    max-order-value: 1000000
+                    # 轮次间隔时间，单位为毫秒
+                    # 建议不小于 5 秒，以防交易软件持仓刷新过慢
+                    round-interval: 5000
+                    # 批次间隔时间，单位为毫秒
+                    batch-interval: 1000
+                    # 下单间隔时间，单位为毫秒
+                    order-interval: 1000
+                    # 默认为 2 轮，该选项用于增加额外轮次
+                    # 额外轮次
+                    extra-rounds: 0
+    -   id: manager-2
+        traders:
+            -   id: trader-2
+                client: client-1
+                sync:
+                    enabled: true
+                    debug: true
+                    pre-clear-for-sim: false
+                    pre-clear-for-live: false
+                    min-order-value: 1%
+                    max-order-value: 1000000
+                    round-interval: 5000
+                    batch-interval: 1000
+                    order-interval: 1000
+                    extra-rounds: 0

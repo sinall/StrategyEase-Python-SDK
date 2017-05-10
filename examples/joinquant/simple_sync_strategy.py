@@ -18,13 +18,10 @@ def process_initialize(context):
 
 # 每个单位时间(如果按天回测,则每天调用一次,如果按分钟,则每分钟调用一次)调用一次
 def handle_data(context, data):
-    # 保存 order 对象
-    order_ = order(g.security, 100)
-    # 实盘易依据聚宽的 order 对象下单
-    g.__manager.execute(order_)
+    try:
+        order(g.security, 100)
 
-    order_ = order(g.security, -100)
-    g.__manager.execute(order_)
-
-    # 撤单
-    g.__manager.cancel(order_)
+    finally:
+        # 放在 finally 块中，以防原有代码抛出异常或者 return
+        # 在函数结尾处加入以下语句，用来将模拟盘同步至实盘
+        g.__manager.sync(context)

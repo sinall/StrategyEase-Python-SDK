@@ -18,6 +18,7 @@ else:
 from shipane_sdk import JoinQuantExecutor
 
 
+@unittest.skip("integration class")
 class JoinQuantExecutorTest(unittest.TestCase):
     def setUp(self):
         logging.basicConfig(level=logging.INFO)

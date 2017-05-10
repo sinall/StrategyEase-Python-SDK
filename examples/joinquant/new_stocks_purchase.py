@@ -11,19 +11,13 @@ def initialize(context):
 
 
 def process_initialize(context):
-    # 创建 JoinQuantExecutor 对象
-    # 可选参数包括：host, port, key, client, timeout 等
-    # 请将下面的 IP 替换为实际 IP
-    g.__executor = shipane_sdk.JoinQuantExecutor(
-        host='xxx.xxx.xxx.xxx',
-        port=8888,
-        key='',
-        client=''
-    )
+    # 创建 StrategyManager 对象
+    # 参数为配置文件中的 manager id
+    g.__manager = shipane_sdk.StrategyManager(context, 'manager-1')
 
 
 def purchase_new_stocks(context):
     if context.run_params.type == 'sim_trade':
-        g.__executor.purchase_new_stocks()
+        g.__manager.purchase_new_stocks()
     else:
         log.info('回测中不进行新股申购')

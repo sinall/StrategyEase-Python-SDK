@@ -130,7 +130,7 @@ class AdjustmentProgressGroup(object):
         return instance
 
     def __str__(self):
-        str = "今日进度：[{0:>.0f}%] ==> [{1:>.0f}%]；总进度：[{2:>.0f}%] ==> [{3:>.0f}%]".format(
+        str = "今日进度：{0:>.0f}% -> {1:>.0f}%；总进度：{2:>.0f}% -> {3:>.0f}%".format(
             self.today.before * 100, self.today.after * 100,
             self.overall.before * 100, self.overall.after * 100
         )
@@ -205,6 +205,11 @@ class Portfolio(object):
         self._positions[security] = position
 
     @property
+    def fingerprint(self):
+        result = dict((security, position.total_amount) for security, position in self._positions.items())
+        return result
+
+    @property
     def available_cash(self):
         return self._available_cash
 
@@ -253,8 +258,8 @@ class Position(object):
         }
         return json
 
-    def __init__(self, security, price=None, total_amount=0, closeable_amount=0):
-        self._security = security
+    def __init__(self, security=None, price=None, total_amount=0, closeable_amount=0):
+        self._security = self._normalize_security(security)
         self._price = price
         self._total_amount = total_amount
         self._closeable_amount = total_amount if closeable_amount is None else closeable_amount
@@ -267,7 +272,7 @@ class Position(object):
 
     @security.setter
     def security(self, value):
-        self._security = value
+        self._security = self._normalize_security(value)
 
     @property
     def price(self):
@@ -301,6 +306,9 @@ class Position(object):
     def value(self, value):
         self._value = value
         self._total_amount = self._value / self._price
+
+    def _normalize_security(self, security):
+        return security.split('.')[0] if security else None
 
 
 class OrderAction(Enum):
