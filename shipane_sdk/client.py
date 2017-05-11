@@ -212,14 +212,14 @@ class Client(object):
     def __log_request(self, prepared_request):
         url = self.__eliminate_privacy(prepared_request.path_url)
         if prepared_request.body is None:
-            self._logger.info('Request:\n%s %s', prepared_request.method, url)
+            self._logger.debug('Request:\n%s %s', prepared_request.method, url)
         else:
-            self._logger.info('Request:\n%s %s\n%s', prepared_request.method, url, prepared_request.body)
+            self._logger.debug('Request:\n%s %s\n%s', prepared_request.method, url, prepared_request.body)
 
     def __log_response(self, response):
         message = u'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
         if response.status_code == 200:
-            self._logger.info(message)
+            self._logger.debug(message)
         else:
             self._logger.error(message)
 
