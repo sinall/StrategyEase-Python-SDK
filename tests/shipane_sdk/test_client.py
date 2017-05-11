@@ -26,7 +26,6 @@ class ClientTest(unittest.TestCase):
         config.read('{}/../config/config.ini'.format(dir_path))
         cls.client = Client(logging.getLogger(), **dict(config.items('ShiPanE')))
         cls.client_param = config.get('ShiPanE', 'client')
-        cls.client.start_clients()
 
     def test_get_account(self):
         try:
@@ -78,7 +77,7 @@ class ClientTest(unittest.TestCase):
             self.assertIsNotNone(order['id'])
         except HTTPError as e:
             result = e.response.json()
-            self.assertIsNotNone(result['message'])
+            self.assertNotEqual(result['source'], "实盘易")
 
     def test_sell_stock(self):
         try:
@@ -86,7 +85,7 @@ class ClientTest(unittest.TestCase):
             self.assertIsNotNone(order['id'])
         except HTTPError as e:
             result = e.response.json()
-            self.assertIsNotNone(result['message'])
+            self.assertNotEqual(result['source'], "实盘易")
 
     def test_cancel_all(self):
         try:
