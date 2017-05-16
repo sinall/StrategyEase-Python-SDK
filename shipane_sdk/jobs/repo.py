@@ -23,5 +23,8 @@ class RepoJob(BasicJob):
             'amountProportion': 'ALL'
         }
         for client_alias in self._client_aliases:
-            client = self._client_aliases[client_alias]
-            self._client.execute(client, **order)
+            try:
+                client = self._client_aliases[client_alias]
+                self._client.execute(client, **order)
+            except:
+                self._logger.exception('客户端[%s]逆回购失败', client_alias)

@@ -12,5 +12,8 @@ class NewStockPurchaseJob(BasicJob):
 
     def __call__(self):
         for client_alias in self._client_aliases:
-            client = self._client_aliases[client_alias]
-            self._client.purchase_new_stocks(client)
+            try:
+                client = self._client_aliases[client_alias]
+                self._client.purchase_new_stocks(client)
+            except:
+                self._logger.exception('客户端[%s]打新失败', client_alias)

@@ -35,15 +35,24 @@ class StrategyManager(object):
 
     def purchase_new_stocks(self):
         for trader in self._traders.values():
-            trader.purchase_new_stocks()
+            try:
+                trader.purchase_new_stocks()
+            except:
+                self._logger.exception('[%s] 打新失败', trader.id)
 
     def execute(self, order):
         for trader in self._traders.values():
-            trader.execute(order)
+            try:
+                trader.execute(order)
+            except:
+                self._logger.exception('[%s] 下单失败', trader.id)
 
     def cancel(self, order):
         for trader in self._traders.values():
-            trader.cancel(order)
+            try:
+                trader.cancel(order)
+            except:
+                self._logger.exception('[%s] 撤单失败', trader.id)
 
     def sync(self, context):
         stop_watch = StopWatch()
