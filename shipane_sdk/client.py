@@ -128,16 +128,16 @@ class Client(object):
         today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
         df = self.query_new_stocks()
         df = df[(df.ipo_date == today)]
-        self._logger.info('今日可申购新股有[%d]只', len(df))
+        self._logger.info('今日可申购新股有[{}]只'.format(len(df)))
         for index, row in df.iterrows():
             try:
                 order = {
                     'symbol': row['xcode'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
                 }
-                self._logger.info('申购新股：%s', str(order))
+                self._logger.info('申购新股：{}'.format(order))
                 self.buy(client, timeout, **order)
             except Exception as e:
-                self._logger.error('客户端[%s]申购新股[%s(%s)]失败\n%s', client, row['name'], row['code'], e)
+                self._logger.error('客户端[{}]申购新股[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
 
     def create_adjustment(self, client=None, request_json=None, timeout=None):
         request = Request('POST', self.__create_url(client, 'adjustments'), json=request_json)
@@ -184,10 +184,7 @@ class Client(object):
 
     def __create_url(self, client, resource, resource_id=None, **params):
         all_params = copy.deepcopy(params)
-        if self._client is not None:
-            all_params.update(client=self._client)
-        if client is not None:
-            all_params.update(client=client)
+        all_params.update(client=(client or self._client))
         all_params.update(key=self._key)
         if resource_id is None:
             path = '/{}'.format(resource)
@@ -197,14 +194,13 @@ class Client(object):
         return url
 
     def __create_base_url(self):
-        return 'http://' + self._host + ':' + str(self._port)
+        return 'http://{}:{}'.format(self._host, self._port)
 
     def __send_request(self, request, timeout=None):
         prepared_request = request.prepare()
-        timeout = timeout if timeout is not None else self._timeout
         self.__log_request(prepared_request)
         with requests.sessions.Session() as session:
-            response = session.send(prepared_request, timeout=timeout)
+            response = session.send(prepared_request, timeout=(timeout or self._timeout))
         self.__log_response(response)
         response.raise_for_status()
         return response
@@ -212,20 +208,22 @@ class Client(object):
     def __log_request(self, prepared_request):
         url = self.__eliminate_privacy(prepared_request.path_url)
         if prepared_request.body is None:
-            self._logger.debug('Request:\n%s %s', prepared_request.method, url)
+            self._logger.info('Request:\n{} {}'.format(prepared_request.method, url))
         else:
-            self._logger.debug('Request:\n%s %s\n%s', prepared_request.method, url, prepared_request.body)
+            self._logger.info('Request:\n{} {}\n{}'.format(prepared_request.method, url, prepared_request.body))
 
     def __log_response(self, response):
         message = u'Response:\n{} {}\n{}'.format(response.status_code, response.reason, response.text)
         if response.status_code == 200:
-            self._logger.debug(message)
+            self._logger.info(message)
         else:
             self._logger.error(message)
 
     @classmethod
     def __eliminate_privacy(cls, url):
         match = re.search(cls.KEY_REGEX, url)
+        if match is None:
+            return url
         key = match.group(1)
         masked_key = '*' * len(key)
         url = re.sub(cls.KEY_REGEX, "key={}".format(masked_key), url)
