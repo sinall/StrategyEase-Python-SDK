@@ -98,11 +98,7 @@ class StrategyTrader(object):
     def execute(self, order):
         self._logger.info("[实盘易] 跟单：" + str(order))
 
-        if order is None:
-            self._logger.info('[实盘易] 委托为空，忽略下单请求')
-            return
-        if self._is_expired(order):
-            self._logger.info('[实盘易] 委托已过期，忽略下单请求')
+        if not self._should_execute(order):
             return
 
         try:
@@ -161,6 +157,15 @@ class StrategyTrader(object):
     @property
     def _sync_config(self):
         return self._config['sync']
+
+    def _should_execute(self, order):
+        if order is None:
+            self._logger.info('[实盘易] 委托为空，忽略下单请求')
+            return False
+        if self._is_expired(order):
+            self._logger.info('[实盘易] 委托已过期，忽略下单请求')
+            return False
+        return True
 
     def _is_expired(self, order):
         return order.add_time < self._expire_before
