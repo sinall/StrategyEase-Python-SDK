@@ -7,51 +7,31 @@ from shipane_sdk.client import Client
 
 class RiceQuantExecutor(object):
     def __init__(self, **kwargs):
-        try:
-            self._logger = logger
-        except NameError:
-            import logging
-            self._logger = logging.getLogger()
-        self._client = Client(self._logger, **kwargs)
-        self._client_param = kwargs.get('client')
+        self._logger = self._create_logger()
+        self._shipane_client = Client(self._logger, **kwargs)
         self._order_id_map = dict()
         self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
 
     @property
     def client(self):
-        return self._client
+        return self._shipane_client
 
     def purchase_new_stocks(self):
-        self.client.purchase_new_stocks(self._client_param)
+        self.client.purchase_new_stocks()
 
-    def execute(self, order_id):
-        if order_id is None:
-            self._logger.info('[实盘易] 委托编号为空，忽略下单请求')
+    def execute(self, order):
+        self._logger.info("[实盘易] 跟单：{}".format(order))
+
+        if not self._should_execute(order):
             return
 
         try:
-            order = get_order(order_id)
-            self._logger.info("[实盘易] 跟单：" + str(order))
-
-            if order is None:
-                self._logger.info('[实盘易] 委托为空，忽略下单请求')
-                return
-            if self.__is_expired(order):
-                self._logger.info('[实盘易] 委托已过期，忽略下单请求')
-                return
-
-            price_type = 0 if order.type.name == 'LIMIT' else 4
-            actual_order = self._client.execute(self._client_param,
-                                                action=order.side.name,
-                                                symbol=order.order_book_id,
-                                                type=order.type.name,
-                                                priceType=price_type,
-                                                price=order.price,
-                                                amount=order.quantity)
-            self._order_id_map[order_id] = actual_order['id']
+            e_order = self._convert_order(order)
+            actual_order = self._shipane_client.execute(**e_order)
+            self._order_id_map[order.order_id] = actual_order['id']
             return actual_order
         except Exception as e:
-            self._logger.error("[实盘易] 下单异常：" + str(e))
+            self._logger.error("[实盘易] 下单异常：{}".format(e))
 
     def cancel(self, order_id):
         if order_id is None:
@@ -60,11 +40,39 @@ class RiceQuantExecutor(object):
 
         try:
             if order_id in self._order_id_map:
-                self._client.cancel(self._client_param, self._order_id_map[order_id])
+                self._shipane_client.cancel(order_id=self._order_id_map[order_id])
             else:
                 self._logger.warning('[实盘易] 未找到对应的委托编号')
         except Exception as e:
-            self._logger.error("[实盘易] 撤单异常：" + str(e))
+            self._logger.error("[实盘易] 撤单异常：{}".format(e))
 
-    def __is_expired(self, order):
+    def _create_logger(self):
+        try:
+            return logger
+        except NameError:
+            import logging
+            return logging.getLogger()
+
+    def _should_execute(self, order):
+        if order is None:
+            self._logger.info('[实盘易] 委托为空，忽略下单请求')
+            return False
+        if self._is_expired(order):
+            self._logger.info('[实盘易] 委托已过期，忽略下单请求')
+            return False
+        return True
+
+    def _is_expired(self, order):
         return order.datetime < self._expire_before
+
+    def _convert_order(self, order):
+        price_type = 0 if order.type.name == 'LIMIT' else 4
+        e_order = dict(
+            action=order.side.name,
+            symbol=order.order_book_id,
+            type=order.type.name,
+            priceType=price_type,
+            price=order.price,
+            amount=order.quantity
+        )
+        return e_order
