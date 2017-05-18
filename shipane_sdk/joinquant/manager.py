@@ -40,10 +40,10 @@ class StrategyManager(object):
             except:
                 self._logger.exception('[%s] 打新失败', trader.id)
 
-    def execute(self, order):
+    def execute(self, order=None, **kwargs):
         for trader in self._traders.values():
             try:
-                trader.execute(order)
+                trader.execute(order, **kwargs)
             except:
                 self._logger.exception('[%s] 下单失败', trader.id)
 
@@ -95,19 +95,11 @@ class StrategyTrader(object):
     def purchase_new_stocks(self):
         self._shipane_client.purchase_new_stocks()
 
-    def execute(self, order):
-        self._logger.info("[实盘易] 跟单：" + str(order))
-
-        if not self._should_execute(order):
-            return
-
-        try:
-            e_order = self._convert_order(order)
-            actual_order = self._shipane_client.execute(**e_order)
-            self._order_id_map[order.order_id] = actual_order['id']
-            return actual_order
-        except:
-            self._logger.exception("[实盘易] 下单异常")
+    def execute(self, order=None, **kwargs):
+        if order is not None:
+            self._execute(order)
+        else:
+            self._shipane_client.execute(**kwargs)
 
     def cancel(self, order):
         if order is None:
@@ -157,6 +149,20 @@ class StrategyTrader(object):
     @property
     def _sync_config(self):
         return self._config['sync']
+
+    def _execute(self, order):
+        self._logger.info("[实盘易] 跟单：" + str(order))
+
+        if not self._should_execute(order):
+            return
+
+        try:
+            e_order = self._convert_order(order)
+            actual_order = self._shipane_client.execute(**e_order)
+            self._order_id_map[order.order_id] = actual_order['id']
+            return actual_order
+        except:
+            self._logger.exception("[实盘易] 下单异常")
 
     def _should_execute(self, order):
         if order is None:
