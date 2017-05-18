@@ -376,5 +376,6 @@ class _Logger(object):
         log.error(msg, *args, **kwargs)
 
     def exception(self, msg, *args, **kwargs):
-        msg = u"{}\n{}".format(msg, traceback.format_exc())
+        msg += "\n%s"
+        args += (traceback.format_exc(),)
         log.error(msg, *args, **kwargs)
