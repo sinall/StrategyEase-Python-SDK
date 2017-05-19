@@ -15,7 +15,7 @@ gateways:
         # 端口
         port: 8888
         # 密钥
-        key:
+        key: 
         # 超时
         timeout:
             # 连接超时
