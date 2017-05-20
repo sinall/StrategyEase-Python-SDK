@@ -15,7 +15,7 @@ from enum import Enum
 import requests
 import six
 
-GIT_BSAE_URL = "https://raw.githubusercontent.com/sinall/ShiPanE-Python-SDK"
+GIT_BASE_URL = "https://raw.githubusercontent.com/sinall/ShiPanE-Python-SDK"
 WORK_DIR = '.'
 
 
@@ -108,7 +108,7 @@ class SdkInstaller:
         return file
 
     def _get_url(self, path):
-        url = "{0}/{1}/{2}".format(GIT_BSAE_URL, self._version, path)
+        url = "{0}/{1}/{2}".format(GIT_BASE_URL, self._version, path)
         response = requests.get(url)
         response.raise_for_status()
         file = six.StringIO(response.text)
