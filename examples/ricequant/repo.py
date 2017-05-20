@@ -12,7 +12,7 @@ def initialize(context):
 
 
 def process_initialize(context):
-    # 创建 JoinQuantExecutor 对象
+    # 创建 RiceQuantExecutor 对象
     # 可选参数包括：host, port, key, client, timeout 等
     # 请将下面的 IP 替换为实际 IP
     g.__executor = shipane_sdk.RiceQuantExecutor(
