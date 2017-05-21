@@ -96,7 +96,7 @@ managers:
                     min-order-value: 1%
                     # 最大订单金额，用于分单
                     # 取值为数值
-                    max-order-value: 1000000
+                    max-order-value: 200000
                     # 轮次间隔时间，单位为毫秒
                     # 建议不小于 5 秒，以防交易软件持仓刷新过慢
                     round-interval: 5000
@@ -117,7 +117,7 @@ managers:
                     pre-clear-for-sim: false
                     pre-clear-for-live: false
                     min-order-value: 1%
-                    max-order-value: 1000000
+                    max-order-value: 200000
                     round-interval: 5000
                     batch-interval: 1000
                     order-interval: 1000
