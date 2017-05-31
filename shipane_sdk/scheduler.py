@@ -3,7 +3,10 @@
 import codecs
 import collections
 import distutils.util
+import errno
 import logging
+import logging.config
+import logging.handlers
 import os
 import os.path
 import time
@@ -26,7 +29,6 @@ from shipane_sdk.uqer.client import UqerClient
 
 class Scheduler(object):
     def __init__(self):
-        logging.basicConfig(level=logging.INFO, format='%(asctime)-15s %(levelname)-6s %(message)s')
         self._logger = logging.getLogger()
 
         config_path = os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config', 'scheduler.ini')
@@ -128,3 +130,16 @@ class Scheduler(object):
                           filter(None, self._config.get(section, 'clients').split(','))]
         return collections.OrderedDict(
             (client_alias, all_client_aliases[client_alias]) for client_alias in client_aliases)
+
+
+class FileHandler(logging.handlers.TimedRotatingFileHandler):
+    def __init__(self, fileName):
+        path = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', '爱股网', '实盘易')
+        try:
+            os.makedirs(path)
+        except OSError as e:
+            if e.errno == errno.EEXIST and os.path.isdir(path):
+                pass
+            else:
+                raise
+        super(FileHandler, self).__init__(path + "/" + fileName)

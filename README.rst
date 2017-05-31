@@ -63,6 +63,7 @@ Windows
 - cmd 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
 - cmd 中运行：cd %UserProfile%\\.shipane_sdk\\config
 - cmd 中运行：echo No | copy /-Y scheduler-template.ini scheduler.ini
+- cmd 中运行：echo No | copy /-Y logging-template.ini logging.ini
 
 配置
 ^^^^
@@ -74,13 +75,18 @@ Windows
 ^^^^
 
 - 找到 python 安装目录，例如：C:\\Program Files\\Anaconda3
-- cmd 下执行（具体路径自行修改）：python "C:\\Program Files\\Anaconda3\\Scripts\\shipane-scheduler.py"
+- cmd 下运行（具体路径自行修改）：python "C:\\Program Files\\Anaconda3\\Scripts\\shipane-scheduler.py"
 
 升级
 ^^^^
 
 - cmd 中运行：pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk
 - 参考 scheduler-template.ini 修改 scheduler.ini
+
+日志
+^^^^
+
+- cmd 中运行：explorer %UserProfile%\\AppData\\Local\\爱股网\\实盘易
 
 Mac/Linux
 ~~~~~~~~~
@@ -91,6 +97,7 @@ Mac/Linux
 - 安装 Python 3.5
 - terminal 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
 - terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-template.ini ~/.shipane_sdk/config/scheduler.ini
+- terminal 中运行：cp -n ~/.shipane_sdk/config/logging-template.ini ~/.shipane_sdk/config/logging.ini
 
 配置
 ^^^^

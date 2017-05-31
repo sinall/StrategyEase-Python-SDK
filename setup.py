@@ -57,7 +57,10 @@ setup(
     package_data={
     },
 
-    data_files=[(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config'), ['config/scheduler-template.ini'])],
+    data_files=[(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config'), [
+        'config/scheduler-template.ini',
+        'config/logging-template.ini',
+    ])],
 
     scripts=['scripts/shipane-scheduler.py'],
 
