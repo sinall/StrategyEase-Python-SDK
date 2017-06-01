@@ -52,7 +52,8 @@ class OnlineQuantFollowingJob(BasicJob):
                         self._shipane_client.execute(client,
                                                      action=tx.action,
                                                      symbol=tx.symbol,
-                                                     type='LIMIT',
+                                                     type=tx.type,
+                                                     priceType=tx.priceType,
                                                      price=tx.price,
                                                      amount=tx.amount)
                     except HTTPError as e:
