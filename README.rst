@@ -113,7 +113,7 @@ Mac/Linux
 - terminal 中运行：shipane-scheduler.py
 
 升级
-~~~~
+^^^^
 
 - terminal 中运行：pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk
 - 参考 scheduler-template.ini 修改 scheduler.ini
