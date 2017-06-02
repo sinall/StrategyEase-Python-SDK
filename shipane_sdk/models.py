@@ -192,9 +192,9 @@ class Portfolio(object):
         }
         return json
 
-    def __init__(self, available_cash=0):
+    def __init__(self, available_cash=None, total_value=None):
         self._available_cash = available_cash
-        self._total_value = available_cash
+        self._total_value = total_value
         self._positions_value = 0
         self._positions = dict()
 
@@ -243,9 +243,16 @@ class Portfolio(object):
 
     def add_position(self, position):
         self._positions_value += position.value
-        self._total_value += position.value
         self._positions[position.security] = position
 
+    def rebalance(self):
+        if self._available_cash is None:
+            self._available_cash = self._total_value - self._positions_value
+        elif self._total_value is None:
+            self._total_value = self._available_cash + self.positions_value
+        if self._available_cash < 0:
+            self._available_cash = 0
+            self._total_value = self._positions_value
 
 class Position(object):
     @staticmethod
