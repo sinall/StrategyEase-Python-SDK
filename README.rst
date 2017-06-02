@@ -6,6 +6,9 @@ ShiPanE-Python-SDK
 | 实盘易是\ `爱股网 <http://www.iguuu.com>`__\ 旗下的股票自动化解决方案；提供基于 HTTP 协议的 RESTFul Service，从而管理通达信等交易终端。
 | 详情见：http://www.iguuu.com/e
 | 交流QQ群：11527956 |实盘易-股票自动交易|
+|
+
+.. contents:: **目录**
 
 原理概述
 --------
