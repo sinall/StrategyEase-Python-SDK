@@ -5,16 +5,24 @@ from codecs import open
 from os import path
 
 from setuptools import setup, find_packages
+from setuptools.command.install import install
 
 here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
+
+class CustomInstallCommand(install):
+    def run(self):
+        install.run(self)
+        print("Installed ShiPanE-Python-SDK successfully")
+
+
 setup(
     name='shipane_sdk',
 
-    version='1.1.0.a12',
+    version='1.1.0.a13',
 
     description=u'实盘易（ShiPanE）Python SDK，通达信自动化交易 API。',
     long_description=long_description,
@@ -67,5 +75,9 @@ setup(
     entry_points={
         'console_scripts': [
         ],
+    },
+
+    cmdclass={
+        'install': CustomInstallCommand,
     },
 )
