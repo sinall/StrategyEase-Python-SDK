@@ -143,3 +143,9 @@ class FileHandler(logging.handlers.TimedRotatingFileHandler):
             else:
                 raise
         super(FileHandler, self).__init__(path + "/" + fileName)
+
+
+def start():
+    logging.config.fileConfig(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config', 'logging.ini'))
+
+    Scheduler().start()

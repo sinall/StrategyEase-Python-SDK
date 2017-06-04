@@ -74,8 +74,7 @@ Windows
 运行
 ^^^^
 
-- 找到 python 安装目录，例如：C:\\Program Files\\Anaconda3
-- cmd 下运行（具体路径自行修改）：python "C:\\Program Files\\Anaconda3\\Scripts\\shipane-scheduler.py"
+- cmd 下运行（具体路径自行修改）：shipane-scheduler
 
 升级
 ^^^^
@@ -105,7 +104,7 @@ Mac/Linux
 运行
 ^^^^
 
-- terminal 中运行：shipane-scheduler.py
+- terminal 中运行：shipane-scheduler
 
 升级
 ^^^^

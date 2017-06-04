@@ -92,6 +92,7 @@ def main():
 
         entry_points={
             'console_scripts': [
+                'shipane-scheduler = shipane_sdk.scheduler:start',
             ],
         },
 

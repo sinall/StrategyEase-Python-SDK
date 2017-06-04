@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-import logging.config
-import os
+import shipane_sdk.scheduler
 
-from shipane_sdk.scheduler import Scheduler
-
-logging.config.fileConfig(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config', 'logging.ini'))
-
-Scheduler().start()
+shipane_sdk.scheduler.start()
