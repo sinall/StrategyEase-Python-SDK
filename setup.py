@@ -1,83 +1,105 @@
 # -*- coding: utf-8 -*-
 
-import os.path
+import os
+import re
+import shutil
 from codecs import open
-from os import path
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-
-here = path.abspath(path.dirname(__file__))
-
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
 
 
 class CustomInstallCommand(install):
     def run(self):
         install.run(self)
-        print("Installed ShiPanE-Python-SDK successfully")
+        config_path = os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config')
+        ConfigInstantiator.instantiate(config_path)
 
 
-setup(
-    name='shipane_sdk',
+class ConfigInstantiator:
+    @staticmethod
+    def instantiate(path):
+        for filename in os.listdir(path):
+            match = re.search("(.*)-template\\.(.*)", filename)
+            if match is None:
+                continue
+            concrete_filename = '{}.{}'.format(match.group(1), match.group(2))
+            template_file_path = os.path.join(path, filename)
+            concrete_file_path = os.path.join(path, concrete_filename)
+            if os.path.isfile(concrete_file_path):
+                continue
+            shutil.copyfile(template_file_path, concrete_file_path)
 
-    version='1.1.0.a13',
 
-    description=u'实盘易（ShiPanE）Python SDK，通达信自动化交易 API。',
-    long_description=long_description,
+def main():
+    here = os.path.abspath(os.path.dirname(__file__))
 
-    url='https://github.com/sinall/ShiPanE-Python-SDK',
+    with open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+        long_description = f.read()
 
-    author='sinall',
-    author_email='gaoruinan@163.com',
+    setup(
+        name='shipane_sdk',
 
-    license='MIT',
+        version='1.1.0.a13',
 
-    classifiers=[
-        'Development Status :: 3 - Alpha',
+        description=u'实盘易（ShiPanE）Python SDK，通达信自动化交易 API。',
+        long_description=long_description,
 
-        'Intended Audience :: Developers',
-        'Intended Audience :: Financial and Insurance Industry',
-        'Topic :: Office/Business :: Financial :: Investment',
+        url='https://github.com/sinall/ShiPanE-Python-SDK',
 
-        'License :: OSI Approved :: MIT License',
+        author='sinall',
+        author_email='gaoruinan@163.com',
 
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-    ],
+        license='MIT',
 
-    keywords='ShiPanE SDK 通达信 TDX Automation',
+        classifiers=[
+            'Development Status :: 3 - Alpha',
 
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+            'Intended Audience :: Developers',
+            'Intended Audience :: Financial and Insurance Industry',
+            'Topic :: Office/Business :: Financial :: Investment',
 
-    install_requires=['requests', 'six', 'apscheduler', 'lxml', 'cssselect', 'bs4', 'html5lib', 'pandas',
-                      'rqopen-client', 'tushare', 'pyyaml'],
+            'License :: OSI Approved :: MIT License',
 
-    extras_require={
-        'dev': [],
-        'test': [],
-    },
-
-    package_data={
-    },
-
-    data_files=[(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config'), [
-        'config/scheduler-template.ini',
-        'config/logging-template.ini',
-    ])],
-
-    scripts=['scripts/shipane-scheduler.py'],
-
-    entry_points={
-        'console_scripts': [
+            'Programming Language :: Python :: 2.7',
+            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.3',
+            'Programming Language :: Python :: 3.4',
+            'Programming Language :: Python :: 3.5',
         ],
-    },
 
-    cmdclass={
-        'install': CustomInstallCommand,
-    },
-)
+        keywords='ShiPanE SDK 通达信 TDX Automation',
+
+        packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+
+        install_requires=['requests', 'six', 'apscheduler', 'lxml', 'cssselect', 'bs4', 'html5lib', 'pandas',
+                          'rqopen-client', 'tushare', 'pyyaml'],
+
+        extras_require={
+            'dev': [],
+            'test': [],
+        },
+
+        package_data={
+        },
+
+        data_files=[(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config'), [
+            'config/scheduler-template.ini',
+            'config/logging-template.ini',
+        ])],
+
+        scripts=['scripts/shipane-scheduler.py'],
+
+        entry_points={
+            'console_scripts': [
+            ],
+        },
+
+        cmdclass={
+            'install': CustomInstallCommand,
+        },
+    )
+
+
+if __name__ == '__main__':
+    main()

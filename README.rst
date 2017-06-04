@@ -64,9 +64,6 @@ Windows
 
 - 安装 Python 3.5（建议安装 `Anaconda3 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
 - cmd 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
-- cmd 中运行：cd %UserProfile%\\.shipane_sdk\\config
-- cmd 中运行：echo No | copy /-Y scheduler-template.ini scheduler.ini
-- cmd 中运行：echo No | copy /-Y logging-template.ini logging.ini
 
 配置
 ^^^^
@@ -99,8 +96,6 @@ Mac/Linux
 
 - 安装 Python 3.5
 - terminal 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
-- terminal 中运行：cp -n ~/.shipane_sdk/config/scheduler-template.ini ~/.shipane_sdk/config/scheduler.ini
-- terminal 中运行：cp -n ~/.shipane_sdk/config/logging-template.ini ~/.shipane_sdk/config/logging.ini
 
 配置
 ^^^^
