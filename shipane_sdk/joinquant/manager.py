@@ -41,6 +41,8 @@ class StrategyManager(object):
                 self._logger.exception('[%s] 打新失败', trader.id)
 
     def execute(self, order=None, **kwargs):
+        if order is None and not kwargs:
+            return
         for trader in self._traders.values():
             try:
                 trader.execute(order, **kwargs)
