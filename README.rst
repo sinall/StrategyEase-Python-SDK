@@ -74,7 +74,7 @@ Windows
 运行
 ^^^^
 
-- cmd 下运行（具体路径自行修改）：shipane-scheduler
+- cmd 下运行：shipane-scheduler
 
 升级
 ^^^^
