@@ -37,6 +37,8 @@ gateways:
                 # 例如：!!str 000001
                 # 注意：该配置在下次 handle_data 调用时生效
                 reserved-securities:
+                    # 含有非数字的代码
+                    - \D
                     # B股代码
                     - ^[92]
                     # 港股代码
@@ -46,7 +48,8 @@ gateways:
             # 客户端-2
             -   id: client-2
                 query: title:xxx,account:xxx
-                reserved-securities: []
+                reserved-securities:
+                    - \D
     # 实盘易-2 配置
     -   id: gateway-2
         host: xxx.xxx.xxx.xxx
