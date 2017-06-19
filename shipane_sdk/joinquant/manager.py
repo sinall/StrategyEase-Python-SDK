@@ -182,6 +182,9 @@ class StrategyTrader(object):
         if not self._sync_config['enabled']:
             self._logger.info("[%s] 同步未启用，不进行同步", self.id)
             return False
+        if _Infra.is_backtest(context):
+            self._logger.info("[%s] 当前为回测环境，不进行同步", self.id)
+            return False
         if _Infra.get_open_orders():
             self._logger.info("[%s] 有未完成订单，不进行同步", self.id)
             return False
