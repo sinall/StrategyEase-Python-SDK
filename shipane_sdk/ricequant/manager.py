@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+# Begin of __future__ module
+# End   of __future__ module
+
+# Begin of external module
+# End   of external module
+
 import datetime
 
 from shipane_sdk.client import Client

@@ -3,6 +3,9 @@
 # Begin of __future__ module
 # End   of __future__ module
 
+# Begin of external module
+# End   of external module
+
 import time
 import traceback
 

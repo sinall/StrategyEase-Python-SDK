@@ -41,19 +41,10 @@ class SdkInstaller:
             self._logger.error("无法安装配置文件")
 
     def _install_sdk(self):
-        file_path = "shipane_sdk/{0}/manager.py".format(self._quant)
-        source_file = self._get_file(file_path)
-        self._logger.info(u"获取文件[%s]成功", file_path)
-        lines = list(source_file)
         buffer = []
-        for line in lines:
-            match = re.search("from (shipane_sdk\\..*) import .*", line)
-            if match:
-                module_name = match.group(1)
-                self._append_module(buffer, module_name)
-                self._logger.info(u"添加模块[%s]成功", module_name)
-                continue
-            buffer.append(line)
+        module_statements = []
+        main_module = "shipane_sdk.{0}.manager".format(self._quant)
+        self._import_sdk_module(main_module, buffer, module_statements)
 
         output_file_path = os.path.join(self._output_dir, 'shipane_sdk.py')
         self._mkdir_p(os.path.dirname(output_file_path))
@@ -74,24 +65,38 @@ class SdkInstaller:
         if not os.path.isfile(output_file_path):
             shutil.copyfile(tpl_output_file_path, output_file_path)
 
-    def _append_module(self, buffer, module):
+    def _import_sdk_module(self, module, buffer, module_statements):
         path = module.replace('.', '/') + '.py'
         lines = list(self._get_file(path))
-        if re.search("^#.*coding:", lines[0]):
+        if buffer and re.search("^#.*coding:", lines[0]):
             lines.pop(0)
-        buffer.append("\n")
-        buffer.append("\n")
-        buffer.append("# Begin of {0}\n".format(path))
-        for line in lines:
-            match = re.search("from __future__ import .*", line)
+        index = next(i for i, line in enumerate(lines) if line and not line.isspace())
+        for line in lines[index:]:
+            match = re.search("^from .* import .*", line) or re.search("^import .*", line)
             if match:
-                index = next(i for i, v in enumerate(buffer) if v.startswith("# End   of __future__ module"))
-                buffer.insert(index, line)
-                continue
-            buffer.append(line)
-        buffer.append("\n")
-        buffer.append("\n")
-        buffer.append("# End   of {0}\n".format(path))
+                if line in module_statements:
+                    continue
+                self._import_module(line, buffer, module_statements)
+                module_statements.append(line)
+            else:
+                buffer.append(line)
+
+    def _import_module(self, statement, buffer, module_statements):
+        match = re.search("^from __future__ import .*", statement)
+        if match:
+            index = next(i for i, line in enumerate(buffer) if line.startswith("# End   of __future__ module"))
+            buffer.insert(index, statement)
+            return
+        match = re.search("^from (?!shipane_sdk).* import .*", statement) or re.search("^import .*", statement)
+        if match:
+            index = next(i for i, line in enumerate(buffer) if line.startswith("# End   of external module"))
+            buffer.insert(index, statement)
+            return
+        match = re.search("^from (shipane_sdk\\..*) import .*", statement)
+        if match:
+            module = match.group(1)
+            self._import_sdk_module(module, buffer, module_statements)
+            return
 
     def _get_file(self, path):
         if self._source_location is SourceLocation.LOCAL:
