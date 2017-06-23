@@ -185,7 +185,7 @@ class Client(object):
     def __create_url(self, client, resource, resource_id=None, **params):
         all_params = copy.deepcopy(params)
         all_params.update(client=(client or self._client))
-        all_params.update(key=self._key)
+        all_params.update(key=(self._key or ''))
         if resource_id is None:
             path = '/{}'.format(resource)
         else:

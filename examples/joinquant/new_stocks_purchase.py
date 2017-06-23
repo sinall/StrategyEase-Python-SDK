@@ -13,7 +13,7 @@ def initialize(context):
 def process_initialize(context):
     # 创建 StrategyManager 对象
     # 参数为配置文件中的 manager id
-    g.__manager = shipane_sdk.StrategyManager(context, 'manager-1')
+    g.__manager = shipane_sdk.JoinQuantStrategyManagerFactory(context).create('manager-1')
 
 
 def purchase_new_stocks(context):
