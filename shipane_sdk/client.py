@@ -12,12 +12,18 @@ import six
 from lxml import etree
 from pandas.compat import StringIO
 from requests import Request
+from requests.auth import HTTPBasicAuth
 from six.moves.urllib.parse import urlencode
 
 
 class MediaType(Enum):
     DEFAULT = 'application/json'
     JOIN_QUANT = 'application/vnd.joinquant+json'
+
+
+class ConnectionMethod(Enum):
+    DIRECT = 'DIRECT'
+    PROXY = 'PROXY'
 
 
 class Client(object):
@@ -29,8 +35,16 @@ class Client(object):
         else:
             import logging
             self._logger = logging.getLogger(__name__)
-        self._host = kwargs.pop('host', 'localhost')
-        self._port = kwargs.pop('port', 8888)
+        self._connection_method = ConnectionMethod[kwargs.pop('connection_method', 'DIRECT')]
+        if self._connection_method is ConnectionMethod.DIRECT:
+            self._host = kwargs.pop('host', 'localhost')
+            self._port = kwargs.pop('port', 8888)
+        else:
+            self._proxy_base_url = kwargs.pop('proxy_base_url')
+            self._proxy_username = kwargs.pop('proxy_username')
+            self._proxy_password = kwargs.pop('proxy_password')
+            self._instance_id = kwargs.pop('instance_id')
+        self._base_url = self.__create_base_url()
         self._key = kwargs.pop('key', '')
         self._client = kwargs.pop('client', '')
         self._timeout = kwargs.pop('timeout', (5.0, 10.0))
@@ -137,7 +151,8 @@ class Client(object):
                 self._logger.info('申购新股：{}'.format(order))
                 self.buy(client, timeout, **order)
             except Exception as e:
-                self._logger.error('客户端[{}]申购新股[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
+                self._logger.error(
+                    '客户端[{}]申购新股[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
 
     def create_adjustment(self, client=None, request_json=None, timeout=None):
         request = Request('POST', self.__create_url(client, 'adjustments'), json=request_json)
@@ -190,13 +205,19 @@ class Client(object):
             path = '/{}'.format(resource)
         else:
             path = '/{}/{}'.format(resource, resource_id)
-        url = '{}{}?{}'.format(self.__create_base_url(), path, urlencode(all_params))
+        url = '{}{}?{}'.format(self._base_url, path, urlencode(all_params))
         return url
 
     def __create_base_url(self):
-        return 'http://{}:{}'.format(self._host, self._port)
+        if self._connection_method is ConnectionMethod.DIRECT:
+            return 'http://{}:{}'.format(self._host, self._port)
+        else:
+            return self._proxy_base_url
 
     def __send_request(self, request, timeout=None):
+        if self._connection_method is ConnectionMethod.PROXY:
+            request.auth = HTTPBasicAuth(self._proxy_username, self._proxy_password)
+            request.headers['X-Instance-ID'] = self._instance_id
         prepared_request = request.prepare()
         self.__log_request(prepared_request)
         with requests.sessions.Session() as session:

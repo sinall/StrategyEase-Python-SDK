@@ -320,6 +320,7 @@ class StrategyConfig(object):
         content = self._strategy_context.read_file('shipane_sdk_config.yaml')
         stream = six.StringIO(content)
         self._data = yaml.load(stream, Loader=OrderedDictYAMLLoader)
+        self._proxies = self._create_proxy_configs()
         stream.close()
 
     def build_trader_configs(self, id):
@@ -332,10 +333,17 @@ class StrategyConfig(object):
                 break
         return trader_configs
 
+    def _create_proxy_configs(self):
+        proxies = {}
+        for raw_proxy_config in self._data['proxies']:
+            id = raw_proxy_config['id']
+            proxies[id] = raw_proxy_config
+        return proxies
+
     def _create_trader_config(self, raw_trader_config):
         client_config = self._create_client_config(raw_trader_config)
         sync_config = raw_trader_config['sync']
-        sync_config['reserved-securities'] = client_config['reserved-securities']
+        sync_config['reserved-securities'] = client_config['reserved_securities']
         result = {
             'id': raw_trader_config['id'],
             'client': client_config,
@@ -348,14 +356,30 @@ class StrategyConfig(object):
         for raw_gateway_config in self._data['gateways']:
             for raw_client_config in raw_gateway_config['clients']:
                 if raw_client_config['id'] == raw_trader_config['client']:
-                    client_config = copy.deepcopy(raw_gateway_config)
-                    client_config.update(raw_client_config)
-                    client_config['client'] = raw_client_config['query']
-                    client_config['timeout'] = tuple([
-                        raw_gateway_config['timeout']['connect'],
-                        raw_gateway_config['timeout']['read']
-                    ])
-                    del client_config['clients']
+                    connection_method = raw_gateway_config['connection-method']
+                    client_config = {
+                        'connection_method': connection_method,
+                        'key': raw_gateway_config['key'],
+                        'timeout': tuple([
+                            raw_gateway_config['timeout']['connect'],
+                            raw_gateway_config['timeout']['read'],
+                        ]),
+                        'client': raw_client_config['query'],
+                        'reserved_securities': raw_client_config['reserved-securities'],
+                    }
+                    if connection_method == 'DIRECT':
+                        client_config.update({
+                            'host': raw_gateway_config['host'],
+                            'port': raw_gateway_config['port'],
+                        })
+                    else:
+                        proxy_config = self._proxies[raw_gateway_config['proxy']]
+                        client_config.update({
+                            'proxy_base_url': proxy_config['base-url'],
+                            'proxy_username': proxy_config['username'],
+                            'proxy_password': proxy_config['password'],
+                            'instance_id': raw_gateway_config['instance-id'],
+                        })
                     break
                 if client_config is not None:
                     break

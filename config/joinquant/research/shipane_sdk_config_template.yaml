@@ -5,17 +5,36 @@
 # *********************************************************
 
 # *********************************************************
+# 代理配置
+# *********************************************************
+proxies:
+    -   id: default
+        base-url: http://www.iguuu.com/proxy/trade
+        # 爱股网用户名
+        username: <username>
+        # 爱股网密码
+        password: <password>
+
+# *********************************************************
 # 实盘易配置
 # *********************************************************
 gateways:
     # 实盘易-1 配置
     -   id: gateway-1
+        # 连接方式
+        # DIRECT：直连，适用于有公网 IP 的环境
+        # PROXY： 通过爱股网代理连接
+        connection-method: <DIRECT|PROXY>
         # IP 地址
         host: xxx.xxx.xxx.xxx
         # 端口
         port: 8888
+        # 代理
+        proxy: default
+        # 实例 ID，即运行实盘易的计算机名
+        instance-id: <instance-id>
         # 密钥
-        key: 
+        key: [key]
         # 超时
         timeout:
             # 连接超时
@@ -52,6 +71,8 @@ gateways:
                     - \D
     # 实盘易-2 配置
     -   id: gateway-2
+        # 连接方式
+        connection-method: DIRECT
         host: xxx.xxx.xxx.xxx
         port: 8888
         key:
