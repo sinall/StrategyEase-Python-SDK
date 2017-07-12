@@ -69,6 +69,9 @@ gateways:
                 query: title:xxx,account:xxx
                 reserved-securities:
                     - \D
+                    - ^[92]
+                    - ^[\d]{5}$
+                    - ^(204|131)
     # 实盘易-2 配置
     -   id: gateway-2
         # 连接方式
@@ -83,8 +86,18 @@ gateways:
             -   id: client-3
                 query: title:monijiaoyi
                 default: true
+                reserved-securities:
+                    - \D
+                    - ^[92]
+                    - ^[\d]{5}$
+                    - ^(204|131)
             -   id: client-4
                 query: title:xxx,account:xxx
+                reserved-securities:
+                    - \D
+                    - ^[92]
+                    - ^[\d]{5}$
+                    - ^(204|131)
 
 # *********************************************************
 # 策略配置
