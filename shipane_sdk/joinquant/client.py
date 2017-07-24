@@ -77,16 +77,12 @@ class JoinQuantClient(BaseQuantClient):
             'ajax': 1})
         position_soup = BeautifulSoup(position_res.json()['data']['html'], "lxml")
         trs = position_soup.findAll('tr', class_="border_bo position_tr")
-        positions = dict()
-        positions_value = 0
-        for tr in trs:
-            position = self.__tr_to_position(tr)
-            positions_value += position.value
-            positions[position.security] = position
         portfolio = Portfolio()
         portfolio.total_value = total_value
-        portfolio.available_cash = total_value - positions_value
-        portfolio.positions = positions
+        for tr in trs:
+            position = self.__tr_to_position(tr)
+            portfolio.add_position(position)
+        portfolio.rebalance()
         return portfolio
 
     def __tr_to_position(self, tr):
