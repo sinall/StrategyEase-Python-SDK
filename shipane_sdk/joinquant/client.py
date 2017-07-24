@@ -3,9 +3,11 @@
 from datetime import datetime
 
 import requests
+from bs4 import BeautifulSoup
 
 from shipane_sdk.base_quant_client import BaseQuantClient
 from shipane_sdk.joinquant.transaction import JoinQuantTransaction
+from shipane_sdk.models import Portfolio, Position
 
 
 class JoinQuantClient(BaseQuantClient):
@@ -18,6 +20,7 @@ class JoinQuantClient(BaseQuantClient):
         self._username = kwargs.get('username', None)
         self._password = kwargs.get('password', None)
         self._backtest_id = kwargs.get('backtest_id', None)
+        self._arena_id = kwargs.get('arena_id', None)
         self._timeout = kwargs.pop('timeout', (5.0, 10.0))
 
     def login(self):
@@ -58,3 +61,39 @@ class JoinQuantClient(BaseQuantClient):
             transactions.append(transaction)
 
         return transactions
+
+    def query_portfolio(self):
+        today_str = datetime.today().strftime('%Y-%m-%d')
+        strategy_res = self._session.get('{}/post/{}'.format(self.BASE_URL, self._arena_id))
+        strategy_soup = BeautifulSoup(strategy_res.content, "lxml")
+        backtest_id = strategy_soup.findAll('input', id="backtestId").pop().get('value')
+        total_value = float(strategy_soup.findAll('div', class_="inline-block num f18 red").pop().text)
+        position_res = self._session.get('{}/algorithm/live/sharePosition'.format(self.BASE_URL), params={
+            'isAjax': 1,
+            'backtestId': backtest_id,
+            'date': today_str,
+            'isMobile': 0,
+            'isForward': 1,
+            'ajax': 1})
+        position_soup = BeautifulSoup(position_res.json()['data']['html'], "lxml")
+        trs = position_soup.findAll('tr', class_="border_bo position_tr")
+        positions = dict()
+        positions_value = 0
+        for tr in trs:
+            position = self.__tr_to_position(tr)
+            positions_value += position.value
+            positions[position.security] = position
+        portfolio = Portfolio()
+        portfolio.total_value = total_value
+        portfolio.available_cash = total_value - positions_value
+        portfolio.positions = positions
+        return portfolio
+
+    def __tr_to_position(self, tr):
+        tds = tr.findAll('td')
+        position = Position()
+        position.security = tds[0].text.split()[1]
+        position.price = float(tds[7].text)
+        position.total_amount = int(tds[2].text.replace(u'股', ''))
+        position.value = float(tds[4].text)
+        return position

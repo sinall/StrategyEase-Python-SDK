@@ -47,6 +47,7 @@ class Scheduler(object):
         self.__add_job(self.__create_rice_quant_following_job())
         self.__add_job(self.__create_uqer_following_job())
         self.__add_job(self.__create_guorn_sync_job())
+        self.__add_job(self.__create_join_quant_sync_job())
 
         self._scheduler.start()
         print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
@@ -110,6 +111,14 @@ class Scheduler(object):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         quant_client = GuornClient(**options)
+        return OnlineQuantSyncJob(self._client, quant_client, client_aliases, '{}SyncJob'.format(section),
+                                  **options)
+
+    def __create_join_quant_sync_job(self):
+        section = 'JoinQuantArena'
+        options = self.__build_options(section)
+        client_aliases = self.__filter_client_aliases(section)
+        quant_client = JoinQuantClient(**options)
         return OnlineQuantSyncJob(self._client, quant_client, client_aliases, '{}SyncJob'.format(section),
                                   **options)
 
