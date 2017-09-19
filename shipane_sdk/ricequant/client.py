@@ -15,11 +15,11 @@ class RiceQuantClient(BaseQuantClient):
         self._run_id = kwargs.get('run_id', None)
 
     def login(self):
-        self._rq_client.login(timeout=self._timeout)
+        self._rq_client.login()
         super(RiceQuantClient, self).login()
 
     def query(self):
-        response = self._rq_client.get_day_trades(self._run_id, timeout=self._timeout)
+        response = self._rq_client.get_day_trades(self._run_id)
         raw_transactions = response['resp']['trades']
         transactions = []
         for raw_transaction in raw_transactions:
