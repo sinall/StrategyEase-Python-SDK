@@ -135,8 +135,8 @@ Mac/Linux
 - 下载 `scripts/shipane_sdk_installer.ipynb`_ 并上传至“投资研究”根目录。
 - 打开该文件，设置参数：QUANT_NAME = 'joinquant'
 - 查看其它参数并根据需要进行修改。
-- 运行该文件。
-- 修改 shipane_sdk_config.yaml，升级后需参考 shipane_sdk_config_template.yaml。
+- 点击工具栏中的右箭头运行该文件，并检查窗口中打印的日志。
+- 修改 shipane_sdk_config.yaml，升级后需参考 shipane_sdk_config_template.yaml 进行修改。
 - 修改策略代码，可参考如下示例：
 
   - examples/joinquant/simple\_strategy.py - 基本跟单用法
@@ -190,7 +190,7 @@ Mac/Linux
 - 下载 `scripts/shipane_sdk_installer.ipynb`_ 并上传至“策略研究”根目录。
 - 打开该文件，设置参数：QUANT_NAME = 'ricequant'
 - 查看其它参数并根据需要进行修改。
-- 运行该文件。
+- 点击工具栏中的右箭头运行该文件，并检查窗口中打印的日志。
 - 修改策略代码，可参考如下示例：
 
   - examples/ricequant/simple\_strategy.py - 基本用法
