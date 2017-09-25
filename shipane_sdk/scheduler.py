@@ -143,7 +143,7 @@ class Scheduler(object):
 
 class FileHandler(logging.handlers.TimedRotatingFileHandler):
     def __init__(self, fileName):
-        path = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', '爱股网', '实盘易')
+        path = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', '爱股网', '实盘♠易')
         try:
             os.makedirs(path)
         except OSError as e:
