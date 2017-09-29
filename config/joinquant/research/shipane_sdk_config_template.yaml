@@ -132,9 +132,9 @@ managers:
                     # 是否开启？
                     # 正式运行时设置为 true
                     enabled: true
-                    # 是否调试？调试时不会下单。
+                    # 是否排练？排练时不会下单。
                     # 正式运行时设置为 false
-                    debug: true
+                    dry-run: true
                     # 同步前是否撤销模拟盘未成交订单
                     # 如果该选项未启用，并且模拟盘有未成交订单，SDK 将不会做同步
                     pre-clear-for-sim: false
@@ -162,7 +162,7 @@ managers:
                 client: client-1
                 sync:
                     enabled: true
-                    debug: true
+                    dry-run: true
                     pre-clear-for-sim: false
                     pre-clear-for-live: false
                     min-order-value: 1%

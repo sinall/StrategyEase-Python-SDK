@@ -21,7 +21,7 @@ class OnlineQuantSyncJob(BasicJob):
         self._name = name
 
     def __call__(self):
-        if MarketUtils.is_closed() and not self._config.debug:
+        if MarketUtils.is_closed() and not self._config.dry_run:
             self._logger.warning("********** 休市期间不同步 **********")
             return
 
@@ -45,7 +45,7 @@ class OnlineQuantSyncJob(BasicJob):
 
     def _sync(self, target_portfolio, client):
         if self._config.pre_clear:
-            if not self._config.debug:
+            if not self._config.dry_run:
                 self._shipane_client.cancel_all(client)
             time.sleep(self._config.order_interval)
 
@@ -77,7 +77,7 @@ class OnlineQuantSyncJob(BasicJob):
 
     def _execute_order(self, order, client):
         try:
-            if self._config.debug:
+            if self._config.dry_run:
                 self._logger.info(order)
                 return
             e_order = order.to_e_order()
@@ -109,7 +109,7 @@ class OnlineQuantSyncJob(BasicJob):
 
 class PortfolioSyncConfig(object):
     def __init__(self, **kwargs):
-        self._debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
+        self._dry_run = distutils.util.strtobool(kwargs.get('dry_run', 'false'))
         self._pre_clear = distutils.util.strtobool(kwargs.get('pre_clear', 'false'))
         self._reserved_securities = list(filter(None, kwargs.get('reserved_securities').split('\n')))
         self._min_order_value = kwargs.get('min_order_value', '0')
@@ -120,8 +120,8 @@ class PortfolioSyncConfig(object):
         self._extra_rounds = int(kwargs.get('extra_rounds', '0'))
 
     @property
-    def debug(self):
-        return self._debug
+    def dry_run(self):
+        return self._dry_run
 
     @property
     def pre_clear(self):

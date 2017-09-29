@@ -181,6 +181,9 @@ class StrategyTrader(object):
             self._logger.exception("[实盘易] 撤单异常")
 
     def sync(self):
+        if not self._pre_check():
+            return
+
         stop_watch = StopWatch()
         stop_watch.start()
         self._logger.info("[%s] 开始同步", self.id)
@@ -190,7 +193,7 @@ class StrategyTrader(object):
                 self._logger.info("[%s] 模拟盘撤销全部订单已完成", self.id)
             target_portfolio = self._strategy_context.get_portfolio()
             if self._should_sync(target_portfolio):
-                if self._sync_config['pre-clear-for-live'] and not self._sync_config['debug']:
+                if self._sync_config['pre-clear-for-live'] and not self._sync_config['dry-run']:
                     self._shipane_client.cancel_all()
                     time.sleep(self._sync_config['order-interval'] / 1000.0)
                     self._logger.info("[%s] 实盘撤销全部订单已完成", self.id)
@@ -244,10 +247,15 @@ class StrategyTrader(object):
     def _is_expired(self, order):
         return order.add_time < self._expire_before
 
-    def _should_sync(self, target_portfolio):
+    def _pre_check(self):
         if not self._sync_config['enabled']:
             self._logger.info("[%s] 同步未启用，不进行同步", self.id)
             return False
+        if self._strategy_context.is_backtest():
+            self._logger.info("[%s] 当前为回测环境，不进行同步", self.id)
+            return False
+
+    def _should_sync(self, target_portfolio):
         if self._strategy_context.has_open_orders():
             self._logger.info("[%s] 有未完成订单，不进行同步", self.id)
             return False
@@ -294,7 +302,7 @@ class StrategyTrader(object):
 
     def _execute_order(self, order):
         try:
-            if self._sync_config['debug']:
+            if self._sync_config['dry-run']:
                 self._logger.info("[%s] %s", self.id, order)
                 return
 
