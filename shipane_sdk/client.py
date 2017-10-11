@@ -117,6 +117,10 @@ class Client(object):
         kwargs['action'] = 'SELL'
         return self.__execute(client, timeout, **kwargs)
 
+    def ipo(self, client=None, timeout=None, **kwargs):
+        kwargs['action'] = 'IPO'
+        return self.__execute(client, timeout, **kwargs)
+
     def execute(self, client=None, timeout=None, **kwargs):
         return self.__execute(client, timeout, **kwargs)
 
@@ -146,10 +150,12 @@ class Client(object):
         for index, row in df.iterrows():
             try:
                 order = {
-                    'symbol': row['xcode'], 'type': 'LIMIT', 'price': row['price'], 'amountProportion': 'ALL'
+                    'symbol': row['xcode'],
+                    'price': row['price'],
+                    'amountProportion': 'ALL'
                 }
                 self._logger.info('申购新股：{}'.format(order))
-                self.buy(client, timeout, **order)
+                self.ipo(client, timeout, **order)
             except Exception as e:
                 self._logger.error(
                     '客户端[{}]申购新股[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
