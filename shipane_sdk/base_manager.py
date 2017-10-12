@@ -254,6 +254,7 @@ class StrategyTrader(object):
         if self._strategy_context.is_backtest():
             self._logger.info("[%s] 当前为回测环境，不进行同步", self.id)
             return False
+        return True
 
     def _should_sync(self, target_portfolio):
         if self._strategy_context.has_open_orders():
