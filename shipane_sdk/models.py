@@ -254,6 +254,7 @@ class Portfolio(object):
             self._available_cash = 0
             self._total_value = self._positions_value
 
+
 class Position(object):
     @staticmethod
     def to_json(instance):
@@ -334,11 +335,23 @@ class Order(object):
         order = Order()
         order.action = OrderAction.OPEN if json['action'] == 'BUY' else OrderAction.CLOSE
         order.security = json['symbol']
+        order.style = OrderStyle(json['type'])
         order.price = json['price']
         order.amount = json['amount']
         return order
 
-    def __init__(self, action=None, security=None, amount=None, price=None, style=None):
+    @staticmethod
+    def from_e_order(**kwargs):
+        order = Order()
+        order.action = OrderAction.OPEN if kwargs['action'] == 'BUY' else OrderAction.CLOSE
+        order.security = kwargs['symbol']
+        order.style = OrderStyle(kwargs['type'])
+        order.price = kwargs['price']
+        order.amount = kwargs['amount']
+        return order
+
+    def __init__(self, id=None, action=None, security=None, amount=None, price=None, style=None):
+        self._id = id
         self._action = action
         self._security = security
         self._amount = amount
@@ -357,9 +370,11 @@ class Order(object):
 
     def to_e_order(self):
         e_order = dict(
-            action='BUY' if self._action == OrderAction.OPEN else 'SELL',
+            action=('BUY' if self._action == OrderAction.OPEN else 'SELL'),
             symbol=self._security,
-            type=self._style,
+            type=self._style.name,
+            priceType=(0 if self._style == OrderStyle.LIMIT else 4),
+            price=self._price,
             amount=self._amount
         )
         return e_order
@@ -367,6 +382,14 @@ class Order(object):
     @property
     def value(self):
         return self._amount * self._price
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
 
     @property
     def action(self):

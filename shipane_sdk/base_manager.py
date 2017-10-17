@@ -161,10 +161,20 @@ class StrategyTrader(object):
         self._shipane_client.purchase_new_stocks()
 
     def execute(self, order=None, **kwargs):
-        if order is not None:
-            self._execute(order)
+        if order is None:
+            common_order = Order.from_e_order(**kwargs)
         else:
-            self._shipane_client.execute(**kwargs)
+            common_order = self._normalize_order(order)
+
+        self._logger.info("[实盘易] 跟单：" + str(common_order))
+        if not self._should_execute(common_order):
+            return
+
+        try:
+            actual_order = self._execute(common_order)
+            return actual_order
+        except Exception:
+            self._logger.exception("[实盘易] 下单异常")
 
     def cancel(self, order):
         if order is None:
@@ -172,11 +182,7 @@ class StrategyTrader(object):
             return
 
         try:
-            order_id = order if isinstance(order, int) else order.order_id
-            if order_id in self._order_id_map:
-                self._shipane_client.cancel(order_id=self._order_id_map[order_id])
-            else:
-                self._logger.warning('[实盘易] 未找到对应的委托编号')
+            self._cancel(order)
         except:
             self._logger.exception("[实盘易] 撤单异常")
 
@@ -219,33 +225,46 @@ class StrategyTrader(object):
         return self._config['sync']
 
     def _execute(self, order):
-        self._logger.info("[实盘易] 跟单：" + str(order))
+        common_order = self._normalize_order(order)
+        e_order = common_order.to_e_order()
+        actual_order = self._shipane_client.execute(**e_order)
+        self._order_id_map[common_order.id] = actual_order['id']
+        return actual_order
 
-        if not self._should_execute(order):
-            return
+    def _cancel(self, order):
+        if isinstance(order, int):
+            quant_order_id = order
+        else:
+            common_order = self._normalize_order(order)
+            quant_order_id = common_order.id
 
         try:
-            e_order = self._strategy_context.convert_order(order)
-            actual_order = self._shipane_client.execute(**e_order)
-            self._order_id_map[order.order_id] = actual_order['id']
-            return actual_order
-        except:
-            self._logger.exception("[实盘易] 下单异常")
+            order_id = self._order_id_map.pop(quant_order_id)
+            self._shipane_client.cancel(order_id=order_id)
+        except KeyError:
+            self._logger.warning('[实盘易] 未找到对应的委托编号')
 
-    def _should_execute(self, order):
+    def _normalize_order(self, order):
+        if isinstance(order, Order):
+            common_order = order
+        else:
+            common_order = self._strategy_context.convert_order(order)
+        return common_order
+
+    def _should_execute(self, common_order):
         if self._strategy_context.is_backtest():
             self._logger.info("[实盘易] 当前为回测环境，忽略下单请求")
             return False
-        if order is None:
+        if common_order is None:
             self._logger.info('[实盘易] 委托为空，忽略下单请求')
             return False
-        if self._is_expired(order):
+        if self._is_expired(common_order):
             self._logger.info('[实盘易] 委托已过期，忽略下单请求')
             return False
         return True
 
-    def _is_expired(self, order):
-        return order.add_time < self._expire_before
+    def _is_expired(self, common_order):
+        return common_order.add_time < self._expire_before
 
     def _pre_check(self):
         if not self._sync_config['enabled']:
@@ -308,8 +327,6 @@ class StrategyTrader(object):
                 return
 
             e_order = order.to_e_order()
-            e_order['type'] = 'MARKET'
-            e_order['priceType'] = 4
             self._shipane_client.execute(**e_order)
         except:
             self._logger.exception("[%s] 客户端下单失败", self.id)

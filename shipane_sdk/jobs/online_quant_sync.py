@@ -81,8 +81,6 @@ class OnlineQuantSyncJob(BasicJob):
                 self._logger.info(order)
                 return
             e_order = order.to_e_order()
-            e_order['type'] = 'MARKET'
-            e_order['priceType'] = 4
             self._shipane_client.execute(client=client, **e_order)
         except Exception as e:
             self._logger.error('客户端[%s]下单失败\n%s', client, e)

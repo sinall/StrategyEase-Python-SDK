@@ -43,16 +43,15 @@ class JoinQuantStrategyContext(BaseStrategyContext):
         return portfolio
 
     def convert_order(self, quant_order):
-        order_type = 'LIMIT' if quant_order.limit > 0 else 'MARKET'
-        e_order = dict(
-            action=('BUY' if quant_order.is_buy else 'SELL'),
-            symbol=quant_order.security,
-            type=order_type,
-            priceType=(0 if order_type == 'LIMIT' else 4),
+        common_order = Order(
+            id=quant_order.order_id,
+            action=(OrderAction.OPEN if quant_order.is_buy else OrderAction.CLOSE),
+            security=quant_order.security,
             price=quant_order.limit,
-            amount=quant_order.amount
+            amount=quant_order.amount,
+            style=(OrderStyle.LIMIT if quant_order.limit > 0 else OrderStyle.MARKET),
         )
-        return e_order
+        return common_order
 
     def has_open_orders(self):
         return bool(get_open_orders())
