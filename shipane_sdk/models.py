@@ -329,6 +329,14 @@ class OrderStyle(Enum):
     MARKET = 'MARKET'
 
 
+class OrderStatus(Enum):
+    open = 0
+    filled = 1
+    canceled = 2
+    rejected = 3
+    held = 4
+
+
 class Order(object):
     @staticmethod
     def from_json(json):
@@ -350,13 +358,15 @@ class Order(object):
         order.amount = kwargs['amount']
         return order
 
-    def __init__(self, id=None, action=None, security=None, amount=None, price=None, style=None):
+    def __init__(self, id=None, action=None, security=None, amount=None, price=None, style=None, status=OrderStatus.open, add_time=None):
         self._id = id
         self._action = action
         self._security = security
         self._amount = amount
         self._price = price
         self._style = style
+        self._status = status
+        self._add_time = add_time
 
     def __str__(self):
         str = "以 {0:>7.3f}元 {1}{2} {3:>5} {4}".format(
@@ -430,3 +440,19 @@ class Order(object):
     @style.setter
     def style(self, value):
         self._style = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
+
+    @property
+    def add_time(self):
+        return self._add_time
+
+    @add_time.setter
+    def add_time(self, value):
+        self._add_time = value

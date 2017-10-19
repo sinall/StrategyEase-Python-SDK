@@ -30,6 +30,9 @@ class JoinQuantStrategyContext(BaseStrategyContext):
     def __init__(self, context):
         self._context = context
 
+    def get_current_time(self):
+        return self._context.current_dt
+
     def get_portfolio(self):
         quant_portfolio = self._context.portfolio
         portfolio = Portfolio()
@@ -50,8 +53,18 @@ class JoinQuantStrategyContext(BaseStrategyContext):
             price=quant_order.limit,
             amount=quant_order.amount,
             style=(OrderStyle.LIMIT if quant_order.limit > 0 else OrderStyle.MARKET),
+            status=OrderStatus(quant_order.status.value),
+            add_time=quant_order.add_time,
         )
         return common_order
+
+    def get_orders(self):
+        orders = get_orders()
+        common_orders = []
+        for order in orders.values():
+            common_order = self.convert_order(order)
+            common_orders.append(common_order)
+        return common_orders
 
     def has_open_orders(self):
         return bool(get_open_orders())

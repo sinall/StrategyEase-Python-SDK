@@ -125,16 +125,20 @@ managers:
             # trader-1
             -   id: trader-1
                 client: client-1
+                # 是否开启？
+                # 正式运行时设置为 true
+                enabled: true
+                # 是否排练？排练时不会下单。
+                # 正式运行时设置为 false
+                dry-run: true
+                # 工作模式
+                # 1. SYNC：  指按模拟交易的持仓进行同步
+                # 2. FOLLOW：指按模拟交易的下单进行跟单
+                mode: SYNC
                 # 同步选项
                 # 如果该策略无需同步操作，可以省略 sync 配置项
                 # 注意：该配置在下次 handle_data 调用时生效
                 sync:
-                    # 是否开启？
-                    # 正式运行时设置为 true
-                    enabled: true
-                    # 是否排练？排练时不会下单。
-                    # 正式运行时设置为 false
-                    dry-run: true
                     # 同步前是否撤销模拟盘未成交订单
                     # 如果该选项未启用，并且模拟盘有未成交订单，SDK 将不会做同步
                     pre-clear-for-sim: false
@@ -160,9 +164,10 @@ managers:
         traders:
             -   id: trader-2
                 client: client-1
+                enabled: true
+                dry-run: true
+                mode: SYNC
                 sync:
-                    enabled: true
-                    dry-run: true
                     pre-clear-for-sim: false
                     pre-clear-for-live: false
                     min-order-value: 1%

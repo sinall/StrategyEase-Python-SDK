@@ -139,8 +139,8 @@ Mac/Linux
 - 修改 shipane_sdk_config.yaml，升级后需参考 shipane_sdk_config_template.yaml 进行修改。
 - 修改策略代码，可参考如下示例：
 
-  - examples/joinquant/simple\_strategy.py - 基本跟单用法
-  - examples/joinquant/simple\_sync\_strategy.py - 基本同步用法
+  - examples/joinquant/simple\_strategy.py - 基本跟单用法（侵入式设计，不推荐）
+  - examples/joinquant/advanced\_strategy.py - 高级同步、跟单用法（非侵入式设计，推荐）
   - examples/joinquant/new\_stocks\_purchase.py - 新股申购
   - examples/joinquant/repo.py - 逆回购
 

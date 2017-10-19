@@ -118,15 +118,15 @@ class StrategyManager(object):
             except:
                 self._logger.exception('[%s] 撤单失败', trader.id)
 
-    def sync(self):
+    def work(self):
         stop_watch = StopWatch()
         stop_watch.start()
-        self._logger.info("[%s] 开始同步", self._id)
+        self._logger.info("[%s] 开始工作", self._id)
         self._refresh()
         for id, trader in self._traders.items():
-            trader.sync()
+            trader.work()
         stop_watch.stop()
-        self._logger.info("[%s] 结束同步，总耗时[%s]", self._id, stop_watch.short_summary())
+        self._logger.info("[%s] 结束工作，总耗时[%s]", self._id, stop_watch.short_summary())
         self._logger.info(self.THEMATIC_BREAK)
 
     def _refresh(self):
@@ -142,7 +142,7 @@ class StrategyTrader(object):
         self._config = config
         self._strategy_context = strategy_context
         self._shipane_client = Client(self._logger, **config['client'])
-        self._order_id_map = {}
+        self._order_id_to_info_map = {}
         self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
         self._last_sync_portfolio_fingerprint = None
 
@@ -158,17 +158,19 @@ class StrategyTrader(object):
         self._config = config
 
     def purchase_new_stocks(self):
+        if not self._pre_check():
+            return
+
         self._shipane_client.purchase_new_stocks()
 
     def execute(self, order=None, **kwargs):
+        if not self._pre_check():
+            return
+
         if order is None:
             common_order = Order.from_e_order(**kwargs)
         else:
             common_order = self._normalize_order(order)
-
-        self._logger.info("[实盘易] 跟单：" + str(common_order))
-        if not self._should_execute(common_order):
-            return
 
         try:
             actual_order = self._execute(common_order)
@@ -177,8 +179,7 @@ class StrategyTrader(object):
             self._logger.exception("[实盘易] 下单异常")
 
     def cancel(self, order):
-        if order is None:
-            self._logger.info('[实盘易] 委托为空，忽略撤单请求')
+        if not self._pre_check():
             return
 
         try:
@@ -186,10 +187,16 @@ class StrategyTrader(object):
         except:
             self._logger.exception("[实盘易] 撤单异常")
 
-    def sync(self):
+    def work(self):
         if not self._pre_check():
             return
 
+        if self._config['mode'] == 'SYNC':
+            self._sync()
+        else:
+            self._follow()
+
+    def _sync(self):
         stop_watch = StopWatch()
         stop_watch.start()
         self._logger.info("[%s] 开始同步", self.id)
@@ -199,7 +206,7 @@ class StrategyTrader(object):
                 self._logger.info("[%s] 模拟盘撤销全部订单已完成", self.id)
             target_portfolio = self._strategy_context.get_portfolio()
             if self._should_sync(target_portfolio):
-                if self._sync_config['pre-clear-for-live'] and not self._sync_config['dry-run']:
+                if self._sync_config['pre-clear-for-live'] and not self._config['dry-run']:
                     self._shipane_client.cancel_all()
                     time.sleep(self._sync_config['order-interval'] / 1000.0)
                     self._logger.info("[%s] 实盘撤销全部订单已完成", self.id)
@@ -220,18 +227,70 @@ class StrategyTrader(object):
         stop_watch.stop()
         self._logger.info("[%s] 结束同步，耗时[%s]", self.id, stop_watch.short_summary())
 
+    def _follow(self):
+        stop_watch = StopWatch()
+        stop_watch.start()
+        self._logger.info("[%s] 开始跟单", self.id)
+        try:
+            common_orders = []
+            all_common_orders = self._strategy_context.get_orders()
+            for common_order in all_common_orders:
+                if common_order.add_time >= self._strategy_context.get_current_time():
+                    if common_order.status == OrderStatus.canceled:
+                        origin_order = copy.deepcopy(common_order)
+                        origin_order.status = OrderStatus.open
+                        common_orders.append(origin_order)
+                    else:
+                        common_orders.append(common_order)
+                if common_order.status == OrderStatus.canceled:
+                    common_orders.append(common_order)
+
+            common_orders = sorted(common_orders, key=lambda o: _PrioritizedOrder(o))
+            for common_order in common_orders:
+                if common_order.status != OrderStatus.canceled:
+                    try:
+                        self._execute(common_order)
+                    except:
+                        self._logger.exception("[实盘易] 下单异常")
+                else:
+                    try:
+                        self._cancel(common_order)
+                    except:
+                        self._logger.exception("[实盘易] 撤单异常")
+        except:
+            self._logger.exception("[%s] 跟单失败", self.id)
+        stop_watch.stop()
+        self._logger.info("[%s] 结束跟单，耗时[%s]", self.id, stop_watch.short_summary())
+
     @property
     def _sync_config(self):
         return self._config['sync']
 
     def _execute(self, order):
-        common_order = self._normalize_order(order)
-        e_order = common_order.to_e_order()
-        actual_order = self._shipane_client.execute(**e_order)
-        self._order_id_map[common_order.id] = actual_order['id']
+        if not self._should_run():
+            self._logger.info("[%s] %s", self.id, order)
+            return None
+        actual_order =  self._do_execute(order)
         return actual_order
 
     def _cancel(self, order):
+        if not self._should_run():
+            self._logger.info("[%s] 撤单 [%s]", self.id, order)
+            return
+        self._do_cancel(order)
+
+    def _do_execute(self, order):
+        common_order = self._normalize_order(order)
+        e_order = common_order.to_e_order()
+        actual_order = self._shipane_client.execute(**e_order)
+        self._order_id_to_info_map[common_order.id] = {'id': actual_order['id'], 'canceled': False}
+        return actual_order
+
+    def _do_cancel(self, order):
+        if order is None:
+            self._logger.info('[实盘易] 委托为空，忽略撤单请求')
+            return
+
         if isinstance(order, int):
             quant_order_id = order
         else:
@@ -239,8 +298,10 @@ class StrategyTrader(object):
             quant_order_id = common_order.id
 
         try:
-            order_id = self._order_id_map.pop(quant_order_id)
-            self._shipane_client.cancel(order_id=order_id)
+            order_info = self._order_id_to_info_map[quant_order_id]
+            if not order_info['canceled']:
+                order_info['canceled'] = True
+                self._shipane_client.cancel(order_id=order_info['id'])
         except KeyError:
             self._logger.warning('[实盘易] 未找到对应的委托编号')
 
@@ -251,15 +312,9 @@ class StrategyTrader(object):
             common_order = self._strategy_context.convert_order(order)
         return common_order
 
-    def _should_execute(self, common_order):
-        if self._strategy_context.is_backtest():
-            self._logger.info("[实盘易] 当前为回测环境，忽略下单请求")
-            return False
-        if common_order is None:
-            self._logger.info('[实盘易] 委托为空，忽略下单请求')
-            return False
-        if self._is_expired(common_order):
-            self._logger.info('[实盘易] 委托已过期，忽略下单请求')
+    def _should_run(self):
+        if self._config['dry-run']:
+            self._logger.debug("[实盘易] 当前为排练模式，不执行下单、撤单请求")
             return False
         return True
 
@@ -267,11 +322,11 @@ class StrategyTrader(object):
         return common_order.add_time < self._expire_before
 
     def _pre_check(self):
-        if not self._sync_config['enabled']:
-            self._logger.info("[%s] 同步未启用，不进行同步", self.id)
+        if not self._config['enabled']:
+            self._logger.info("[%s] 同步未启用，不执行", self.id)
             return False
         if self._strategy_context.is_backtest():
-            self._logger.info("[%s] 当前为回测环境，不进行同步", self.id)
+            self._logger.info("[%s] 当前为回测环境，不执行", self.id)
             return False
         return True
 
@@ -316,20 +371,9 @@ class StrategyTrader(object):
     def _execute_adjustment(self, adjustment):
         for batch in adjustment.batches:
             for order in batch:
-                self._execute_order(order)
+                self._execute(order)
                 time.sleep(self._sync_config['order-interval'] / 1000.0)
             time.sleep(self._sync_config['batch-interval'] / 1000.0)
-
-    def _execute_order(self, order):
-        try:
-            if self._sync_config['dry-run']:
-                self._logger.info("[%s] %s", self.id, order)
-                return
-
-            e_order = order.to_e_order()
-            self._shipane_client.execute(**e_order)
-        except:
-            self._logger.exception("[%s] 客户端下单失败", self.id)
 
 
 class StrategyConfig(object):
@@ -368,14 +412,10 @@ class StrategyConfig(object):
 
     def _create_trader_config(self, raw_trader_config):
         client_config = self._create_client_config(raw_trader_config)
-        sync_config = raw_trader_config['sync']
-        sync_config['reserved-securities'] = client_config['reserved_securities']
-        result = {
-            'id': raw_trader_config['id'],
-            'client': client_config,
-            'sync': sync_config
-        }
-        return result
+        trader_config = copy.deepcopy(raw_trader_config)
+        trader_config['client'] = client_config
+        trader_config['sync']['reserved-securities'] = client_config.pop('reserved_securities', [])
+        return trader_config
 
     def _create_client_config(self, raw_trader_config):
         client_config = None
@@ -410,3 +450,39 @@ class StrategyConfig(object):
                 if client_config is not None:
                     break
         return client_config
+
+
+class _PrioritizedOrder(object):
+    def __init__(self, order):
+        self.order = order
+
+    def __lt__(self, other):
+        x = self.order
+        y = other.order
+        if x.add_time != y.add_time:
+            return x.add_time < y.add_time
+        if x.status == OrderStatus.canceled:
+            if y.status == OrderStatus.canceled:
+                return x.id < y.id
+            else:
+                return False
+        else:
+            if y.status == OrderStatus.canceled:
+                return True
+            else:
+                return x.id < y.id
+
+    def __gt__(self, other):
+        return other.__lt__(self)
+
+    def __eq__(self, other):
+        return (not self.__lt__(other)) and (not other.__lt__(self))
+
+    def __le__(self, other):
+        return not self.__gt__(other)
+
+    def __ge__(self, other):
+        return not self.__lt__(other)
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
