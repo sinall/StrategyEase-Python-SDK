@@ -144,7 +144,7 @@ class StrategyTrader(object):
         self._shipane_client = Client(self._logger, **config['client'])
         self._order_id_map = {}
         self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-        self._last_sync_portfolio_fingerprint = {}
+        self._last_sync_portfolio_fingerprint = None
 
     @property
     def id(self):
