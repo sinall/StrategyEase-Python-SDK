@@ -64,7 +64,7 @@ Windows
 安装
 ^^^^
 
-- 安装 Python 3.5（建议安装 `Anaconda3 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
+- 安装 Python 3.5（建议安装 `Anaconda3-4.2.0 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
 - cmd 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
 
 配置
