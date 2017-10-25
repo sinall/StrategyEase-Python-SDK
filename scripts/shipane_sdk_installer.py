@@ -53,7 +53,7 @@ class SdkInstaller:
         self._logger.info(u"生成文件[%s]成功", output_file_path)
 
     def _install_config(self):
-        file_path = "config/{0}/research/shipane_sdk_config_template.yaml".format(self._quant)
+        file_path = "config/online-quant/research/shipane_sdk_config_template.yaml"
         source_file = self._get_file(file_path)
 
         tpl_output_file_path = os.path.join(self._output_dir, 'shipane_sdk_config_template.yaml')
