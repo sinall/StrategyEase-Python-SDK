@@ -86,6 +86,9 @@ class JoinQuantStrategyContext(BaseStrategyContext):
     def is_backtest(self):
         return not self.is_sim_trade()
 
+    def is_read_file_allowed(self):
+        return True
+
     @staticmethod
     def _convert_position(quant_position):
         position = Position()

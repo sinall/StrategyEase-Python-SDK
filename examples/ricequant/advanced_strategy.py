@@ -10,13 +10,10 @@ def before_trading(context):
     context.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 def handle_bar(context, bar_dict):
-    # 保存 order
-    order_ = order_shares(context.s1, 100)
-    # 实盘易依据 order_ 下单
-    context.__manager.execute(order_)
-
-    order_ = order_shares(context.s1, -100)
-    context.__manager.execute(order_)
-
-    cancel_order(order_)
-    context.__manager.cancel(order_)
+    try:
+        order_target_value(context.s1, 0)
+        order_target_value(context.s1, 500)
+    finally:
+        # 放在 finally 块中，以防原有代码抛出异常或者 return
+        # 在函数结尾处加入以下语句，用来将模拟盘同步至实盘
+        g.__manager.work()

@@ -13,7 +13,7 @@ class BaseStrategyManagerFactory(object):
 
     def create(self, id):
         traders = self._create_traders(id)
-        return StrategyManager(id, self._create_logger(), self._config, traders)
+        return StrategyManager(id, self._create_logger(), self._config, traders, self._get_context())
 
     def _get_context(self):
         pass
@@ -60,6 +60,9 @@ class BaseStrategyContext(object):
     def is_backtest(self):
         pass
 
+    def is_read_file_allowed(self):
+        return False
+
 
 class BaseLogger(object):
     def debug(self, msg, *args, **kwargs):
@@ -81,11 +84,12 @@ class BaseLogger(object):
 class StrategyManager(object):
     THEMATIC_BREAK = '-' * 50
 
-    def __init__(self, id, logger, config, traders):
+    def __init__(self, id, logger, config, traders, strategy_context):
         self._id = id
         self._logger = logger
         self._config = config
         self._traders = traders
+        self._strategy_context = strategy_context
 
     @property
     def id(self):
@@ -130,6 +134,8 @@ class StrategyManager(object):
         self._logger.info(self.THEMATIC_BREAK)
 
     def _refresh(self):
+        if not self._strategy_context.is_read_file_allowed():
+            return
         self._config.reload()
         trader_configs = self._config.build_trader_configs(self._id)
         for id, trader in self._traders.items():
@@ -270,7 +276,7 @@ class StrategyTrader(object):
         if not self._should_run():
             self._logger.info("[%s] %s", self.id, order)
             return None
-        actual_order =  self._do_execute(order)
+        actual_order = self._do_execute(order)
         return actual_order
 
     def _cancel(self, order):
@@ -388,7 +394,7 @@ class StrategyConfig(object):
 
     def reload(self):
         content = self._strategy_context.read_file('shipane_sdk_config.yaml')
-        stream = six.StringIO(content)
+        stream = six.BytesIO(content)
         self._data = yaml.load(stream, Loader=OrderedDictYAMLLoader)
         self._proxies = self._create_proxy_configs()
         stream.close()

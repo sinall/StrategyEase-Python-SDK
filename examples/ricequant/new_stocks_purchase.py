@@ -12,19 +12,13 @@ def init(context):
 
 
 def before_trading(context):
-    # 创建 RiceQuantExecutor 对象
-    # 可选参数包括：host, port, key, client, timeout 等
-    # 请将下面的 IP 替换为实际 IP
-    context.__executor = shipane_sdk.RiceQuantExecutor(
-        host='xxx.xxx.xxx.xxx',
-        port=8888,
-        key='',
-        client=''
-    )
+    # 创建 RiceQuantStrategyManagerFactory 对象
+    # 参数为 shipane_sdk_config_template.yaml 中配置的 manager id
+    context.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 
 def purchase_new_stocks(context, bar_dict):
     if context.run_info.run_type == RUN_TYPE.PAPER_TRADING:
-        context.__executor.purchase_new_stocks()
+        context.__manager.purchase_new_stocks()
     else:
         logger.info('回测中不进行新股申购')

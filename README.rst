@@ -194,6 +194,7 @@ Mac/Linux
 - 修改策略代码，可参考如下示例：
 
   - examples/ricequant/simple\_strategy.py - 基本用法
+  - examples/ricequant/advanced\_strategy.py - 高级同步用法（非侵入式设计，推荐）
   - examples/ricequant/new\_stocks\_purchase.py - 新股申购
   - examples/ricequant/repo.py - 逆回购
 

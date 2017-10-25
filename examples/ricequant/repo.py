@@ -12,15 +12,9 @@ def initialize(context):
 
 
 def process_initialize(context):
-    # 创建 RiceQuantExecutor 对象
-    # 可选参数包括：host, port, key, client, timeout 等
-    # 请将下面的 IP 替换为实际 IP
-    g.__executor = shipane_sdk.RiceQuantExecutor(
-        host='xxx.xxx.xxx.xxx',
-        port=8888,
-        key='',
-        client=''
-    )
+    # 创建 RiceQuantStrategyManagerFactory 对象
+    # 参数为 shipane_sdk_config_template.yaml 中配置的 manager id
+    g.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 
 def repo(context):
@@ -34,6 +28,6 @@ def repo(context):
             'price': float(quote_df['bid'][0]),
             'amountProportion': 'ALL'
         }
-        g.__executor.client.execute(**order)
+        g.__manager.execute(**order)
     else:
         log.info('回测中不进行逆回购')
