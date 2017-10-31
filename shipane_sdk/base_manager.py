@@ -310,6 +310,7 @@ class StrategyTrader(object):
                 self._shipane_client.cancel(order_id=order_info['id'])
         except KeyError:
             self._logger.warning('[实盘易] 未找到对应的委托编号')
+            self._order_id_to_info_map[quant_order_id] = {'id': None, 'canceled': True}
 
     def _normalize_order(self, order):
         if isinstance(order, Order):
