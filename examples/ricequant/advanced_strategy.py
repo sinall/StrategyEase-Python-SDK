@@ -16,4 +16,4 @@ def handle_bar(context, bar_dict):
     finally:
         # 放在 finally 块中，以防原有代码抛出异常或者 return
         # 在函数结尾处加入以下语句，用来将模拟盘同步至实盘
-        g.__manager.work()
+        context.__manager.work()
