@@ -53,8 +53,13 @@ class GuornClient(BaseQuantClient):
         }, timeout=self._timeout)
         instruction = response.json()
 
+        status = instruction['status']
         data = instruction['data']
-        position = data['position']
+        if status == 'failed':
+            if isinstance(data, str):
+                raise Exception(data)
+            raise Exception("获取调仓指令数据失败")
+
         df = pd.DataFrame()
         sheet_data = instruction['data']['sheet_data']
         for row in sheet_data['row']:
