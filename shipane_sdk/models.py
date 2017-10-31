@@ -313,7 +313,8 @@ class Position(object):
     @value.setter
     def value(self, value):
         self._value = value
-        self._total_amount = self._value / self._price
+        if self._price != 0:
+            self._total_amount = self._value / self._price
 
     def _normalize_security(self, security):
         return security.split('.')[0] if security else None
@@ -358,7 +359,8 @@ class Order(object):
         order.amount = kwargs['amount']
         return order
 
-    def __init__(self, id=None, action=None, security=None, amount=None, price=None, style=None, status=OrderStatus.open, add_time=None):
+    def __init__(self, id=None, action=None, security=None, amount=None, price=None, style=None,
+                 status=OrderStatus.open, add_time=None):
         self._id = id
         self._action = action
         self._security = security
