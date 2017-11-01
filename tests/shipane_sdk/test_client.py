@@ -87,6 +87,22 @@ class ClientTest(unittest.TestCase):
             result = e.response.json()
             self.assertNotEqual(result['source'], "实盘易")
 
+    def test_buy_stock_at_market_price(self):
+        try:
+            order = self.client.buy(self.client_param, symbol='000001', type='MARKET', priceType=4, amount=100)
+            self.assertIsNotNone(order['id'])
+        except HTTPError as e:
+            result = e.response.json()
+            self.assertNotEqual(result['source'], "实盘易")
+
+    def test_sell_stock_at_market_price(self):
+        try:
+            order = self.client.sell(self.client_param, symbol='000001', type='MARKET', priceType=4, amount=100)
+            self.assertIsNotNone(order['id'])
+        except HTTPError as e:
+            result = e.response.json()
+            self.assertNotEqual(result['source'], "实盘易")
+
     def test_cancel_all(self):
         try:
             self.client.cancel_all(self.client_param)
