@@ -62,11 +62,12 @@ class GuornClient(BaseQuantClient):
 
         df = pd.DataFrame()
         sheet_data = instruction['data']['sheet_data']
-        for row in sheet_data['row']:
-            df[row['name']] = pd.Series(row['data'][1])
-        meas_data = sheet_data['meas_data']
-        for index, col in enumerate(sheet_data['col']):
-            df[col['name']] = pd.Series(meas_data[index])
+        if sheet_data is not None:
+            for row in sheet_data['row']:
+                df[row['name']] = pd.Series(row['data'][1])
+            meas_data = sheet_data['meas_data']
+            for index, col in enumerate(sheet_data['col']):
+                df[col['name']] = pd.Series(meas_data[index])
 
         portfolio = Portfolio(total_value=1.0)
         for index, row in df.iterrows():
