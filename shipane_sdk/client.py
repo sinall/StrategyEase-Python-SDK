@@ -146,7 +146,7 @@ class Client(object):
         today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
         df = self.query_new_stocks()
         df = df[(df.ipo_date == today)]
-        self._logger.info('今日可申购新股有[{}]只'.format(len(df)))
+        self._logger.info('今日有[{}]支可申购新股'.format(len(df)))
         for index, row in df.iterrows():
             try:
                 order = {
