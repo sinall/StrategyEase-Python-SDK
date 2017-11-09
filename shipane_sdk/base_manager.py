@@ -421,7 +421,8 @@ class StrategyConfig(object):
         client_config = self._create_client_config(raw_trader_config)
         trader_config = copy.deepcopy(raw_trader_config)
         trader_config['client'] = client_config
-        trader_config['sync']['reserved-securities'] = client_config.pop('reserved_securities', [])
+        if 'sync' in trader_config:
+            trader_config['sync']['reserved-securities'] = client_config.pop('reserved_securities', [])
         return trader_config
 
     def _create_client_config(self, raw_trader_config):
