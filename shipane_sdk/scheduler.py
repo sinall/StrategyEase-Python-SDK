@@ -40,14 +40,14 @@ class Scheduler(object):
         self._client = Client(self._logger, **dict(self._config.items('ShiPanE')))
 
     def start(self):
-        self.__add_job(self.__create_new_stock_purchase_job())
-        self.__add_job(self.__create_repo_job())
-        self.__add_job(self.__create_batch_job())
-        self.__add_job(self.__create_join_quant_following_job())
-        self.__add_job(self.__create_rice_quant_following_job())
-        self.__add_job(self.__create_uqer_following_job())
-        self.__add_job(self.__create_guorn_sync_job())
-        self.__add_job(self.__create_join_quant_sync_job())
+        for section in self._config.sections():
+            if not self.__is_job(section):
+                continue
+            job = self.__create_job(section)
+            if job is not None:
+                self.__add_job(job)
+            else:
+                self._logger.warning("[{}] is not a valid job", section)
 
         self._scheduler.start()
         print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
@@ -64,63 +64,79 @@ class Scheduler(object):
         else:
             self._logger.warning('{} is not enabled'.format(job.name))
 
-    def __create_new_stock_purchase_job(self):
-        section = 'NewStocks'
+    def __create_job(self, section):
+        job_type = self._config.get(section, 'type')
+        job = None
+        if job_type == 'NewStocks':
+            job = self.__create_new_stock_purchase_job(section)
+        elif job_type == 'Repo':
+            job = self.__create_repo_job(section)
+        elif job_type == 'Batch':
+            job = self.__create_batch_job(section)
+        elif job_type == 'JoinQuant':
+            job = self.__create_join_quant_following_job(section)
+        elif job_type == 'RiceQuant':
+            job = self.__create_rice_quant_following_job(section)
+        elif job_type == 'Uqer':
+            job = self.__create_uqer_following_job(section)
+        elif job_type == 'Guorn':
+            job = self.__create_guorn_sync_job(section)
+        elif job_type == 'JoinQuantArena':
+            job = self.__create_join_quant_sync_job(section)
+        return job
+
+    def __create_new_stock_purchase_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
-        return NewStockPurchaseJob(self._client, client_aliases, '{}Job'.format(section), **options)
+        return NewStockPurchaseJob(self._client, client_aliases, '{}-Job'.format(section), **options)
 
-    def __create_repo_job(self):
-        section = 'Repo'
+    def __create_repo_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
-        return RepoJob(self._client, client_aliases, '{}Job'.format(section), **options)
+        return RepoJob(self._client, client_aliases, '{}-Job'.format(section), **options)
 
-    def __create_batch_job(self):
-        section = 'Batch'
+    def __create_batch_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
-        return BatchJob(self._client, client_aliases, '{}Job'.format(section), **options)
+        return BatchJob(self._client, client_aliases, '{}-Job'.format(section), **options)
 
-    def __create_join_quant_following_job(self):
-        section = 'JoinQuant'
+    def __create_join_quant_following_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         quant_client = JoinQuantClient(**options)
-        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}FollowingJob'.format(section),
+        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}-FollowingJob'.format(section),
                                        **options)
 
-    def __create_rice_quant_following_job(self):
-        section = 'RiceQuant'
+    def __create_rice_quant_following_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         quant_client = RiceQuantClient(**options)
-        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}FollowingJob'.format(section),
+        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}-FollowingJob'.format(section),
                                        **options)
 
-    def __create_uqer_following_job(self):
-        section = 'Uqer'
+    def __create_uqer_following_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         quant_client = UqerClient(**options)
-        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}FollowingJob'.format(section),
+        return OnlineQuantFollowingJob(self._client, quant_client, client_aliases, '{}-FollowingJob'.format(section),
                                        **options)
 
-    def __create_guorn_sync_job(self):
-        section = 'Guorn'
+    def __create_guorn_sync_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         quant_client = GuornClient(**options)
-        return OnlineQuantSyncJob(self._client, quant_client, client_aliases, '{}SyncJob'.format(section),
+        return OnlineQuantSyncJob(self._client, quant_client, client_aliases, '{}-SyncJob'.format(section),
                                   **options)
 
-    def __create_join_quant_sync_job(self):
-        section = 'JoinQuantArena'
+    def __create_join_quant_sync_job(self, section):
         options = self.__build_options(section)
         client_aliases = self.__filter_client_aliases(section)
         quant_client = JoinQuantClient(**options)
-        return OnlineQuantSyncJob(self._client, quant_client, client_aliases, '{}SyncJob'.format(section),
+        return OnlineQuantSyncJob(self._client, quant_client, client_aliases, '{}-SyncJob'.format(section),
                                   **options)
+
+    def __is_job(self, section):
+        return self._config.has_option(section, 'type')
 
     def __build_options(self, section):
         if not self._config.has_section(section):
