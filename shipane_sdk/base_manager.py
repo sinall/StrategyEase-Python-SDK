@@ -365,6 +365,8 @@ class StrategyTrader(object):
 
     def _create_adjustment_request(self, target_portfolio):
         context = AdjustmentContext(self._sync_config['reserved-securities'],
+                                    self._sync_config['other-value'],
+                                    self._sync_config['total-value-deviation-rate'],
                                     self._sync_config['min-order-value'],
                                     self._sync_config['max-order-value'])
         request = Adjustment()
@@ -423,6 +425,8 @@ class StrategyConfig(object):
         trader_config['client'] = client_config
         if 'sync' in trader_config:
             trader_config['sync']['reserved-securities'] = client_config.pop('reserved_securities', [])
+            trader_config['sync']['other-value'] = client_config.pop('other_value', [])
+            trader_config['sync']['total-value-deviation-rate'] = client_config.pop('total_value_deviation_rate', [])
         return trader_config
 
     def _create_client_config(self, raw_trader_config):
@@ -440,6 +444,8 @@ class StrategyConfig(object):
                         ]),
                         'client': raw_client_config['query'],
                         'reserved_securities': raw_client_config['reserved-securities'],
+                        'other_value': raw_client_config['other-value'],
+                        'total_value_deviation_rate': raw_client_config['total-value-deviation-rate'],
                     }
                     if connection_method == 'DIRECT':
                         client_config.update({

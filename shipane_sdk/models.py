@@ -88,11 +88,15 @@ class AdjustmentContext(object):
             'minOrderValue': instance.min_order_value,
             'maxOrderValue': instance.max_order_value,
             'reservedSecurities': instance.reserved_securities,
+            'otherValue': instance.other_value,
+            'totalValueDeviationRate': instance.total_value_deviation_rate,
         }
         return json
 
-    def __init__(self, reserved_securities, min_order_value, max_order_value):
+    def __init__(self, reserved_securities, other_value, total_value_deviation_rate, min_order_value, max_order_value):
         self._reserved_securities = reserved_securities
+        self._other_value = other_value
+        self._total_value_deviation_rate = total_value_deviation_rate
         self._min_order_value = min_order_value
         self._max_order_value = max_order_value
 
@@ -103,6 +107,22 @@ class AdjustmentContext(object):
     @reserved_securities.setter
     def reserved_securities(self, value):
         self._reserved_securities = value
+
+    @property
+    def other_value(self):
+        return self._other_value
+
+    @other_value.setter
+    def other_value(self, value):
+        self._other_value = value
+
+    @property
+    def total_value_deviation_rate(self):
+        return self._total_value_deviation_rate
+
+    @total_value_deviation_rate.setter
+    def total_value_deviation_rate(self, value):
+        self._total_value_deviation_rate = value
 
     @property
     def min_order_value(self):

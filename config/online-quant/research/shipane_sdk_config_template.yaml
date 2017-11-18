@@ -58,6 +58,12 @@ gateways:
                 # 是否默认？
                 # 1 个实盘易只允许设置 1 个交易客户端为默认
                 default: true
+                # 其他资产价值
+                # 基金及其他非场内资产价值，该项配置用于校验账户
+                other-value: 0
+                # 总资产价值偏差率
+                # 该项配置用于校验账户
+                total-value-deviation-rate: 0.001
                 # 保留名单，每行一个
                 # 股票代码，注意使用 str 标签
                 # 例如：!!str 000001
@@ -76,6 +82,8 @@ gateways:
             # 客户端-2
             -   id: client-2
                 query: account:xxxx
+                other-value: 0
+                total-value-deviation-rate: 0.001
                 reserved-securities:
                     - \D
                     - ^[92]
@@ -96,6 +104,8 @@ gateways:
             -   id: client-3
                 query: title:monijiaoyi
                 default: true
+                other-value: 0
+                total-value-deviation-rate: 0.001
                 reserved-securities:
                     - \D
                     - ^[92]
@@ -104,6 +114,8 @@ gateways:
                     - !!str 888880
             -   id: client-4
                 query: title:xxx,account:xxx
+                other-value: 0
+                total-value-deviation-rate: 0.001
                 reserved-securities:
                     - \D
                     - ^[92]
