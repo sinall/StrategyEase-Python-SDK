@@ -364,9 +364,9 @@ class StrategyTrader(object):
         return adjustment
 
     def _create_adjustment_request(self, target_portfolio):
-        context = AdjustmentContext(self._sync_config['reserved-securities'],
-                                    self._sync_config['other-value'],
+        context = AdjustmentContext(self._sync_config['other-value'],
                                     self._sync_config['total-value-deviation-rate'],
+                                    self._sync_config['reserved-securities'],
                                     self._sync_config['min-order-value'],
                                     self._sync_config['max-order-value'])
         request = Adjustment()
