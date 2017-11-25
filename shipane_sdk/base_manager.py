@@ -2,6 +2,8 @@
 
 import time
 
+import tushare as ts
+
 from shipane_sdk.client import *
 from shipane_sdk.models import *
 from shipane_sdk.support import *
@@ -105,6 +107,22 @@ class StrategyManager(object):
                 trader.purchase_new_stocks()
             except:
                 self._logger.exception('[%s] 打新失败', trader.id)
+
+    def repo(self):
+        security = '131810'
+        quote_df = ts.get_realtime_quotes(security)
+        order = {
+            'action': 'SELL',
+            'symbol': security,
+            'type': 'LIMIT',
+            'price': float(quote_df['bid'][0]),
+            'amountProportion': 'ALL'
+        }
+        for trader in self._traders.values():
+            try:
+                trader.execute(**order)
+            except:
+                self._logger.exception('[%s] 逆回购失败', trader.id)
 
     def execute(self, order=None, **kwargs):
         if order is None and not kwargs:
@@ -330,7 +348,7 @@ class StrategyTrader(object):
 
     def _pre_check(self):
         if not self._config['enabled']:
-            self._logger.info("[%s] 同步未启用，不执行", self.id)
+            self._logger.info("[%s] 交易未启用，不执行", self.id)
             return False
         if self._strategy_context.is_backtest():
             self._logger.info("[%s] 当前为回测环境，不执行", self.id)

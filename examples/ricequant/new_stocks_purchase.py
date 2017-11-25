@@ -18,7 +18,4 @@ def before_trading(context):
 
 
 def purchase_new_stocks(context, bar_dict):
-    if context.run_info.run_type == RUN_TYPE.PAPER_TRADING:
-        context.__manager.purchase_new_stocks()
-    else:
-        logger.info('回测中不进行新股申购')
+    context.__manager.purchase_new_stocks()

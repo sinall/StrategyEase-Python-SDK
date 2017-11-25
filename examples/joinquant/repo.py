@@ -1,5 +1,3 @@
-import tushare as ts
-
 import shipane_sdk
 
 
@@ -18,16 +16,4 @@ def process_initialize(context):
 
 
 def repo(context):
-    if context.run_params.type == 'sim_trade':
-        security = '131810'
-        df = ts.get_realtime_quotes(security)
-        order = {
-            'action': 'SELL',
-            'symbol': security,
-            'type': 'LIMIT',
-            'price': float(df['bid'][0]),
-            'amountProportion': 'ALL'
-        }
-        g.__manager.execute(**order)
-    else:
-        log.info('回测中不进行逆回购')
+    g.__manager.repo()
