@@ -49,7 +49,8 @@ ShiPanE-Python-SDK
 定时任务调度
 --------------
 
-- 多账号自动新股申购（自动打新）
+- 多账号自动申购新股（自动打新）
+- 多账号自动申购转债
 - 多账号自动逆回购
 - 定时批量下单
 - 聚宽（JoinQuant）
@@ -142,6 +143,7 @@ Mac/Linux
   - examples/joinquant/simple\_strategy.py - 基本跟单用法（侵入式设计，不推荐）
   - examples/joinquant/advanced\_strategy.py - 高级同步、跟单用法（非侵入式设计，推荐）
   - examples/joinquant/new\_stocks\_purchase.py - 新股申购
+  - examples/joinquant/convertible\_bonds\_purchase.py - 转债申购
   - examples/joinquant/repo.py - 逆回购
 
 同步操作注意事项：
@@ -196,6 +198,7 @@ Mac/Linux
   - examples/ricequant/simple\_strategy.py - 基本用法
   - examples/ricequant/advanced\_strategy.py - 高级同步用法（非侵入式设计，推荐）
   - examples/ricequant/new\_stocks\_purchase.py - 新股申购
+  - examples/ricequant/convertible\_bonds\_purchase.py - 转债申购
   - examples/ricequant/repo.py - 逆回购
 
 二. 抓取方式

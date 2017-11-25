@@ -9,6 +9,7 @@ import lxml.html
 import pandas as pd
 import requests
 import six
+import tushare as ts
 from lxml import etree
 from pandas.compat import StringIO
 from requests import Request
@@ -142,6 +143,9 @@ class Client(object):
     def query_new_stocks(self):
         return self.__query_new_stocks()
 
+    def query_convertible_bonds(self):
+        return self.__query_convertible_bonds()
+
     def purchase_new_stocks(self, client=None, timeout=None):
         today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
         df = self.query_new_stocks()
@@ -159,6 +163,24 @@ class Client(object):
             except Exception as e:
                 self._logger.error(
                     '客户端[{}]申购新股[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
+
+    def purchase_convertible_bonds(self, client=None, timeout=None):
+        today = datetime.datetime.strftime(datetime.datetime.today(), '%Y-%m-%d')
+        df = self.query_convertible_bonds()
+        df = df[(df.ipo_date == today)]
+        self._logger.info('今日有[{}]支可申购转债'.format(len(df)))
+        for index, row in df.iterrows():
+            try:
+                order = {
+                    'symbol': row['xcode'],
+                    'price': 100,
+                    'amountProportion': 'ALL'
+                }
+                self._logger.info('申购转债：{}'.format(order))
+                self.buy(client, timeout, **order)
+            except Exception as e:
+                self._logger.error(
+                    '客户端[{}]申购转债[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
 
     def create_adjustment(self, client=None, request_json=None, timeout=None):
         request = Request('POST', self.__create_url(client, 'adjustments'), json=request_json)
@@ -198,6 +220,10 @@ class Client(object):
         df.columns = ['code', 'xcode', 'name', 'ipo_date', 'price']
         df['code'] = df['code'].map(lambda x: str(x).zfill(6))
         df['xcode'] = df['xcode'].map(lambda x: str(x).zfill(6))
+        return df
+
+    def __query_convertible_bonds(self):
+        df = ts.new_cbonds()
         return df
 
     def __create_order_url(self, client=None, order_id=None, **params):

@@ -124,6 +124,13 @@ class StrategyManager(object):
             except:
                 self._logger.exception('[%s] 逆回购失败', trader.id)
 
+    def purchase_convertible_bonds(self):
+        for trader in self._traders.values():
+            try:
+                trader.purchase_convertible_bonds()
+            except:
+                self._logger.exception('[%s] 申购转债失败', trader.id)
+
     def execute(self, order=None, **kwargs):
         if order is None and not kwargs:
             return
@@ -186,6 +193,12 @@ class StrategyTrader(object):
             return
 
         self._shipane_client.purchase_new_stocks()
+
+    def purchase_convertible_bonds(self):
+        if not self._pre_check():
+            return
+
+        self._shipane_client.purchase_convertible_bonds()
 
     def execute(self, order=None, **kwargs):
         if not self._pre_check():

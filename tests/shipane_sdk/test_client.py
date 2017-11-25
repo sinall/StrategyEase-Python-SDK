@@ -119,3 +119,8 @@ class ClientTest(unittest.TestCase):
     def test_query_new_stocks(self):
         df = self.client.query_new_stocks()
         self.assertTrue((df.columns == ['code', 'xcode', 'name', 'ipo_date', 'price']).all())
+
+    def test_query_convertible_bonds(self):
+        df = self.client.query_convertible_bonds()
+        assert_that(df, has_column('ipo_date'))
+        assert_that(df, has_column('xcode'))
