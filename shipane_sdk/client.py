@@ -180,7 +180,7 @@ class Client(object):
                 self.buy(client, timeout, **order)
             except Exception as e:
                 self._logger.error(
-                    '客户端[{}]申购转债[{}({})]失败\n{}'.format((client or self._client), row['name'], row['code'], e))
+                    '客户端[{}]申购转债[{}({})]失败\n{}'.format((client or self._client), row['bname'], row['xcode'], e))
 
     def create_adjustment(self, client=None, request_json=None, timeout=None):
         request = Request('POST', self.__create_url(client, 'adjustments'), json=request_json)
