@@ -11,7 +11,7 @@ from shipane_sdk.models import Portfolio, Position
 
 
 class JoinQuantClient(BaseQuantClient):
-    BASE_URL = 'https://www.joinquant.com'
+    BASE_URL = 'https://www.joinquant.net'
 
     def __init__(self, **kwargs):
         super(JoinQuantClient, self).__init__('JoinQuant')
