@@ -376,15 +376,17 @@ class Order(object):
         order.security = kwargs['symbol']
         order.style = OrderStyle(kwargs['type'])
         order.price = kwargs['price']
-        order.amount = kwargs['amount']
+        order.amount = kwargs.get('amount', 0)
+        order.amountProportion = kwargs.get('amountProportion')
         return order
 
-    def __init__(self, id=None, action=None, security=None, amount=None, price=None, style=None,
+    def __init__(self, id=None, action=None, security=None, amount=None, amountProportion=None, price=None, style=None,
                  status=OrderStatus.open, add_time=None):
         self._id = id
         self._action = action
         self._security = security
         self._amount = amount
+        self._amountProportion = amountProportion
         self._price = price
         self._style = style
         self._status = status
@@ -407,7 +409,8 @@ class Order(object):
             type=self._style.name,
             priceType=(0 if self._style == OrderStyle.LIMIT else 4),
             price=self._price,
-            amount=self._amount
+            amount=self._amount,
+            amountProportion=self._amountProportion
         )
         return e_order
 
@@ -446,6 +449,14 @@ class Order(object):
     @amount.setter
     def amount(self, value):
         self._amount = value
+
+    @property
+    def amountProportion(self):
+        return self._amountProportion
+
+    @amountProportion.setter
+    def amountProportion(self, value):
+        self._amountProportion = value
 
     @property
     def price(self):
