@@ -367,6 +367,7 @@ class Order(object):
         order.style = OrderStyle(json['type'])
         order.price = json['price']
         order.amount = json['amount']
+        order.amountProportion = json.get('amountProportion', '')
         return order
 
     @staticmethod
@@ -377,7 +378,7 @@ class Order(object):
         order.style = OrderStyle(kwargs['type'])
         order.price = kwargs['price']
         order.amount = kwargs.get('amount', 0)
-        order.amountProportion = kwargs.get('amountProportion')
+        order.amountProportion = kwargs.get('amountProportion', '')
         return order
 
     def __init__(self, id=None, action=None, security=None, amount=None, amountProportion=None, price=None, style=None,
@@ -410,7 +411,7 @@ class Order(object):
             priceType=(0 if self._style == OrderStyle.LIMIT else 4),
             price=self._price,
             amount=self._amount,
-            amountProportion=self._amountProportion
+            amountProportion=self._amountProportion or ''
         )
         return e_order
 
