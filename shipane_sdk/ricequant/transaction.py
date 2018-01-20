@@ -14,6 +14,8 @@ class RiceQuantTransaction(object):
         transaction.completed_at = datetime.strptime(self.time, '%Y-%m-%d %H:%M:%S')
         transaction.action = 'BUY' if self.quantity > 0 else 'SELL'
         transaction.symbol = self.order_book_id
+        transaction.type = 'LIMIT'
+        transaction.priceType = 0
         transaction.price = self.price
         transaction.amount = abs(self.quantity)
         return transaction

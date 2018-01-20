@@ -53,17 +53,23 @@ class GuornClient(BaseQuantClient):
         }, timeout=self._timeout)
         instruction = response.json()
 
+        status = instruction['status']
         data = instruction['data']
-        position = data['position']
+        if status == 'failed':
+            if isinstance(data, str):
+                raise Exception(data)
+            raise Exception("获取调仓指令数据失败")
+
         df = pd.DataFrame()
         sheet_data = instruction['data']['sheet_data']
-        for row in sheet_data['row']:
-            df[row['name']] = pd.Series(row['data'][1])
-        meas_data = sheet_data['meas_data']
-        for index, col in enumerate(sheet_data['col']):
-            df[col['name']] = pd.Series(meas_data[index])
+        if sheet_data is not None:
+            for row in sheet_data['row']:
+                df[row['name']] = pd.Series(row['data'][1])
+            meas_data = sheet_data['meas_data']
+            for index, col in enumerate(sheet_data['col']):
+                df[col['name']] = pd.Series(meas_data[index])
 
-        portfolio = Portfolio(1 - position)
+        portfolio = Portfolio(total_value=1.0)
         for index, row in df.iterrows():
             security = row[u'股票代码']
             value = row[u'目标仓位']
@@ -71,5 +77,6 @@ class GuornClient(BaseQuantClient):
             amount = value / price
             position = Position(security, price, amount, amount)
             portfolio.add_position(position)
+        portfolio.rebalance()
 
         return portfolio

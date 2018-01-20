@@ -1,5 +1,5 @@
 #!/usr/bin/env python
 
-from shipane_sdk.scheduler import Scheduler
+import shipane_sdk.scheduler
 
-Scheduler().start()
+shipane_sdk.scheduler.start()

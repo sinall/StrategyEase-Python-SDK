@@ -8,7 +8,7 @@ import shipane_sdk
 # 在这个方法中编写任何的初始化逻辑。context对象将会在你的算法策略的任何方法之间做传递。
 def init(context):
     # 每天的开市后10分钟进行新股申购。参数设置见：https://www.ricequant.com/api/python/chn#scheduler
-    scheduler.run_daily(purchase_new_stocks, time_rule=market_open(minute=10))
+    scheduler.run_daily(purchase_convertible_bonds, time_rule=market_open(minute=10))
 
 
 def before_trading(context):
@@ -17,5 +17,5 @@ def before_trading(context):
     context.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 
-def purchase_new_stocks(context, bar_dict):
-    context.__manager.purchase_new_stocks()
+def purchase_convertible_bonds(context, bar_dict):
+    context.__manager.purchase_convertible_bonds()

@@ -21,7 +21,7 @@ class OnlineQuantSyncJob(BasicJob):
         self._name = name
 
     def __call__(self):
-        if MarketUtils.is_closed() and not self._config.debug:
+        if MarketUtils.is_closed() and not self._config.dry_run:
             self._logger.warning("********** 休市期间不同步 **********")
             return
 
@@ -45,7 +45,7 @@ class OnlineQuantSyncJob(BasicJob):
 
     def _sync(self, target_portfolio, client):
         if self._config.pre_clear:
-            if not self._config.debug:
+            if not self._config.dry_run:
                 self._shipane_client.cancel_all(client)
             time.sleep(self._config.order_interval)
 
@@ -77,12 +77,10 @@ class OnlineQuantSyncJob(BasicJob):
 
     def _execute_order(self, order, client):
         try:
-            if self._config.debug:
+            if self._config.dry_run:
                 self._logger.info(order)
                 return
             e_order = order.to_e_order()
-            e_order['type'] = 'MARKET'
-            e_order['priceType'] = 4
             self._shipane_client.execute(client=client, **e_order)
         except Exception as e:
             self._logger.error('客户端[%s]下单失败\n%s', client, e)
@@ -95,7 +93,9 @@ class OnlineQuantSyncJob(BasicJob):
         return adjustment
 
     def _create_adjustment_request(self, target_portfolio):
-        context = AdjustmentContext(self._config.reserved_securities,
+        context = AdjustmentContext(self._config.other_value,
+                                    self._config.total_value_deviation_rate,
+                                    self._config.reserved_securities,
                                     self._config.min_order_value,
                                     self._config.max_order_value)
         request = Adjustment()
@@ -109,8 +109,10 @@ class OnlineQuantSyncJob(BasicJob):
 
 class PortfolioSyncConfig(object):
     def __init__(self, **kwargs):
-        self._debug = distutils.util.strtobool(kwargs.get('debug', 'false'))
+        self._dry_run = distutils.util.strtobool(kwargs.get('dry_run', 'false'))
         self._pre_clear = distutils.util.strtobool(kwargs.get('pre_clear', 'false'))
+        self._other_value = float(kwargs.get('other_value', 0.0))
+        self._total_value_deviation_rate = float(kwargs.get('total_value_deviation_rate', 0.001))
         self._reserved_securities = list(filter(None, kwargs.get('reserved_securities').split('\n')))
         self._min_order_value = kwargs.get('min_order_value', '0')
         self._max_order_value = float(kwargs.get('max_order_value', '1000000'))
@@ -120,12 +122,20 @@ class PortfolioSyncConfig(object):
         self._extra_rounds = int(kwargs.get('extra_rounds', '0'))
 
     @property
-    def debug(self):
-        return self._debug
+    def dry_run(self):
+        return self._dry_run
 
     @property
     def pre_clear(self):
         return self._pre_clear
+
+    @property
+    def other_value(self):
+        return self._other_value
+
+    @property
+    def total_value_deviation_rate(self):
+        return self._total_value_deviation_rate
 
     @property
     def reserved_securities(self):

@@ -13,15 +13,19 @@ def initialize(context):
 def process_initialize(context):
     # 创建 StrategyManager 对象
     # 参数为配置文件中的 manager id
-    g.__manager = shipane_sdk.StrategyManager(context, 'manager-1')
+    g.__manager = shipane_sdk.JoinQuantStrategyManagerFactory(context).create('manager-1')
 
 
 # 每个单位时间(如果按天回测,则每天调用一次,如果按分钟,则每分钟调用一次)调用一次
 def handle_data(context, data):
     try:
-        order(g.security, 100)
+        order_target(g.security, 0)
+        order_target(g.security, 100)
 
+        current_data = get_current_data()
+        order_ = order(g.security, 100, LimitOrderStyle(current_data[g.security].low_limit))
+        cancel_order(order_)
     finally:
         # 放在 finally 块中，以防原有代码抛出异常或者 return
-        # 在函数结尾处加入以下语句，用来将模拟盘同步至实盘
-        g.__manager.sync(context)
+        # 在函数结尾处加入以下语句，用来将模拟盘同步、跟单至实盘
+        g.__manager.work()

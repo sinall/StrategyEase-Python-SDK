@@ -1,78 +1,131 @@
 # -*- coding: utf-8 -*-
 
-import datetime
+# Begin of __future__ module
+# End   of __future__ module
 
-from shipane_sdk.client import Client
+# Begin of external module
+# End   of external module
+
+import traceback
+
+from shipane_sdk.base_manager import *
+from shipane_sdk.models import *
 
 
-class RiceQuantExecutor(object):
-    def __init__(self, **kwargs):
-        self._logger = self._create_logger()
-        self._shipane_client = Client(self._logger, **kwargs)
-        self._order_id_map = dict()
-        self._expire_before = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+class RiceQuantStrategyManagerFactory(BaseStrategyManagerFactory):
+    def __init__(self, context):
+        self._strategy_context = RiceQuantStrategyContext(context)
+        super(RiceQuantStrategyManagerFactory, self).__init__()
 
-    @property
-    def client(self):
-        return self._shipane_client
-
-    def purchase_new_stocks(self):
-        self.client.purchase_new_stocks()
-
-    def execute(self, order):
-        self._logger.info("[实盘易] 跟单：{}".format(order))
-
-        if not self._should_execute(order):
-            return
-
-        try:
-            e_order = self._convert_order(order)
-            actual_order = self._shipane_client.execute(**e_order)
-            self._order_id_map[order.order_id] = actual_order['id']
-            return actual_order
-        except Exception as e:
-            self._logger.error("[实盘易] 下单异常：{}".format(e))
-
-    def cancel(self, order_id):
-        if order_id is None:
-            self._logger.info('[实盘易] 委托为空，忽略撤单请求')
-            return
-
-        try:
-            if order_id in self._order_id_map:
-                self._shipane_client.cancel(order_id=self._order_id_map[order_id])
-            else:
-                self._logger.warning('[实盘易] 未找到对应的委托编号')
-        except Exception as e:
-            self._logger.error("[实盘易] 撤单异常：{}".format(e))
+    def _get_context(self):
+        return self._strategy_context
 
     def _create_logger(self):
-        try:
-            return logger
-        except NameError:
-            import logging
-            return logging.getLogger()
+        return RiceQuantLogger()
 
-    def _should_execute(self, order):
-        if order is None:
-            self._logger.info('[实盘易] 委托为空，忽略下单请求')
-            return False
-        if self._is_expired(order):
-            self._logger.info('[实盘易] 委托已过期，忽略下单请求')
-            return False
-        return True
 
-    def _is_expired(self, order):
-        return order.datetime < self._expire_before
+class RiceQuantStrategyContext(BaseStrategyContext):
+    def __init__(self, context):
+        self._context = context
 
-    def _convert_order(self, order):
-        price_type = 0 if order.type.name == 'LIMIT' else 4
-        e_order = dict(
-            action=order.side.name,
-            symbol=order.order_book_id,
-            type=order.type.name,
-            priceType=price_type,
-            price=order.price,
-            amount=order.quantity
+    def get_current_time(self):
+        return self._context.now
+
+    def get_portfolio(self):
+        quant_portfolio = self._context.portfolio
+        portfolio = Portfolio()
+        portfolio.available_cash = quant_portfolio.cash
+        portfolio.total_value = quant_portfolio.total_value
+        positions = dict()
+        for order_book_id, quant_position in quant_portfolio.positions.items():
+            position = self._convert_position(quant_position)
+            positions[position.security] = position
+        portfolio.positions = positions
+        return portfolio
+
+    def convert_order(self, quant_order):
+        status = {
+            ORDER_STATUS.PENDING_NEW: OrderStatus.open,
+            ORDER_STATUS.ACTIVE: OrderStatus.open,
+            ORDER_STATUS.FILLED: OrderStatus.filled,
+            ORDER_STATUS.CANCELLED: OrderStatus.canceled,
+            ORDER_STATUS.REJECTED: OrderStatus.rejected,
+        }.get(quant_order.ORDER_STATUS)
+        common_order = Order(
+            id=quant_order.order_id,
+            action=(OrderAction.OPEN if quant_order.side == SIDE.BUY else OrderAction.CLOSE),
+            security=quant_order.order_book_id,
+            price=quant_order.price,
+            amount=quant_order.quantity,
+            style=(OrderStyle.LIMIT if quant_order.price > 0 else OrderStyle.MARKET),
+            status=status,
+            add_time=quant_order.datetime,
         )
-        return e_order
+        return common_order
+
+    def get_orders(self):
+        pass
+
+    def has_open_orders(self):
+        return bool(get_open_orders())
+
+    def cancel_open_orders(self):
+        open_orders = get_open_orders()
+        for open_order in open_orders.values():
+            self.cancel_order(open_order)
+
+    def cancel_order(self, open_order):
+        return cancel_order(open_order)
+
+    def read_file(self, path):
+        return get_file(path)
+
+    def is_sim_trade(self):
+        return self._context.run_info.run_type == RUN_TYPE.PAPER_TRADING
+
+    def is_backtest(self):
+        return not self.is_sim_trade()
+
+    def is_read_file_allowed(self):
+        return False
+
+    @staticmethod
+    def _convert_position(quant_position):
+        position = Position()
+        position.security = quant_position.order_book_id
+        position.price = quant_position.avg_price
+        position.total_amount = quant_position.quantity
+        position.closeable_amount = quant_position.sellable
+        position.value = quant_position.market_value
+        return position
+
+
+class RiceQuantLogger(BaseLogger):
+    def debug(self, msg, *args, **kwargs):
+        if not args:
+            logger.debug(msg)
+        else:
+            logger.debug(msg % args)
+
+    def info(self, msg, *args, **kwargs):
+        if not args:
+            logger.info(msg)
+        else:
+            logger.info(msg % args)
+
+    def warning(self, msg, *args, **kwargs):
+        if not args:
+            logger.warning(msg)
+        else:
+            logger.warning(msg % args)
+
+    def error(self, msg, *args, **kwargs):
+        if not args:
+            logger.error(msg)
+        else:
+            logger.error(msg % args)
+
+    def exception(self, msg, *args, **kwargs):
+        msg += "\n%s"
+        args += (traceback.format_exc(),)
+        logger.error(msg % args)

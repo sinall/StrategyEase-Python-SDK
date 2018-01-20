@@ -25,3 +25,8 @@ class JoinQuantClientTest(unittest.TestCase):
         self._jq_client.login()
         transactions = self._jq_client.query()
         self.assertTrue(isinstance(transactions, list))
+
+    def test_query_portfolio(self):
+        self._jq_client.login()
+        portfolio = self._jq_client.query_portfolio()
+        self.assertIsNotNone(portfolio)

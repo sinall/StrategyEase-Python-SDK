@@ -1,5 +1,3 @@
-import tushare as ts
-
 import shipane_sdk
 
 
@@ -12,28 +10,11 @@ def initialize(context):
 
 
 def process_initialize(context):
-    # 创建 RiceQuantExecutor 对象
-    # 可选参数包括：host, port, key, client, timeout 等
-    # 请将下面的 IP 替换为实际 IP
-    g.__executor = shipane_sdk.RiceQuantExecutor(
-        host='xxx.xxx.xxx.xxx',
-        port=8888,
-        key='',
-        client=''
-    )
+
+    # 创建 RiceQuantStrategyManagerFactory 对象
+    # 参数为 shipane_sdk_config_template.yaml 中配置的 manager id
+    context.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 
 def repo(context):
-    if context.run_info.run_type == RUN_TYPE.PAPER_TRADING:
-        security = '131810'
-        quote_df = ts.get_realtime_quotes(security)
-        order = {
-            'action': 'SELL',
-            'symbol': security,
-            'type': 'LIMIT',
-            'price': float(quote_df['bid'][0]),
-            'amountProportion': 'ALL'
-        }
-        g.__executor.client.execute(**order)
-    else:
-        log.info('回测中不进行逆回购')
+    context.__manager.repo()

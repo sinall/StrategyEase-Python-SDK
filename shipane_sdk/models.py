@@ -88,13 +88,33 @@ class AdjustmentContext(object):
             'minOrderValue': instance.min_order_value,
             'maxOrderValue': instance.max_order_value,
             'reservedSecurities': instance.reserved_securities,
+            'otherValue': instance.other_value,
+            'totalValueDeviationRate': instance.total_value_deviation_rate,
         }
         return json
 
-    def __init__(self, reserved_securities, min_order_value, max_order_value):
+    def __init__(self, other_value, total_value_deviation_rate, reserved_securities, min_order_value, max_order_value):
+        self._other_value = other_value
+        self._total_value_deviation_rate = total_value_deviation_rate
         self._reserved_securities = reserved_securities
         self._min_order_value = min_order_value
         self._max_order_value = max_order_value
+
+    @property
+    def other_value(self):
+        return self._other_value
+
+    @other_value.setter
+    def other_value(self, value):
+        self._other_value = value
+
+    @property
+    def total_value_deviation_rate(self):
+        return self._total_value_deviation_rate
+
+    @total_value_deviation_rate.setter
+    def total_value_deviation_rate(self, value):
+        self._total_value_deviation_rate = value
 
     @property
     def reserved_securities(self):
@@ -192,9 +212,9 @@ class Portfolio(object):
         }
         return json
 
-    def __init__(self, available_cash=0):
+    def __init__(self, available_cash=None, total_value=None):
         self._available_cash = available_cash
-        self._total_value = available_cash
+        self._total_value = total_value
         self._positions_value = 0
         self._positions = dict()
 
@@ -243,8 +263,16 @@ class Portfolio(object):
 
     def add_position(self, position):
         self._positions_value += position.value
-        self._total_value += position.value
         self._positions[position.security] = position
+
+    def rebalance(self):
+        if self._available_cash is None:
+            self._available_cash = self._total_value - self._positions_value
+        elif self._total_value is None:
+            self._total_value = self._available_cash + self.positions_value
+        if self._available_cash < 0:
+            self._available_cash = 0
+            self._total_value = self._positions_value
 
 
 class Position(object):
@@ -305,7 +333,8 @@ class Position(object):
     @value.setter
     def value(self, value):
         self._value = value
-        self._total_amount = self._value / self._price
+        if self._price != 0:
+            self._total_amount = self._value / self._price
 
     def _normalize_security(self, security):
         return security.split('.')[0] if security else None
@@ -321,22 +350,48 @@ class OrderStyle(Enum):
     MARKET = 'MARKET'
 
 
+class OrderStatus(Enum):
+    open = 0
+    filled = 1
+    canceled = 2
+    rejected = 3
+    held = 4
+
+
 class Order(object):
     @staticmethod
     def from_json(json):
         order = Order()
         order.action = OrderAction.OPEN if json['action'] == 'BUY' else OrderAction.CLOSE
         order.security = json['symbol']
+        order.style = OrderStyle(json['type'])
         order.price = json['price']
         order.amount = json['amount']
+        order.amountProportion = json.get('amountProportion', '')
         return order
 
-    def __init__(self, action=None, security=None, amount=None, price=None, style=None):
+    @staticmethod
+    def from_e_order(**kwargs):
+        order = Order()
+        order.action = OrderAction.OPEN if kwargs['action'] == 'BUY' else OrderAction.CLOSE
+        order.security = kwargs['symbol']
+        order.style = OrderStyle(kwargs['type'])
+        order.price = kwargs['price']
+        order.amount = kwargs.get('amount', 0)
+        order.amountProportion = kwargs.get('amountProportion', '')
+        return order
+
+    def __init__(self, id=None, action=None, security=None, amount=None, amountProportion=None, price=None, style=None,
+                 status=OrderStatus.open, add_time=None):
+        self._id = id
         self._action = action
         self._security = security
         self._amount = amount
+        self._amountProportion = amountProportion
         self._price = price
         self._style = style
+        self._status = status
+        self._add_time = add_time
 
     def __str__(self):
         str = "以 {0:>7.3f}元 {1}{2} {3:>5} {4}".format(
@@ -350,16 +405,27 @@ class Order(object):
 
     def to_e_order(self):
         e_order = dict(
-            action='BUY' if self._action == OrderAction.OPEN else 'SELL',
+            action=('BUY' if self._action == OrderAction.OPEN else 'SELL'),
             symbol=self._security,
-            type=self._style,
-            amount=self._amount
+            type=self._style.name,
+            priceType=(0 if self._style == OrderStyle.LIMIT else 4),
+            price=self._price,
+            amount=self._amount,
+            amountProportion=self._amountProportion or ''
         )
         return e_order
 
     @property
     def value(self):
         return self._amount * self._price
+
+    @property
+    def id(self):
+        return self._id
+
+    @id.setter
+    def id(self, value):
+        self._id = value
 
     @property
     def action(self):
@@ -386,6 +452,14 @@ class Order(object):
         self._amount = value
 
     @property
+    def amountProportion(self):
+        return self._amountProportion
+
+    @amountProportion.setter
+    def amountProportion(self, value):
+        self._amountProportion = value
+
+    @property
     def price(self):
         return self._price
 
@@ -400,3 +474,19 @@ class Order(object):
     @style.setter
     def style(self, value):
         self._style = value
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        self._status = value
+
+    @property
+    def add_time(self):
+        return self._add_time
+
+    @add_time.setter
+    def add_time(self, value):
+        self._add_time = value
