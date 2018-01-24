@@ -71,7 +71,7 @@ class GuornClient(BaseQuantClient):
 
         portfolio = Portfolio(total_value=1.0)
         for index, row in df.iterrows():
-            security = row[u'股票代码']
+            security = row.get(u'股票代码') or row.get(u'基金代码')
             value = row[u'目标仓位']
             price = row[u'参考价']
             amount = value / price
