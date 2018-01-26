@@ -53,7 +53,7 @@ class JoinQuantStrategyContext(BaseStrategyContext):
             price=quant_order.limit,
             amount=quant_order.amount,
             style=(OrderStyle.LIMIT if quant_order.limit > 0 else OrderStyle.MARKET),
-            status=OrderStatus(quant_order.status.value),
+            status=self._convert_status(quant_order.status),
             add_time=quant_order.add_time,
         )
         return common_order
@@ -98,6 +98,13 @@ class JoinQuantStrategyContext(BaseStrategyContext):
         position.closeable_amount = quant_position.closeable_amount
         position.value = quant_position.value
         return position
+
+    @staticmethod
+    def _convert_status(quant_order_status):
+        try:
+            return OrderStatus(quant_order_status.value)
+        except ValueError:
+            return OrderStatus.open
 
 
 class JoinQuantLogger(BaseLogger):
