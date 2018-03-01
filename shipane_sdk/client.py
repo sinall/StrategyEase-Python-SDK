@@ -28,6 +28,7 @@ class ConnectionMethod(Enum):
 
 
 class Client(object):
+    VERSION = 'v1.0'
     KEY_REGEX = r'key=([^&]*)'
 
     def __init__(self, logger=None, **kwargs):
@@ -238,7 +239,7 @@ class Client(object):
             path = '/{}'.format(resource)
         else:
             path = '/{}/{}'.format(resource, resource_id)
-        url = '{}{}?{}'.format(self._base_url, path, urlencode(all_params))
+        url = '{}/api/{}{}?{}'.format(self._base_url, self.VERSION, path, urlencode(all_params))
         return url
 
     def __create_base_url(self):
