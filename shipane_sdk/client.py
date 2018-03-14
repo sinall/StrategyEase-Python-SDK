@@ -84,7 +84,8 @@ class Client(object):
 
     def get_statuses(self, timeout=None):
         request = Request('GET', self.__create_url(None, 'statuses'))
-        self.__send_request(request, timeout)
+        response = self.__send_request(request, timeout)
+        return response.json()
 
     def get_account(self, client=None, timeout=None):
         request = Request('GET', self.__create_url(client, 'accounts'))
