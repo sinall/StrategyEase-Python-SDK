@@ -97,7 +97,7 @@ class Client(object):
         request.headers['Accept'] = media_type.value
         response = self.__send_request(request, timeout)
         json = response.json()
-        if media_type == MediaType.DEFAULT:
+        if media_type != MediaType.DEFAULT:
             sub_accounts = pd.DataFrame(json['subAccounts']).T
             positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
             portfolio = {'sub_accounts': sub_accounts, 'positions': positions}
