@@ -66,29 +66,42 @@ Windows
 ^^^^
 
 - 安装 Python 3.5（建议安装 `Anaconda3-4.2.0 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
-- cmd 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
+- cmd 中运行
+
++--------+---------------------------------------------------------------+
+| 正式版 | :code:`pip install --no-binary shipane_sdk shipane_sdk`       |
++--------+---------------------------------------------------------------+
+| 测试版 | :code:`pip install --pre --no-binary shipane_sdk shipane_sdk` |
++--------+---------------------------------------------------------------+
 
 配置
 ^^^^
 
-- cmd 中运行：explorer %UserProfile%\\.shipane_sdk\\config
+- cmd 中运行：:code:`explorer %UserProfile%\\.shipane_sdk\\config`
 - 修改 scheduler.ini 中的配置（建议使用Notepad++）
 
 运行
 ^^^^
 
-- cmd 下运行：shipane-scheduler
+- cmd 下运行：:code:`shipane-scheduler`
 
 升级
 ^^^^
 
-- cmd 中运行：pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk
+- cmd 中运行
+
++--------+-------------------------------------------------------------------------+
+| 正式版 | :code:`pip install --upgrade --no-binary shipane_sdk shipane_sdk`       |
++--------+-------------------------------------------------------------------------+
+| 测试版 | :code:`pip install --upgrade --pre --no-binary shipane_sdk shipane_sdk` |
++--------+-------------------------------------------------------------------------+
+
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
 日志
 ^^^^
 
-- cmd 中运行：explorer %UserProfile%\\AppData\\Local\\爱股网\\实盘易
+- cmd 中运行：:code:`explorer %UserProfile%\\AppData\\Local\\爱股网\\实盘易`
 
 Mac/Linux
 ~~~~~~~~~
@@ -97,7 +110,13 @@ Mac/Linux
 ^^^^
 
 - 安装 Python 3.5
-- terminal 中运行：pip install --pre --no-binary shipane_sdk shipane_sdk
+- terminal 中运行
+
++--------+---------------------------------------------------------------+
+| 正式版 | :code:`pip install --no-binary shipane_sdk shipane_sdk`       |
++--------+---------------------------------------------------------------+
+| 测试版 | :code:`pip install --pre --no-binary shipane_sdk shipane_sdk` |
++--------+---------------------------------------------------------------+
 
 配置
 ^^^^
@@ -107,12 +126,19 @@ Mac/Linux
 运行
 ^^^^
 
-- terminal 中运行：shipane-scheduler
+- terminal 中运行：:code:`shipane-scheduler:code:`
 
 升级
 ^^^^
 
-- terminal 中运行：pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk
+- terminal 中运行
+
++--------+-------------------------------------------------------------------------+
+| 正式版 | :code:`pip install --upgrade --no-binary shipane_sdk shipane_sdk`       |
++--------+-------------------------------------------------------------------------+
+| 测试版 | :code:`pip install --upgrade --pre --no-binary shipane_sdk shipane_sdk` |
++--------+-------------------------------------------------------------------------+
+
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
 聚宽（JoinQuant）集成
