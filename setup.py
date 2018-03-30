@@ -40,7 +40,7 @@ def main():
     setup(
         name='shipane_sdk',
 
-        version='1.4.0',
+        version='1.5.0a1',
 
         description=u'实盘易（ShiPanE）Python SDK，通达信自动化交易 API。',
         long_description=long_description,
