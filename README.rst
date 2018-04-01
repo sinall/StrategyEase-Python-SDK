@@ -77,7 +77,7 @@ Windows
 配置
 ^^^^
 
-- cmd 中运行：:code:`explorer %UserProfile%\\.shipane_sdk\\config`
+- cmd 中运行：:code:`explorer %UserProfile%\.shipane_sdk\config`
 - 修改 scheduler.ini 中的配置（建议使用Notepad++）
 
 运行
@@ -90,18 +90,18 @@ Windows
 
 - cmd 中运行
 
-+--------+-------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --upgrade --no-binary shipane_sdk shipane_sdk`       |
-+--------+-------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --upgrade --pre --no-binary shipane_sdk shipane_sdk` |
-+--------+-------------------------------------------------------------------------+
++--------+-----------------------------------------------------------------------------------+
+| 正式版 | :code:`pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk`       |
++--------+-----------------------------------------------------------------------------------+
+| 测试版 | :code:`pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk` |
++--------+-----------------------------------------------------------------------------------+
 
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
 日志
 ^^^^
 
-- cmd 中运行：:code:`explorer %UserProfile%\\AppData\\Local\\爱股网\\实盘易`
+- cmd 中运行：:code:`explorer %UserProfile%\AppData\Local\爱股网\实盘易`
 
 Mac/Linux
 ~~~~~~~~~
@@ -133,11 +133,11 @@ Mac/Linux
 
 - terminal 中运行
 
-+--------+-------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --upgrade --no-binary shipane_sdk shipane_sdk`       |
-+--------+-------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --upgrade --pre --no-binary shipane_sdk shipane_sdk` |
-+--------+-------------------------------------------------------------------------+
++--------+-----------------------------------------------------------------------------------+
+| 正式版 | :code:`pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk`       |
++--------+-----------------------------------------------------------------------------------+
+| 测试版 | :code:`pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk` |
++--------+-----------------------------------------------------------------------------------+
 
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
