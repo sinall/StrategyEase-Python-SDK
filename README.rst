@@ -180,6 +180,7 @@ Mac/Linux
 - 同步操作依赖于实盘易 API /adjustments；因此也依赖于“查询投资组合”API，使用前请先做好测试及配置。
 - 同步操作使用“市价单”。
 - 如遇到策略报错“ImportError: No module named shipane_sdk”，请稍后重试。
+- 量化平台模拟交易运行中升级 SDK，需重启生效。
 
 二. 抓取方式
 ~~~~~~~~~~~~
