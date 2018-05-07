@@ -9,7 +9,7 @@ from shipane_sdk.uqer.transaction import UqerTransaction
 
 
 class UqerClient(BaseQuantClient):
-    BASE_URL = 'https://gw.wmcloud.com'
+    BASE_URL = 'https://gw.datayes.com'
 
     def __init__(self, **kwargs):
         super(UqerClient, self).__init__('Uqer')
@@ -31,7 +31,6 @@ class UqerClient(BaseQuantClient):
             'Origin': self.BASE_URL,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
         }
-        self._session.get(self.BASE_URL, timeout=self._timeout)
         response = self._session.post('{}/usermaster/authenticate/v1.json'.format(self.BASE_URL), data={
             'username': self._username,
             'password': self._password,
