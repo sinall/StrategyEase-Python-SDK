@@ -136,7 +136,7 @@ class Client(object):
         self.__send_request(request, timeout)
 
     def query(self, client=None, navigation=None, timeout=None):
-        request = Request('GET', self.__create_url(client, '', navigation=navigation))
+        request = Request('GET', self.__create_url(client, 'reports', navigation=navigation))
         response = self.__send_request(request, timeout)
         json = response.json()
         df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
