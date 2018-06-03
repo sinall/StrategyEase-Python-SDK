@@ -9,8 +9,9 @@ class Adjustment(object):
     @staticmethod
     def to_json(instance):
         json = {
+            'sourcePortfolio': Portfolio.to_json(instance.source_portfolio),
             'targetPortfolio': Portfolio.to_json(instance.target_portfolio),
-            'context': AdjustmentContext.to_json(instance.context)
+            'schema': AdjustmentSchema.to_json(instance.schema)
         }
         return json
 
@@ -57,12 +58,12 @@ class Adjustment(object):
         self._target_portfolio = value
 
     @property
-    def context(self):
-        return self._context
+    def schema(self):
+        return self._schema
 
-    @context.setter
-    def context(self, value):
-        self._context = value
+    @schema.setter
+    def schema(self, value):
+        self._schema = value
 
     @property
     def batches(self):
@@ -81,40 +82,20 @@ class Adjustment(object):
         self._progress = value
 
 
-class AdjustmentContext(object):
+class AdjustmentSchema(object):
     @staticmethod
     def to_json(instance):
         json = {
             'minOrderValue': instance.min_order_value,
             'maxOrderValue': instance.max_order_value,
             'reservedSecurities': instance.reserved_securities,
-            'otherValue': instance.other_value,
-            'totalValueDeviationRate': instance.total_value_deviation_rate,
         }
         return json
 
-    def __init__(self, other_value, total_value_deviation_rate, reserved_securities, min_order_value, max_order_value):
-        self._other_value = other_value
-        self._total_value_deviation_rate = total_value_deviation_rate
+    def __init__(self, reserved_securities, min_order_value, max_order_value):
         self._reserved_securities = reserved_securities
         self._min_order_value = min_order_value
         self._max_order_value = max_order_value
-
-    @property
-    def other_value(self):
-        return self._other_value
-
-    @other_value.setter
-    def other_value(self, value):
-        self._other_value = value
-
-    @property
-    def total_value_deviation_rate(self):
-        return self._total_value_deviation_rate
-
-    @total_value_deviation_rate.setter
-    def total_value_deviation_rate(self, value):
-        self._total_value_deviation_rate = value
 
     @property
     def reserved_securities(self):
@@ -207,14 +188,18 @@ class Portfolio(object):
         json = {
             'availableCash': instance.available_cash,
             'totalValue': instance.total_value,
+            'otherValue': instance.other_value,
+            'totalValueDeviationRate': instance.total_value_deviation_rate,
             'positionsValue': instance.positions_value,
             'positions': positions_json
         }
         return json
 
-    def __init__(self, available_cash=None, total_value=None):
+    def __init__(self, available_cash=None, total_value=None, other_value=None, total_value_deviation_rate=None):
         self._available_cash = available_cash
         self._total_value = total_value
+        self._other_value = other_value
+        self._total_value_deviation_rate = total_value_deviation_rate
         self._positions_value = 0
         self._positions = dict()
 
@@ -244,6 +229,22 @@ class Portfolio(object):
     @total_value.setter
     def total_value(self, value):
         self._total_value = value
+
+    @property
+    def other_value(self):
+        return self._other_value
+
+    @other_value.setter
+    def other_value(self, value):
+        self._other_value = value
+
+    @property
+    def total_value_deviation_rate(self):
+        return self._total_value_deviation_rate
+
+    @total_value_deviation_rate.setter
+    def total_value_deviation_rate(self, value):
+        self._total_value_deviation_rate = value
 
     @property
     def positions_value(self):

@@ -93,14 +93,16 @@ class OnlineQuantSyncJob(BasicJob):
         return adjustment
 
     def _create_adjustment_request(self, target_portfolio):
-        context = AdjustmentContext(self._config.other_value,
-                                    self._config.total_value_deviation_rate,
-                                    self._config.reserved_securities,
-                                    self._config.min_order_value,
-                                    self._config.max_order_value)
+        schema = AdjustmentSchema(self._config.reserved_securities,
+                                   self._config.min_order_value,
+                                   self._config.max_order_value)
         request = Adjustment()
+        request.source_portfolio = Portfolio(
+            other_value=self._config.other_value,
+            total_value_deviation_rate=self._config.total_value_deviation_rate
+        )
         request.target_portfolio = target_portfolio
-        request.context = context
+        request.schema = schema
         return request
 
     def _log_progress(self, adjustment):
