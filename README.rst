@@ -77,7 +77,7 @@ Windows
 配置
 ^^^^
 
-- cmd 中运行：:code:`explorer %UserProfile%\\.shipane_sdk\\config`
+- cmd 中运行：:code:`explorer %UserProfile%\.shipane_sdk\config`
 - 修改 scheduler.ini 中的配置（建议使用Notepad++）
 
 运行
@@ -90,18 +90,18 @@ Windows
 
 - cmd 中运行
 
-+--------+-------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --upgrade --no-binary shipane_sdk shipane_sdk`       |
-+--------+-------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --upgrade --pre --no-binary shipane_sdk shipane_sdk` |
-+--------+-------------------------------------------------------------------------+
++--------+-----------------------------------------------------------------------------------+
+| 正式版 | :code:`pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk`       |
++--------+-----------------------------------------------------------------------------------+
+| 测试版 | :code:`pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk` |
++--------+-----------------------------------------------------------------------------------+
 
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
 日志
 ^^^^
 
-- cmd 中运行：:code:`explorer %UserProfile%\\AppData\\Local\\爱股网\\实盘易`
+- cmd 中运行：:code:`explorer %UserProfile%\AppData\Local\爱股网\实盘易`
 
 Mac/Linux
 ~~~~~~~~~
@@ -133,11 +133,11 @@ Mac/Linux
 
 - terminal 中运行
 
-+--------+-------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --upgrade --no-binary shipane_sdk shipane_sdk`       |
-+--------+-------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --upgrade --pre --no-binary shipane_sdk shipane_sdk` |
-+--------+-------------------------------------------------------------------------+
++--------+-----------------------------------------------------------------------------------+
+| 正式版 | :code:`pip install --upgrade --no-deps --no-binary shipane_sdk shipane_sdk`       |
++--------+-----------------------------------------------------------------------------------+
+| 测试版 | :code:`pip install --upgrade --pre --no-deps --no-binary shipane_sdk shipane_sdk` |
++--------+-----------------------------------------------------------------------------------+
 
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
@@ -180,6 +180,7 @@ Mac/Linux
 - 同步操作依赖于实盘易 API /adjustments；因此也依赖于“查询投资组合”API，使用前请先做好测试及配置。
 - 同步操作使用“市价单”。
 - 如遇到策略报错“ImportError: No module named shipane_sdk”，请稍后重试。
+- 量化平台模拟交易运行中升级 SDK，需重启生效。
 
 二. 抓取方式
 ~~~~~~~~~~~~

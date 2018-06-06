@@ -192,12 +192,10 @@ class Client(object):
         return json
 
     def start_clients(self, timeout=None):
-        request = Request('PUT', self.__create_url(None, 'clients'))
-        self.__send_request(request, timeout)
+        self.__change_clients_status('LOGGED')
 
     def shutdown_clients(self, timeout=None):
-        request = Request('DELETE', self.__create_url(None, 'clients'))
-        self.__send_request(request, timeout)
+        self.__change_clients_status('STOPPED')
 
     def __execute(self, client=None, timeout=None, **kwargs):
         if not kwargs.get('type'):
@@ -205,6 +203,12 @@ class Client(object):
         request = Request('POST', self.__create_order_url(client), json=kwargs)
         response = self.__send_request(request)
         return response.json()
+
+    def __change_clients_status(self, status, timeout=None):
+        request = Request('PATCH', self.__create_url(None, 'clients'), json={
+            'status': status
+        })
+        self.__send_request(request, timeout)
 
     def __query_new_stocks(self):
         DATA_URL = 'http://vip.stock.finance.sina.com.cn/corp/view/vRPD_NewStockIssue.php?page=1&cngem=0&orderBy=NetDate&orderType=desc'
