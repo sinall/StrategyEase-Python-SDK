@@ -17,4 +17,8 @@ def process_initialize(context):
 
 
 def purchase_new_stocks(context):
-    g.__manager.purchase_new_stocks()
+    try:
+        g.__manager.purchase_new_stocks()
+    except:
+        import traceback
+        traceback.print_exc()
