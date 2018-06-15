@@ -16,4 +16,8 @@ def process_initialize(context):
 
 
 def repo(context):
-    g.__manager.repo()
+    try:
+        g.__manager.repo()
+    except:
+        import traceback
+        traceback.print_exc()

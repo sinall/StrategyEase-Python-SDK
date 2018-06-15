@@ -18,4 +18,9 @@ def before_trading(context):
 
 
 def purchase_new_stocks(context, bar_dict):
-    context.__manager.purchase_new_stocks()
+    try:
+        context.__manager.purchase_new_stocks()
+    except:
+        import sys
+        s = sys.exc_info()
+        logger.error("Error '%s' happened on line %d" % (s[1],s[2].tb_lineno))

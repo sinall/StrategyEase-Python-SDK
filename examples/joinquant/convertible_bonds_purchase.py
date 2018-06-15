@@ -17,4 +17,8 @@ def process_initialize(context):
 
 
 def purchase_convertible_bonds(context):
-    g.__manager.purchase_convertible_bonds()
+    try:
+        g.__manager.purchase_convertible_bonds()
+    except:
+        import traceback
+        traceback.print_exc()

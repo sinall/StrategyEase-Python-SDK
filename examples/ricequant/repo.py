@@ -16,4 +16,9 @@ def process_initialize(context):
 
 
 def repo(context):
-    context.__manager.repo()
+    try:
+        context.__manager.repo()
+    except:
+        import sys
+        s = sys.exc_info()
+        logger.error("Error '%s' happened on line %d" % (s[1],s[2].tb_lineno))
