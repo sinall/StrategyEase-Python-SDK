@@ -109,20 +109,23 @@ class StrategyManager(object):
                 self._logger.exception('[%s] 打新失败', trader.id)
 
     def repo(self):
-        security = '131810'
-        quote_df = ts.get_realtime_quotes(security)
-        order = {
-            'action': 'SELL',
-            'symbol': security,
-            'type': 'LIMIT',
-            'price': float(quote_df['bid'][0]),
-            'amountProportion': 'ALL'
-        }
-        for trader in self._traders.values():
-            try:
-                trader.execute(**order)
-            except:
-                self._logger.exception('[%s] 逆回购失败', trader.id)
+        try:
+            security = '131810'
+            quote_df = ts.get_realtime_quotes(security)
+            order = {
+                'action': 'SELL',
+                'symbol': security,
+                'type': 'LIMIT',
+                'price': float(quote_df['bid'][0]),
+                'amountProportion': 'ALL'
+            }
+            for trader in self._traders.values():
+                try:
+                    trader.execute(**order)
+                except:
+                    self._logger.exception('[%s] 逆回购失败', trader.id)
+        except:
+            self._logger.exception('逆回购失败')
 
     def purchase_convertible_bonds(self):
         for trader in self._traders.values():
