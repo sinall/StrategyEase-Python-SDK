@@ -120,14 +120,6 @@ class Client(object):
         kwargs['action'] = 'SELL'
         return self.__execute(client, timeout, **kwargs)
 
-    def buy_on_margin(self, client=None, timeout=None, **kwargs):
-        kwargs['action'] = 'BUY_ON_MARGIN'
-        return self.__execute(client, timeout, **kwargs)
-
-    def sell_then_repay(self, client=None, timeout=None, **kwargs):
-        kwargs['action'] = 'SELL_THEN_REPAY'
-        return self.__execute(client, timeout, **kwargs)
-
     def ipo(self, client=None, timeout=None, **kwargs):
         kwargs['action'] = 'IPO'
         return self.__execute(client, timeout, **kwargs)

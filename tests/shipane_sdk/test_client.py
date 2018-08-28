@@ -73,7 +73,7 @@ class ClientTest(unittest.TestCase):
 
     def test_buy_stock(self):
         try:
-            order = self.client.buy(self.client_param, symbol='000001', price=11.11, amount=100)
+            order = self.client.buy(self.client_param, symbol='000001', price=9, amount=100)
             self.assertIsNotNone(order['id'])
         except HTTPError as e:
             result = e.response.json()
@@ -81,7 +81,7 @@ class ClientTest(unittest.TestCase):
 
     def test_sell_stock(self):
         try:
-            order = self.client.sell(self.client_param, symbol='000001', price=12.11, amount=100)
+            order = self.client.sell(self.client_param, symbol='000001', price=9.5, amount=100)
             self.assertIsNotNone(order['id'])
         except HTTPError as e:
             result = e.response.json()
