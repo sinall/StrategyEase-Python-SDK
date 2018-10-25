@@ -25,7 +25,7 @@ class HasColumnMatches(BaseMatcher):
         self._column_pattern = re.compile(column_pattern)
 
     def _matches(self, df):
-        return df.filter(regex=self._column_pattern).columns.size > 0
+        return len(list(filter(self._column_pattern.match, df.columns.values))) > 0
 
     def describe_to(self, description):
         description.append_text(u'Dataframe doesn\'t have colum matches [{0}]'.format(self._column_pattern))
