@@ -127,8 +127,8 @@ class Client(object):
     def execute(self, client=None, timeout=None, **kwargs):
         return self.__execute(client, timeout, **kwargs)
 
-    def cancel(self, client=None, order_id=None, timeout=None):
-        request = Request('DELETE', self.__create_order_url(client, order_id))
+    def cancel(self, client=None, order_id=None, symbol=None, timeout=None):
+        request = Request('DELETE', self.__create_order_url(client, order_id, symbol=symbol))
         self.__send_request(request, timeout)
 
     def cancel_all(self, client=None, timeout=None):
