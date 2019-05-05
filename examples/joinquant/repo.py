@@ -1,4 +1,4 @@
-import shipane_sdk
+import strategyease_sdk
 
 
 # 注意：需将回测调成分钟级别
@@ -12,7 +12,7 @@ def initialize(context):
 def process_initialize(context):
     # 创建 StrategyManager 对象
     # 参数为配置文件中的 manager id
-    g.__manager = shipane_sdk.JoinQuantStrategyManagerFactory(context).create('manager-1')
+    g.__manager = strategyease_sdk.JoinQuantStrategyManagerFactory(context).create('manager-1')
 
 
 def repo(context):

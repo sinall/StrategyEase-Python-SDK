@@ -1,4 +1,4 @@
-import shipane_sdk
+import strategyease_sdk
 
 
 def init(context):
@@ -6,13 +6,13 @@ def init(context):
 
 def before_trading(context):
     # 创建 RiceQuantStrategyManagerFactory 对象
-    # 参数为 shipane_sdk_config_template.yaml 中配置的 manager id
-    context.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
+    # 参数为 strategyease_sdk_config_template.yaml 中配置的 manager id
+    context.__manager = strategyease_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 def handle_bar(context, bar_dict):
     # 保存 order
     order_ = order_shares(context.s1, 100)
-    # 实盘易依据 order_ 下单
+    # 策略易依据 order_ 下单
     context.__manager.execute(order_)
 
     order_ = order_shares(context.s1, -100)

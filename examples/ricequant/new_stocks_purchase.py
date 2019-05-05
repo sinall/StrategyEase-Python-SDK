@@ -1,4 +1,4 @@
-import shipane_sdk
+import strategyease_sdk
 
 
 # 注意：需将回测调成分钟级别
@@ -13,8 +13,8 @@ def init(context):
 
 def before_trading(context):
     # 创建 RiceQuantStrategyManagerFactory 对象
-    # 参数为 shipane_sdk_config_template.yaml 中配置的 manager id
-    context.__manager = shipane_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
+    # 参数为 strategyease_sdk_config_template.yaml 中配置的 manager id
+    context.__manager = strategyease_sdk.RiceQuantStrategyManagerFactory(context).create('manager-1')
 
 
 def purchase_new_stocks(context, bar_dict):

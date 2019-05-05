@@ -12,7 +12,7 @@ from setuptools.command.install import install
 class CustomInstallCommand(install):
     def run(self):
         install.run(self)
-        config_path = os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config')
+        config_path = os.path.join(os.path.expanduser('~'), '.strategyease_sdk', 'config')
         ConfigInstantiator.instantiate(config_path)
 
 
@@ -38,14 +38,14 @@ def main():
         long_description = f.read()
 
     setup(
-        name='shipane_sdk',
+        name='strategyease_sdk',
 
         version='1.5.1',
 
-        description=u'实盘易（ShiPanE）Python SDK，通达信自动化交易 API。',
+        description=u'策略易（StrategyEase）Python SDK，通达信自动化交易 API。',
         long_description=long_description,
 
-        url='https://github.com/sinall/ShiPanE-Python-SDK',
+        url='https://github.com/sinall/StrategyEase-Python-SDK',
 
         author='sinall',
         author_email='gaoruinan@163.com',
@@ -68,7 +68,7 @@ def main():
             'Programming Language :: Python :: 3.5',
         ],
 
-        keywords='ShiPanE SDK 通达信 TDX Automation',
+        keywords='StrategyEase SDK 通达信 TDX Automation',
 
         packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
@@ -83,16 +83,16 @@ def main():
         package_data={
         },
 
-        data_files=[(os.path.join(os.path.expanduser('~'), '.shipane_sdk', 'config'), [
+        data_files=[(os.path.join(os.path.expanduser('~'), '.strategyease_sdk', 'config'), [
             'config/scheduler-template.ini',
             'config/logging-template.ini',
         ])],
 
-        scripts=['scripts/shipane-scheduler.py'],
+        scripts=['scripts/strategyease-scheduler.py'],
 
         entry_points={
             'console_scripts': [
-                'shipane-scheduler = shipane_sdk.scheduler:start',
+                'strategyease-scheduler = strategyease_sdk.scheduler:start',
             ],
         },
 
