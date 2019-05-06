@@ -3,7 +3,7 @@ StrategyEase-Python-SDK
 
 策略易（StrategyEase）Python SDK。
 
-| 策略易是\ `爱股网 <http://www.iguuu.com>`__\ 旗下的股票自动化解决方案；提供基于 HTTP 协议的 RESTFul Service，从而管理通达信等交易终端。
+| 策略易是\ `爱股网 <http://www.iguuu.com>`__\ 旗下的策略自动化解决方案；提供基于 HTTP 协议的 RESTFul Service，并管理交易客户端。
 | 详情见：http://www.iguuu.com/e
 | 交流QQ群：11527956 |策略交流|
 |
@@ -12,7 +12,7 @@ StrategyEase-Python-SDK
 
 原理概述
 --------
-- 策略易通过调用 WINDOWS API 对通达信进行操作。
+- 策略易通过调用 WINDOWS API 对交易客户端进行操作。
 - 策略易提供基于 HTTP 协议的 RESTFul Service/API。
 - SDK 对 API 进行了封装（由 strategyease_sdk/client.py 中的 Client 类实现）。
 - 本地策略或量化交易平台（目前支持聚宽、米筐、优矿）的模拟交易通过调用 SDK 实现自动下单。

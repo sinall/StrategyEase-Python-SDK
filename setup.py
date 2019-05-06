@@ -42,7 +42,7 @@ def main():
 
         version='1.5.1',
 
-        description=u'策略易（StrategyEase）Python SDK，通达信自动化交易 API。',
+        description=u'策略易（StrategyEase）Python SDK，策略自动化交易 API。',
         long_description=long_description,
 
         url='https://github.com/sinall/StrategyEase-Python-SDK',
@@ -68,7 +68,7 @@ def main():
             'Programming Language :: Python :: 3.5',
         ],
 
-        keywords='StrategyEase SDK 通达信 TDX Automation',
+        keywords='StrategyEase SDK',
 
         packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
