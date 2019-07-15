@@ -12,7 +12,7 @@ class JoinQuantTransaction(object):
 
     def normalize(self):
         transaction = Transaction()
-        transaction.completed_at = datetime.strptime('{} {}'.format(self.date, self.time), '%Y-%m-%d %H:%M')
+        transaction.completed_at = datetime.strptime('{} {}'.format(self.date, (self.time + ':00')[:8]), '%Y-%m-%d %H:%M:%S')
         transaction.action = 'BUY' if self.transaction == u'买' else 'SELL'
         transaction.symbol = re.search(".*\\((\\d+)\\..*\\)", self.stock).group(1)
         transaction.type = 'LIMIT' if self.type == u'限价单' else 'MARKET'
