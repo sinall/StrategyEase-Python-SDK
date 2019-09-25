@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 import six
 import tushare as ts
+from deprecation import deprecated
 from lxml import etree
 from pandas.compat import StringIO
 from requests import Request
@@ -93,8 +94,21 @@ class Client(object):
         response = self.__send_request(request, timeout)
         return response.json()
 
+    @deprecated(details="You should use get_portfolio")
     def get_positions(self, client=None, media_type=MediaType.DEFAULT, timeout=None):
         request = Request('GET', self.__create_url(client, 'positions'))
+        request.headers['Accept'] = media_type.value
+        response = self.__send_request(request, timeout)
+        json = response.json()
+        if media_type == MediaType.DEFAULT:
+            sub_accounts = pd.DataFrame(json['subAccounts']).T
+            positions = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
+            portfolio = {'sub_accounts': sub_accounts, 'positions': positions}
+            return portfolio
+        return json
+
+    def get_portfolio(self, client=None, media_type=MediaType.DEFAULT, timeout=None):
+        request = Request('GET', self.__create_url(client, 'portfolios'))
         request.headers['Accept'] = media_type.value
         response = self.__send_request(request, timeout)
         json = response.json()
@@ -135,8 +149,8 @@ class Client(object):
         request = Request('DELETE', self.__create_order_url(client))
         self.__send_request(request, timeout)
 
-    def query(self, client=None, navigation=None, timeout=None):
-        request = Request('GET', self.__create_url(client, 'reports', navigation=navigation))
+    def query(self, client=None, type=None, navigation=None, timeout=None):
+        request = Request('GET', self.__create_url(client, 'reports', type=type, navigation=navigation))
         response = self.__send_request(request, timeout)
         json = response.json()
         df = pd.DataFrame(json['dataTable']['rows'], columns=json['dataTable']['columns'])
@@ -236,7 +250,7 @@ class Client(object):
         return self.__create_url(client, 'orders', order_id, **params)
 
     def __create_url(self, client, resource, resource_id=None, **params):
-        all_params = copy.deepcopy(params)
+        all_params = dict((k, v) for k, v in params.items() if v is not None)
         all_params.update(client=(client or self._client))
         all_params.update(key=(self._key or ''))
         if resource_id is None:

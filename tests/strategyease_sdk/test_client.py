@@ -35,9 +35,9 @@ class ClientTest(unittest.TestCase):
         except HTTPError as e:
             self.fail()
 
-    def test_get_positions(self):
+    def test_get_portfolios(self):
         try:
-            data = self.client.get_positions(self.client_param)
+            data = self.client.get_portfolio(self.client_param)
             assert_that(data['sub_accounts'], has_row(u'人民币'))
             assert_that(data['positions'], has_column(u'证券代码'))
         except HTTPError as e:
@@ -109,9 +109,16 @@ class ClientTest(unittest.TestCase):
         except HTTPError as e:
             self.fail()
 
-    def test_query(self):
+    def test_query_by_type(self):
         try:
-            df = self.client.query(self.client_param, '查询>资金股份')
+            df = self.client.query(self.client_param, type='FUND')
+            assert_that(df, has_column(u'币种'))
+        except HTTPError as e:
+            self.fail()
+
+    def test_query_by_navigation(self):
+        try:
+            df = self.client.query(self.client_param, navigation='查询>资金股份')
             assert_that(df, has_column(u'证券代码'))
         except HTTPError as e:
             self.fail()

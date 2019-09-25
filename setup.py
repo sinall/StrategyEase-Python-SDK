@@ -73,7 +73,7 @@ def main():
         packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
         install_requires=['requests', 'six', 'apscheduler', 'lxml', 'cssselect', 'bs4', 'html5lib', 'pandas',
-                          'rqopen-client', 'tushare', 'pyyaml'],
+                          'rqopen-client', 'tushare', 'pyyaml', 'deprecation'],
 
         extras_require={
             'dev': [],
