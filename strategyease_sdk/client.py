@@ -10,7 +10,6 @@ import pandas as pd
 import requests
 import six
 import tushare as ts
-from deprecation import deprecated
 from lxml import etree
 from pandas.compat import StringIO
 from requests import Request
@@ -94,7 +93,7 @@ class Client(object):
         response = self.__send_request(request, timeout)
         return response.json()
 
-    @deprecated(details="You should use get_portfolio")
+    # You should use get_portfolio
     def get_positions(self, client=None, media_type=MediaType.DEFAULT, timeout=None):
         request = Request('GET', self.__create_url(client, 'positions'))
         request.headers['Accept'] = media_type.value
