@@ -21,18 +21,6 @@
 Windows
 ~~~~~~~
 
-安装
-^^^^
-
-- 安装 Python 3.5（建议安装 `Anaconda3-4.2.0 <https://mirrors.tuna.tsinghua.edu.cn/anaconda/archive/>`_）
-- cmd 中运行
-
-+--------+-------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --no-binary strategyease_sdk strategyease_sdk`       |
-+--------+-------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --pre --no-binary strategyease_sdk strategyease_sdk` |
-+--------+-------------------------------------------------------------------------+
-
 配置
 ^^^^
 
@@ -47,14 +35,6 @@ Windows
 升级
 ^^^^
 
-- cmd 中运行
-
-+--------+---------------------------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --upgrade --no-deps --no-binary strategyease_sdk strategyease_sdk`       |
-+--------+---------------------------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --upgrade --pre --no-deps --no-binary strategyease_sdk strategyease_sdk` |
-+--------+---------------------------------------------------------------------------------------------+
-
 - 参考 scheduler-template.ini 修改 scheduler.ini
 
 日志
@@ -64,18 +44,6 @@ Windows
 
 Mac/Linux
 ~~~~~~~~~
-
-安装
-^^^^
-
-- 安装 Python 3.5
-- terminal 中运行
-
-+--------+-------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --no-binary strategyease_sdk strategyease_sdk`       |
-+--------+-------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --pre --no-binary strategyease_sdk strategyease_sdk` |
-+--------+-------------------------------------------------------------------------+
 
 配置
 ^^^^
@@ -89,13 +57,5 @@ Mac/Linux
 
 升级
 ^^^^
-
-- terminal 中运行
-
-+--------+---------------------------------------------------------------------------------------------+
-| 正式版 | :code:`pip install --upgrade --no-deps --no-binary strategyease_sdk strategyease_sdk`       |
-+--------+---------------------------------------------------------------------------------------------+
-| 测试版 | :code:`pip install --upgrade --pre --no-deps --no-binary strategyease_sdk strategyease_sdk` |
-+--------+---------------------------------------------------------------------------------------------+
 
 - 参考 scheduler-template.ini 修改 scheduler.ini
