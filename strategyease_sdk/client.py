@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import copy
 import datetime
 import re
 from enum import Enum
@@ -11,9 +10,9 @@ import requests
 import six
 import tushare as ts
 from lxml import etree
-from pandas.compat import StringIO
 from requests import Request
 from requests.auth import HTTPBasicAuth
+from six import StringIO
 from six.moves.urllib.parse import urlencode
 
 
