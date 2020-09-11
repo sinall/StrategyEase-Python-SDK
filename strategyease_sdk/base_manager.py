@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import copy
 import time
 
 import tushare as ts
