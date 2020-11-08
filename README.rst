@@ -5,7 +5,7 @@ StrategyEase-Python-SDK
 
 | 策略易是\ `爱股网 <http://www.iguuu.com>`__\ 旗下的策略自动化解决方案；提供基于 HTTP 协议的 RESTFul Service，并管理交易客户端。
 | 详情见：http://www.iguuu.com/e
-| 交流QQ群：11527956 |策略交流|
+| 交流QQ群：115279569 |策略交流|
 |
 
 .. contents:: **目录**
