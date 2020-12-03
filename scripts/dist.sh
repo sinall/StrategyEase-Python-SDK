@@ -6,5 +6,5 @@ cd $HOME_DIR
 rm -rf dist/*
 python3 setup.py sdist
 python3 setup.py bdist_wheel --universal
-twine upload dist/*
+twine upload --repository-url https://upload.pypi.org/legacy/ dist/*
 cd $CWD
