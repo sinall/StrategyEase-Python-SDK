@@ -40,7 +40,7 @@ def main():
     setup(
         name='strategyease_sdk',
 
-        version='2.1.0',
+        version='2.1.1',
 
         description=u'策略易（StrategyEase）Python SDK，策略自动化交易 API。',
         long_description=long_description,
