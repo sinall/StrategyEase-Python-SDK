@@ -367,9 +367,10 @@ class StrategyTrader(object):
         if not self._config['enabled']:
             self._logger.info("[%s] 交易未启用，不执行", self.id)
             return False
-        if self._strategy_context.is_backtest():
-            self._logger.info("[%s] 当前为回测环境，不执行", self.id)
-            return False
+        if not self._config['enabled-in-backtest']:
+            if self._strategy_context.is_backtest():
+                self._logger.info("[%s] 当前为回测环境，不执行", self.id)
+                return False
         return True
 
     def _should_sync(self, target_portfolio):

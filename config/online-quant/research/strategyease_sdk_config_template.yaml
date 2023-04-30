@@ -140,6 +140,8 @@ managers:
                 # 是否开启？
                 # 正式运行时设置为 true
                 enabled: true
+                # 在回测中是否开启？
+                enabled-in-backtest: false
                 # 是否排练？排练时不会下单。
                 # 正式运行时设置为 false
                 dry-run: true
