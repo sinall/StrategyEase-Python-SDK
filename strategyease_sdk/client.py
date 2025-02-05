@@ -18,6 +18,7 @@ from six.moves.urllib.parse import urlencode
 
 class MediaType(Enum):
     DEFAULT = 'application/json'
+    UNIFIED = 'application/vnd.quant.unified+json'
     JOIN_QUANT = 'application/vnd.joinquant+json'
 
 
@@ -198,7 +199,7 @@ class Client(object):
 
     def create_adjustment(self, client=None, request_json=None, timeout=None):
         request = Request('POST', self.__create_url(client, 'adjustments'), json=request_json)
-        request.headers['Content-Type'] = MediaType.JOIN_QUANT.value
+        request.headers['Content-Type'] = MediaType.UNIFIED.value
         response = self.__send_request(request, timeout)
         json = response.json()
         return json

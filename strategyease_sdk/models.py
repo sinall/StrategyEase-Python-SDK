@@ -182,15 +182,17 @@ class AdjustmentProgress(object):
 class Portfolio(object):
     @staticmethod
     def to_json(instance):
-        positions_json = {}
+        positions_json = []
         for security, position in instance.positions.items():
-            positions_json[security] = Position.to_json(position)
+            positions_json.append(Position.to_json(position))
         json = {
-            'availableCash': instance.available_cash,
-            'totalValue': instance.total_value,
-            'otherValue': instance.other_value,
-            'totalValueDeviationRate': instance.total_value_deviation_rate,
-            'positionsValue': instance.positions_value,
+            'summary': {
+                'availableCash': instance.available_cash,
+                'totalValue': instance.total_value,
+                'otherValue': instance.other_value,
+                'totalValueDeviationRate': instance.total_value_deviation_rate,
+                'positionsValue': instance.positions_value,
+            },
             'positions': positions_json
         }
         return json
